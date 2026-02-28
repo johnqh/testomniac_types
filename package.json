@@ -1,6 +1,6 @@
 {
-  "name": "@sudobility/starter_types",
-  "version": "0.0.7",
+  "name": "@sudobility/testomniac_types",
+  "version": "0.0.8",
   "description": "TypeScript types for Starter API - template project",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
