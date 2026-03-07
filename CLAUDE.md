@@ -98,8 +98,7 @@ All other starter_* projects depend on this package. This package depends on `@s
 - The `BaseResponse<T>` wrapper is the standard API envelope -- all API responses must conform to it
 - Do not add runtime dependencies; this package should remain a lightweight type-only dependency (response helpers are the sole exception)
 
-## Testing
+## Testing Notes
 
-- Run tests: `bun test`
 - Tests are in `src/index.test.ts`
 - Tests verify that type exports exist, response helpers produce correct `BaseResponse<T>` shapes, and re-exports from `@sudobility/types` are accessible
