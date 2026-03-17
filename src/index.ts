@@ -8,6 +8,49 @@ export type {
 import type { BaseResponse } from '@sudobility/types';
 
 // =============================================================================
+// Test Run
+// =============================================================================
+
+export interface TestRun {
+  id: string;
+  userId: string;
+  configId?: string;
+  status: 'running' | 'completed' | 'failed';
+  startUrl: string;
+  steps: TestStep[];
+  issues: DetectedIssue[];
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+}
+
+export interface TestStep {
+  id: string;
+  testRunId: string;
+  sequenceNumber: number;
+  action: string;
+  target: string;
+  targetDescription?: string;
+  screenshotPath?: string;
+  timestamp: string;
+  success: boolean;
+}
+
+export interface DetectedIssue {
+  id: string;
+  testRunId: string;
+  stepId: string;
+  type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  title: string;
+  description: string;
+  screenshots: string[];
+  consoleErrors?: string[];
+  networkErrors?: string[];
+  createdAt: string;
+}
+
+// =============================================================================
 // Type Aliases
 // =============================================================================
 
