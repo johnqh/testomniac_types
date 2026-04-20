@@ -444,6 +444,362 @@ export interface RunDetailResponse {
 }
 
 // =============================================================================
+// Scanner API Request/Response Types
+// =============================================================================
+
+// --- Runs ---
+
+export interface PendingRunResponse {
+  id: number;
+  appId: number;
+  sizeClass: string;
+  status: string;
+}
+
+export interface UpdateRunPhaseRequest {
+  phase: string;
+}
+
+export interface UpdateRunStatsRequest {
+  pagesFound?: number;
+  pageStatesFound?: number;
+  actionsCompleted?: number;
+}
+
+export interface UpdatePhaseDurationRequest {
+  field: string;
+  durationMs: number;
+}
+
+export interface CompleteRunRequest {
+  aiSummary?: string;
+  totalDurationMs?: number;
+}
+
+// --- Pages ---
+
+export interface FindOrCreatePageRequest {
+  appId: number;
+  url: string;
+}
+
+export interface PageResponse {
+  id: number;
+  appId: number;
+  url: string;
+  routeKey: string | null;
+  requiresLogin: boolean | null;
+  createdAt: string | null;
+}
+
+// --- Page States ---
+
+export interface FindPageStateRequest {
+  pageId: number;
+  sizeClass: string;
+  hashes: PageHashes;
+}
+
+export interface CreatePageStateRequest {
+  pageId: number;
+  sizeClass: string;
+  hashes: PageHashes;
+  screenshotPath?: string;
+  rawHtmlPath?: string;
+  contentText?: string;
+}
+
+export interface PageStateResponse {
+  id: number;
+  pageId: number;
+  sizeClass: string;
+  htmlHash: string | null;
+  normalizedHtmlHash: string | null;
+  textHash: string | null;
+  actionableHash: string | null;
+  createdByActionId: number | null;
+  screenshotPath: string | null;
+  rawHtmlPath: string | null;
+  contentText: string | null;
+  capturedAt: string | null;
+}
+
+// --- Actionable Items ---
+
+export interface InsertActionableItemsRequest {
+  pageStateId: number;
+  items: ActionableItem[];
+}
+
+export interface ActionableItemResponse {
+  id: number;
+  pageStateId: number;
+  stableKey: string | null;
+  selector: string | null;
+  tagName: string | null;
+  role: string | null;
+  actionKind: string | null;
+  accessibleName: string | null;
+  disabled: boolean | null;
+  visible: boolean | null;
+  x: number | null;
+  y: number | null;
+  width: number | null;
+  height: number | null;
+  attributesJson: unknown;
+}
+
+// --- Actions ---
+
+export interface CreateActionRequest {
+  runId: number;
+  type: string;
+  actionableItemId?: number;
+  startingPageStateId?: number;
+  targetPageId?: number;
+  sizeClass: string;
+  personaId?: number;
+  useCaseId?: number;
+  inputValue?: string;
+}
+
+export interface CompleteActionRequest {
+  targetPageId?: number;
+  targetPageStateId?: number;
+  durationMs?: number;
+  consoleLog?: string;
+  networkLog?: string;
+  screenshotBefore?: string;
+  screenshotAfter?: string;
+}
+
+export interface ActionResponse {
+  id: number;
+  runId: number;
+  type: string;
+  actionableItemId: number | null;
+  startingPageStateId: number | null;
+  targetPageId: number | null;
+  targetPageStateId: number | null;
+  personaId: number | null;
+  useCaseId: number | null;
+  inputValue: string | null;
+  status: string;
+  sizeClass: string;
+  durationMs: number | null;
+  screenshotBefore: string | null;
+  screenshotAfter: string | null;
+  consoleLog: string | null;
+  networkLog: string | null;
+  startedAt: string | null;
+  executedAt: string | null;
+}
+
+// --- Personas / Use Cases / Input Values ---
+
+export interface CreatePersonaRequest {
+  appId: number;
+  name: string;
+  description: string;
+}
+
+export interface PersonaResponse {
+  id: number;
+  appId: number;
+  name: string;
+  description: string | null;
+  createdAt: string | null;
+}
+
+export interface CreateUseCaseRequest {
+  personaId: number;
+  name: string;
+  description: string;
+}
+
+export interface UseCaseResponse {
+  id: number;
+  personaId: number;
+  name: string;
+  description: string | null;
+  createdAt: string | null;
+}
+
+export interface CreateInputValueRequest {
+  useCaseId: number;
+  fieldSelector: string;
+  fieldName: string;
+  value: string;
+}
+
+export interface InputValueResponse {
+  id: number;
+  useCaseId: number;
+  fieldSelector: string;
+  fieldName: string | null;
+  value: string;
+  createdAt: string | null;
+}
+
+// --- Forms ---
+
+export interface InsertFormRequest {
+  pageStateId: number;
+  form: FormInfo;
+  formType?: string;
+}
+
+export interface FormResponse {
+  id: number;
+  pageStateId: number;
+  selector: string;
+  action: string | null;
+  method: string | null;
+  submitSelector: string | null;
+  fieldCount: number | null;
+  formType: string | null;
+  fieldsJson: unknown;
+  createdAt: string | null;
+}
+
+// --- Test Cases ---
+
+export interface InsertTestCaseRequest {
+  runId: number;
+  testCase: TestCase;
+}
+
+export interface TestCaseResponse {
+  id: number;
+  runId: number;
+  name: string;
+  testType: string;
+  sizeClass: string;
+  suiteTags: string[];
+  pageId: number | null;
+  personaId: number | null;
+  useCaseId: number | null;
+  priority: string;
+  actionsJson: unknown;
+  generatedAt: string | null;
+}
+
+// --- Test Runs ---
+
+export interface CreateTestRunRequest {
+  testCaseId: number;
+  runId: number;
+  screen: string;
+}
+
+export interface CompleteTestRunRequest {
+  status: string;
+  durationMs: number;
+  errorMessage?: string;
+  screenshotPath?: string;
+  consoleLog?: string;
+  networkLog?: string;
+}
+
+export interface TestRunResponse {
+  id: number;
+  testCaseId: number;
+  runId: number;
+  screen: string;
+  status: string;
+  durationMs: number | null;
+  errorMessage: string | null;
+  screenshotPath: string | null;
+  consoleLog: string | null;
+  networkLog: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
+// --- Issues ---
+
+export interface CreateIssueRequest {
+  runId: number;
+  actionId?: number;
+  testCaseId?: number;
+  testRunId?: number;
+  type: string;
+  description: string;
+  reproductionSteps: unknown[];
+  consoleLog?: string;
+  networkLog?: string;
+  screenshotPath?: string;
+  pageId?: number;
+  pageStateId?: number;
+}
+
+export interface IssueResponse {
+  id: number;
+  runId: number;
+  actionId: number | null;
+  testCaseId: number | null;
+  testRunId: number | null;
+  type: string;
+  description: string;
+  reproductionSteps: unknown;
+  consoleLog: string | null;
+  networkLog: string | null;
+  screenshotPath: string | null;
+  pageId: number | null;
+  pageStateId: number | null;
+  createdAt: string | null;
+}
+
+// --- AI Usage ---
+
+export interface RecordAiUsageRequest {
+  runId: number;
+  phase: string;
+  model: string;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  purpose?: string;
+}
+
+// --- Report Emails ---
+
+export interface CreateReportEmailRequest {
+  runId: number;
+  userEmail: string;
+  deepLinkToken: string;
+}
+
+// --- Components ---
+
+export interface SaveComponentRequest {
+  appId: number;
+  sizeClass: string;
+  component: {
+    name: string;
+    selector: string;
+    hash: string;
+    canonicalPageStateId: number;
+    instances: Array<{
+      pageStateId: number;
+      isIdentical: boolean;
+      hash: string;
+    }>;
+  };
+}
+
+// --- Apps ---
+
+export interface AppResponse {
+  id: number;
+  projectId: number;
+  name: string;
+  baseUrl: string | null;
+  normalizedBaseUrl: string;
+  createdAt: string | null;
+}
+
+// =============================================================================
 // Type Guards
 // =============================================================================
 
