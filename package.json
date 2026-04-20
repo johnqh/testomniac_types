@@ -1,7 +1,7 @@
 {
   "name": "@sudobility/testomniac_types",
-  "version": "0.0.18",
-  "description": "TypeScript types for Starter API - template project",
+  "version": "0.0.19",
+  "description": "Shared TypeScript types for the Testomniac ecosystem",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
