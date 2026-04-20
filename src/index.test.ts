@@ -12,10 +12,6 @@ import {
   DESKTOP_SCREENS,
   MOBILE_SCREENS,
   type User,
-  type History,
-  type HistoryCreateRequest,
-  type HistoryUpdateRequest,
-  type HistoryTotalResponse,
   type BaseResponse,
   type ApiResponse,
   type NetworkClient,
@@ -118,54 +114,11 @@ describe('starter_types', () => {
       expect(user.email).toBeNull();
       expect(user.display_name).toBeNull();
     });
-
-    it('History type should accept valid history objects', () => {
-      const history: History = {
-        id: 'hist-uuid-1',
-        user_id: 'uid123',
-        datetime: '2025-01-15T10:30:00.000Z',
-        value: 42.5,
-        created_at: '2025-01-15T10:30:00.000Z',
-        updated_at: null,
-      };
-
-      expect(history.id).toBe('hist-uuid-1');
-      expect(history.value).toBe(42.5);
-    });
-
-    it('HistoryCreateRequest should have required fields', () => {
-      const request: HistoryCreateRequest = {
-        datetime: '2025-01-15T10:30:00.000Z',
-        value: 100,
-      };
-
-      expect(request.datetime).toBeDefined();
-      expect(request.value).toBe(100);
-    });
-
-    it('HistoryUpdateRequest should allow partial fields', () => {
-      const request1: HistoryUpdateRequest = { value: 50 };
-      const request2: HistoryUpdateRequest = {
-        datetime: '2025-01-15T12:00:00.000Z',
-      };
-      const request3: HistoryUpdateRequest = {};
-
-      expect(request1.value).toBe(50);
-      expect(request1.datetime).toBeUndefined();
-      expect(request2.datetime).toBeDefined();
-      expect(request3).toEqual({});
-    });
-
-    it('HistoryTotalResponse should have total field', () => {
-      const response: HistoryTotalResponse = { total: 1234.56 };
-
-      expect(response.total).toBe(1234.56);
-    });
   });
 
   describe('BaseResponse type compatibility', () => {
     it('successResponse should produce valid BaseResponse<T>', () => {
-      const response: BaseResponse<History[]> = successResponse([]);
+      const response: BaseResponse<string[]> = successResponse([]);
 
       expect(response.success).toBe(true);
       expect(response.data).toEqual([]);
@@ -227,22 +180,6 @@ describe('starter_types', () => {
       // Verify ISO 8601 format: YYYY-MM-DDTHH:mm:ss.sssZ
       const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
       expect(response.timestamp).toMatch(iso8601Regex);
-    });
-  });
-
-  describe('ApiResponse type compatibility', () => {
-    it('successResponse should work with ApiResponse type annotation', () => {
-      const response: BaseResponse<History> = successResponse({
-        id: '123',
-        user_id: 'user1',
-        datetime: '2025-01-15T10:30:00.000Z',
-        value: 100,
-        created_at: '2025-01-15T10:30:00.000Z',
-        updated_at: null,
-      });
-
-      expect(response.success).toBe(true);
-      expect(response.data.id).toBe('123');
     });
   });
 
@@ -360,19 +297,6 @@ describe('starter_types', () => {
         '2025-01-15T10:30:00.000Z' as ISODateString;
 
       expect(isoDate).toBe('2025-01-15T10:30:00.000Z');
-    });
-
-    it('should be usable in History datetime field', () => {
-      const history: History = {
-        id: '123',
-        user_id: 'user1',
-        datetime: '2025-01-15T10:30:00.000Z',
-        value: 100,
-        created_at: '2025-01-15T10:30:00.000Z',
-        updated_at: null,
-      };
-
-      expect(history.datetime).toBe('2025-01-15T10:30:00.000Z');
     });
   });
 
@@ -601,108 +525,6 @@ describe('starter_types', () => {
     });
   });
 
-  describe('HistoryTotalResponse edge values', () => {
-    it('should accept zero total', () => {
-      const response: HistoryTotalResponse = { total: 0 };
-
-      expect(response.total).toBe(0);
-    });
-
-    it('should accept negative total', () => {
-      const response: HistoryTotalResponse = { total: -100 };
-
-      expect(response.total).toBe(-100);
-    });
-
-    it('should accept very large total', () => {
-      const response: HistoryTotalResponse = { total: Number.MAX_SAFE_INTEGER };
-
-      expect(response.total).toBe(Number.MAX_SAFE_INTEGER);
-    });
-
-    it('should accept fractional total', () => {
-      const response: HistoryTotalResponse = { total: 0.001 };
-
-      expect(response.total).toBeCloseTo(0.001);
-    });
-  });
-
-  describe('History with nullable field combinations', () => {
-    it('should accept all nullable fields set to non-null', () => {
-      const history: History = {
-        id: '1',
-        user_id: 'u1',
-        datetime: '2025-06-01T00:00:00.000Z',
-        value: 10,
-        created_at: '2025-06-01T00:00:00.000Z',
-        updated_at: '2025-06-02T00:00:00.000Z',
-      };
-
-      expect(history.created_at).not.toBeNull();
-      expect(history.updated_at).not.toBeNull();
-    });
-
-    it('should accept all nullable fields set to null', () => {
-      const history: History = {
-        id: '2',
-        user_id: 'u2',
-        datetime: '2025-06-01T00:00:00.000Z',
-        value: 0,
-        created_at: null,
-        updated_at: null,
-      };
-
-      expect(history.created_at).toBeNull();
-      expect(history.updated_at).toBeNull();
-    });
-
-    it('should accept mixed nullable fields', () => {
-      const history: History = {
-        id: '3',
-        user_id: 'u3',
-        datetime: '2025-06-01T00:00:00.000Z',
-        value: 5,
-        created_at: '2025-06-01T00:00:00.000Z',
-        updated_at: null,
-      };
-
-      expect(history.created_at).not.toBeNull();
-      expect(history.updated_at).toBeNull();
-    });
-  });
-
-  describe('HistoryUpdateRequest combinations', () => {
-    it('should accept both fields provided', () => {
-      const request: HistoryUpdateRequest = {
-        datetime: '2025-06-01T00:00:00.000Z',
-        value: 200,
-      };
-
-      expect(request.datetime).toBeDefined();
-      expect(request.value).toBe(200);
-    });
-  });
-
-  describe('HistoryCreateRequest with edge values', () => {
-    it('should accept zero value', () => {
-      const request: HistoryCreateRequest = {
-        datetime: '2025-01-01T00:00:00.000Z',
-        value: 0,
-      };
-
-      expect(request.value).toBe(0);
-    });
-
-    it('should accept very large value', () => {
-      const request: HistoryCreateRequest = {
-        datetime: '2025-01-01T00:00:00.000Z',
-        value: 999999999.99,
-      };
-
-      expect(request.value).toBe(999999999.99);
-    });
-  });
-
   describe('User type edge cases', () => {
     it('should accept empty string for email and display_name', () => {
       const user: User = {
@@ -822,70 +644,6 @@ describe('starter_types', () => {
 
       expect(response.success).toBe(true);
       expect(response.data!.firebase_uid).toBe('uid-abc');
-    });
-
-    it('should wrap a History array in successResponse', () => {
-      const histories: History[] = [
-        {
-          id: '1',
-          user_id: 'u1',
-          datetime: '2025-01-01T00:00:00.000Z',
-          value: 10,
-          created_at: null,
-          updated_at: null,
-        },
-        {
-          id: '2',
-          user_id: 'u1',
-          datetime: '2025-01-02T00:00:00.000Z',
-          value: 20,
-          created_at: null,
-          updated_at: null,
-        },
-      ];
-      const response = successResponse(histories);
-
-      expect(response.success).toBe(true);
-      expect(response.data).toHaveLength(2);
-      expect(response.data![0].value).toBe(10);
-      expect(response.data![1].value).toBe(20);
-    });
-
-    it('should wrap HistoryTotalResponse in successResponse', () => {
-      const total: HistoryTotalResponse = { total: 500 };
-      const response = successResponse(total);
-
-      expect(response.success).toBe(true);
-      expect(response.data!.total).toBe(500);
-    });
-
-    it('should type-guard a BaseResponse<History[]>', () => {
-      const response: BaseResponse<History[]> = successResponse([
-        {
-          id: '1',
-          user_id: 'u1',
-          datetime: '2025-01-01T00:00:00.000Z',
-          value: 5,
-          created_at: null,
-          updated_at: null,
-        },
-      ]);
-
-      if (isSuccessResponse(response)) {
-        expect(response.data[0].id).toBe('1');
-      } else {
-        expect.fail('Expected success response');
-      }
-    });
-
-    it('should type-guard an error response for History endpoint', () => {
-      const response: BaseResponse<History[]> = errorResponse('Not authorized');
-
-      if (isErrorResponse(response)) {
-        expect(response.error).toBe('Not authorized');
-      } else {
-        expect.fail('Expected error response');
-      }
     });
   });
 
