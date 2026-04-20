@@ -264,6 +264,8 @@ export const TestType = {
   Render: 'render',
   Interaction: 'interaction',
   Form: 'form',
+  FormNegative: 'form_negative',
+  Password: 'password',
   Navigation: 'navigation',
   E2E: 'e2e',
 } as const;
@@ -375,6 +377,70 @@ export interface Credentials {
   username?: string;
   password: string;
   twoFactorCode?: string;
+}
+
+// =============================================================================
+// Type Guards
+// =============================================================================
+
+// =============================================================================
+// Scanner API Contract Types
+// =============================================================================
+
+export interface CreateScanRequest {
+  url: string;
+  email?: string;
+  sizeClass?: 'desktop' | 'mobile';
+  credentials?: {
+    username?: string;
+    email?: string;
+    password: string;
+    twoFactorCode?: string;
+  };
+  reportEmail?: string;
+  plugins?: string[];
+}
+
+export interface CreateScanResponse {
+  status:
+    | 'pending'
+    | 'duplicate_owned'
+    | 'duplicate_unclaimed'
+    | 'validation_error';
+  runId?: number;
+  projectId?: number;
+  message?: string;
+  streamPath?: string;
+  suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_project';
+}
+
+export interface RunStreamEvent {
+  runId: number;
+  type:
+    | 'run_started'
+    | 'phase_changed'
+    | 'page_discovered'
+    | 'page_state_created'
+    | 'action_completed'
+    | 'issue_detected'
+    | 'run_completed'
+    | 'run_failed';
+  payload: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ProjectSummaryResponse {
+  id: number;
+  name: string;
+  entityId: string;
+}
+
+export interface RunDetailResponse {
+  id: number;
+  status: string;
+  phase: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
 }
 
 // =============================================================================
