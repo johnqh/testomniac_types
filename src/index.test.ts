@@ -4,6 +4,13 @@ import {
   errorResponse,
   isSuccessResponse,
   isErrorResponse,
+  SizeClass,
+  ActionType,
+  ActionStatus,
+  IssueType,
+  TestType,
+  DESKTOP_SCREENS,
+  MOBILE_SCREENS,
   type User,
   type History,
   type HistoryCreateRequest,
@@ -14,6 +21,10 @@ import {
   type NetworkClient,
   type Optional,
   type ISODateString,
+  type ActionableItem,
+  type FormInfo,
+  type TestCase,
+  type Credentials,
 } from './index';
 
 describe('starter_types', () => {
@@ -875,6 +886,123 @@ describe('starter_types', () => {
       } else {
         expect.fail('Expected error response');
       }
+    });
+  });
+
+  describe('Scanner enums', () => {
+    it('SizeClass has desktop and mobile', () => {
+      expect(SizeClass.Desktop).toBe('desktop');
+      expect(SizeClass.Mobile).toBe('mobile');
+    });
+
+    it('ActionType has all interaction types', () => {
+      expect(ActionType.Navigate).toBe('navigate');
+      expect(ActionType.Mouseover).toBe('mouseover');
+      expect(ActionType.Click).toBe('click');
+      expect(ActionType.Fill).toBe('fill');
+      expect(ActionType.Select).toBe('select');
+      expect(ActionType.Check).toBe('check');
+      expect(ActionType.Toggle).toBe('toggle');
+      expect(ActionType.CheckEmail).toBe('check_email');
+    });
+
+    it('ActionStatus has open and completed', () => {
+      expect(ActionStatus.Open).toBe('open');
+      expect(ActionStatus.Completed).toBe('completed');
+    });
+
+    it('IssueType has all error types', () => {
+      expect(IssueType.DeadClick).toBe('dead_click');
+      expect(IssueType.ErrorOnPage).toBe('error_on_page');
+      expect(IssueType.ConsoleError).toBe('console_error');
+      expect(IssueType.NetworkError).toBe('network_error');
+      expect(IssueType.EmailNotReceived).toBe('email_not_received');
+    });
+
+    it('TestType has all test types', () => {
+      expect(TestType.Render).toBe('render');
+      expect(TestType.Interaction).toBe('interaction');
+      expect(TestType.Form).toBe('form');
+      expect(TestType.Navigation).toBe('navigation');
+      expect(TestType.E2E).toBe('e2e');
+    });
+  });
+
+  describe('Screen definitions', () => {
+    it('DESKTOP_SCREENS has common resolutions', () => {
+      expect(DESKTOP_SCREENS.length).toBeGreaterThanOrEqual(3);
+      expect(DESKTOP_SCREENS[0]).toEqual({
+        name: '1920x1080',
+        width: 1920,
+        height: 1080,
+      });
+    });
+
+    it('MOBILE_SCREENS has common resolutions', () => {
+      expect(MOBILE_SCREENS.length).toBeGreaterThanOrEqual(3);
+      expect(MOBILE_SCREENS[0]).toEqual({
+        name: '390x844',
+        width: 390,
+        height: 844,
+      });
+    });
+  });
+
+  describe('Scanner data types', () => {
+    it('ActionableItem accepts valid objects', () => {
+      const item: ActionableItem = {
+        stableKey: 'btn-submit',
+        selector: '#submit',
+        tagName: 'button',
+        actionKind: 'click',
+        disabled: false,
+        visible: true,
+        attributes: {},
+      };
+      expect(item.stableKey).toBe('btn-submit');
+      expect(item.actionKind).toBe('click');
+    });
+
+    it('FormInfo accepts valid objects', () => {
+      const form: FormInfo = {
+        selector: '#login-form',
+        action: '/login',
+        method: 'POST',
+        fields: [
+          {
+            selector: '#email',
+            name: 'email',
+            type: 'email',
+            label: 'Email',
+            required: true,
+          },
+        ],
+        fieldCount: 1,
+      };
+      expect(form.fields).toHaveLength(1);
+      expect(form.fieldCount).toBe(1);
+    });
+
+    it('TestCase accepts valid objects', () => {
+      const tc: TestCase = {
+        name: 'Login test',
+        type: TestType.Form,
+        sizeClass: SizeClass.Desktop,
+        suite_tags: ['smoke'],
+        priority: 'high',
+        actions: [{ action: 'navigate', url: '/login' }],
+      };
+      expect(tc.type).toBe('form');
+      expect(tc.actions).toHaveLength(1);
+    });
+
+    it('Credentials accepts valid objects', () => {
+      const creds: Credentials = {
+        email: 'test@example.com',
+        password: 'secret',
+      };
+      expect(creds.email).toBe('test@example.com');
+      expect(creds.twoFactorCode).toBeUndefined();
     });
   });
 

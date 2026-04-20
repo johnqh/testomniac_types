@@ -50,8 +50,9 @@ export default [
       prettier: prettier,
     },
     rules: {
-      // Disable base rule and enable TypeScript version
+      // Disable base rules that conflict with TypeScript
       'no-unused-vars': 'off',
+      'no-redeclare': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

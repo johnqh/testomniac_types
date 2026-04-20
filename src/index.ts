@@ -224,6 +224,160 @@ export function errorResponse(error: string): BaseResponse<never> {
 }
 
 // =============================================================================
+// Scanner Enums
+// =============================================================================
+
+export const SizeClass = {
+  Desktop: 'desktop',
+  Mobile: 'mobile',
+} as const;
+export type SizeClass = (typeof SizeClass)[keyof typeof SizeClass];
+
+export const ActionType = {
+  Navigate: 'navigate',
+  Mouseover: 'mouseover',
+  Click: 'click',
+  Fill: 'fill',
+  Select: 'select',
+  Check: 'check',
+  Toggle: 'toggle',
+  CheckEmail: 'check_email',
+} as const;
+export type ActionType = (typeof ActionType)[keyof typeof ActionType];
+
+export const ActionStatus = {
+  Open: 'open',
+  Completed: 'completed',
+} as const;
+export type ActionStatus = (typeof ActionStatus)[keyof typeof ActionStatus];
+
+export const IssueType = {
+  DeadClick: 'dead_click',
+  ErrorOnPage: 'error_on_page',
+  ConsoleError: 'console_error',
+  NetworkError: 'network_error',
+  EmailNotReceived: 'email_not_received',
+} as const;
+export type IssueType = (typeof IssueType)[keyof typeof IssueType];
+
+export const TestType = {
+  Render: 'render',
+  Interaction: 'interaction',
+  Form: 'form',
+  Navigation: 'navigation',
+  E2E: 'e2e',
+} as const;
+export type TestType = (typeof TestType)[keyof typeof TestType];
+
+// =============================================================================
+// Screen Definitions
+// =============================================================================
+
+export interface Screen {
+  name: string;
+  width: number;
+  height: number;
+}
+
+export const DESKTOP_SCREENS: Screen[] = [
+  { name: '1920x1080', width: 1920, height: 1080 },
+  { name: '1366x768', width: 1366, height: 768 },
+  { name: '1536x864', width: 1536, height: 864 },
+];
+
+export const MOBILE_SCREENS: Screen[] = [
+  { name: '390x844', width: 390, height: 844 },
+  { name: '360x800', width: 360, height: 800 },
+  { name: '414x896', width: 414, height: 896 },
+];
+
+// =============================================================================
+// Scanner Data Types
+// =============================================================================
+
+export interface ActionableItem {
+  stableKey: string;
+  selector: string;
+  tagName: string;
+  role?: string;
+  inputType?: string;
+  actionKind: 'click' | 'fill' | 'toggle' | 'select' | 'navigate';
+  accessibleName?: string;
+  textContent?: string;
+  href?: string;
+  disabled: boolean;
+  visible: boolean;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  attributes: Record<string, unknown>;
+}
+
+export interface FormField {
+  selector: string;
+  name: string;
+  type: string;
+  label: string;
+  required: boolean;
+  placeholder?: string;
+  options?: string[];
+}
+
+export interface FormInfo {
+  selector: string;
+  action: string;
+  method: string;
+  fields: FormField[];
+  submitSelector?: string;
+  fieldCount: number;
+}
+
+export interface PageHashes {
+  htmlHash: string;
+  normalizedHtmlHash: string;
+  textHash: string;
+  actionableHash: string;
+}
+
+export interface NetworkLogEntry {
+  method: string;
+  url: string;
+  status: number;
+  contentType: string;
+}
+
+export interface TestAction {
+  action: string;
+  url?: string;
+  selector?: string;
+  value?: string;
+  pattern?: string;
+  label?: string;
+  direction?: string;
+  amount?: number;
+}
+
+export interface TestCase {
+  name: string;
+  type: TestType;
+  sizeClass: SizeClass;
+  suite_tags: string[];
+  page_id?: number;
+  persona_id?: number;
+  use_case_id?: number;
+  priority: string;
+  actions: TestAction[];
+}
+
+export interface Credentials {
+  email?: string;
+  username?: string;
+  password: string;
+  twoFactorCode?: string;
+}
+
+// =============================================================================
 // Type Guards
 // =============================================================================
 

@@ -24,6 +24,7 @@ export default [
     },
     rules: {
       ...typescript.configs.recommended.rules,
+      'no-redeclare': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },
