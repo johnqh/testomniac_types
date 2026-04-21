@@ -332,6 +332,7 @@ export interface RunStreamEvent {
     | 'page_state_created'
     | 'action_completed'
     | 'issue_detected'
+    | 'stats_update'
     | 'run_completed'
     | 'run_failed';
   payload: Record<string, unknown>;
