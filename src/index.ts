@@ -180,6 +180,16 @@ export const TestType = {
 } as const;
 export type TestType = (typeof TestType)[keyof typeof TestType];
 
+export const HtmlComponentType = {
+  TopMenu: 'topMenu',
+  Footer: 'footer',
+  Breadcrumb: 'breadcrumb',
+  LeftMenu: 'leftMenu',
+  HamburgerMenu: 'hamburgerMenu',
+} as const;
+export type HtmlComponentType =
+  (typeof HtmlComponentType)[keyof typeof HtmlComponentType];
+
 // =============================================================================
 // Screen Definitions
 // =============================================================================
@@ -223,6 +233,7 @@ export interface ActionableItem {
   width?: number;
   height?: number;
   attributes: Record<string, unknown>;
+  reusableHtmlElementId?: number;
 }
 
 export interface FormField {
@@ -417,6 +428,8 @@ export interface CreatePageStateRequest {
   screenshotPath?: string;
   rawHtmlPath?: string;
   contentText?: string;
+  bodyHtmlElementId?: number;
+  contentHtmlElementId?: number;
 }
 
 export interface PageStateResponse {
@@ -431,6 +444,8 @@ export interface PageStateResponse {
   screenshotPath: string | null;
   rawHtmlPath: string | null;
   contentText: string | null;
+  bodyHtmlElementId: number | null;
+  contentHtmlElementId: number | null;
   capturedAt: string | null;
 }
 
@@ -457,6 +472,7 @@ export interface ActionableItemResponse {
   width: number | null;
   height: number | null;
   attributesJson: unknown;
+  reusableHtmlElementId: number | null;
 }
 
 // --- Actions ---
@@ -680,8 +696,46 @@ export interface CreateReportEmailRequest {
   deepLinkToken: string;
 }
 
-// --- Components ---
+// --- Html Elements ---
 
+export interface HtmlElementResponse {
+  id: number;
+  html: string;
+  hash: string;
+  createdAt: string | null;
+}
+
+export interface CreateHtmlElementRequest {
+  html: string;
+  hash: string;
+}
+
+// --- Reusable Html Elements ---
+
+export interface ReusableHtmlElementResponse {
+  id: number;
+  appId: number;
+  type: HtmlComponentType;
+  htmlElementId: number;
+  htmlHash: string | null;
+  createdAt: string | null;
+}
+
+export interface FindOrCreateReusableHtmlElementRequest {
+  appId: number;
+  type: HtmlComponentType;
+  html: string;
+  hash: string;
+}
+
+export interface LinkPageStateReusableElementsRequest {
+  pageStateId: number;
+  reusableHtmlElementIds: number[];
+}
+
+// --- Components (deprecated — use Reusable Html Elements) ---
+
+/** @deprecated Use FindOrCreateReusableHtmlElementRequest instead */
 export interface SaveComponentRequest {
   appId: number;
   sizeClass: string;
