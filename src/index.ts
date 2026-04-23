@@ -78,6 +78,37 @@ export const ActionStatus = {
 } as const;
 export type ActionStatus = (typeof ActionStatus)[keyof typeof ActionStatus];
 
+export const IssueSeverity = {
+  Bug: 'bug',
+  Warning: 'warning',
+} as const;
+export type IssueSeverity = (typeof IssueSeverity)[keyof typeof IssueSeverity];
+
+export const IssueStatus = {
+  Open: 'open',
+  Rejected: 'rejected',
+  Qa: 'qa',
+  Closed: 'closed',
+} as const;
+export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus];
+
+export const IssueRuleName = {
+  BrokenLink: 'broken_link',
+  DuplicateHeading: 'duplicate_heading',
+  EmptyLink: 'empty_link',
+  BrokenImage: 'broken_image',
+  DuplicateId: 'duplicate_id',
+  PlaceholderText: 'placeholder_text',
+  ErrorPage: 'error_page',
+  BlankPage: 'blank_page',
+  BrokenMedia: 'broken_media',
+  DeadClick: 'dead_click',
+  ConsoleError: 'console_error',
+  NetworkError: 'network_error',
+} as const;
+export type IssueRuleName = (typeof IssueRuleName)[keyof typeof IssueRuleName];
+
+/** @deprecated Use IssueSeverity + IssueRuleName instead */
 export const IssueType = {
   DeadClick: 'dead_click',
   ErrorOnPage: 'error_on_page',
@@ -85,6 +116,7 @@ export const IssueType = {
   NetworkError: 'network_error',
   EmailNotReceived: 'email_not_received',
 } as const;
+/** @deprecated */
 export type IssueType = (typeof IssueType)[keyof typeof IssueType];
 
 export const TestType = {
@@ -653,13 +685,18 @@ export interface TestRunResponse {
 // --- Issues ---
 
 export interface CreateIssueRequest {
-  scanId: number;
-  actionExecutionId?: number;
+  appId: number;
+  scanId?: number;
   testCaseId?: number;
   testRunId?: number;
-  type: string;
+  severity: IssueSeverity;
+  ruleName: string;
+  title: string;
   description: string;
-  reproductionSteps: unknown[];
+  steps?: string;
+  expectedOutcome?: string;
+  observedOutcome?: string;
+  status?: IssueStatus;
   consoleLog?: string;
   networkLog?: string;
   screenshotPath?: string;
@@ -669,19 +706,36 @@ export interface CreateIssueRequest {
 
 export interface IssueResponse {
   id: number;
-  scanId: number;
-  actionExecutionId: number | null;
+  appId: number;
+  scanId: number | null;
   testCaseId: number | null;
   testRunId: number | null;
-  type: string;
+  severity: string;
+  ruleName: string;
+  title: string;
   description: string;
-  reproductionSteps: unknown;
+  steps: string | null;
+  expectedOutcome: string | null;
+  observedOutcome: string | null;
+  status: string;
   consoleLog: string | null;
   networkLog: string | null;
   screenshotPath: string | null;
   pageId: number | null;
   pageStateId: number | null;
   createdAt: string | null;
+}
+
+// --- Issue Dedup ---
+
+export interface FindTestCaseByActionsRequest {
+  appId: number;
+  actionIds: number[];
+}
+
+export interface FindIssueByRuleRequest {
+  testCaseId: number;
+  ruleName: string;
 }
 
 // --- AI Usage ---
