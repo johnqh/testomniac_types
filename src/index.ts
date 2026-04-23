@@ -822,7 +822,29 @@ export interface PageStateReusableElementResponse {
   reusableHtmlElementId: number;
 }
 
+// --- Projects ---
+
+export interface CreateProjectRequest {
+  entityId: string;
+  name: string;
+  description?: string;
+}
+
+export interface ProjectResponse {
+  id: number;
+  entityId: string | null;
+  name: string;
+  description: string | null;
+  createdAt: string | null;
+}
+
 // --- Apps ---
+
+export interface CreateAppRequest {
+  projectId: number;
+  name: string;
+  url: string;
+}
 
 export interface AppResponse {
   id: number;
