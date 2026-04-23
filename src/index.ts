@@ -26,41 +26,17 @@ export { EntityType, EntityRole, InvitationStatus } from '@sudobility/types';
 // Type Aliases
 // =============================================================================
 
-/**
- * ISO 8601 formatted datetime string.
- *
- * @example "2025-01-15T10:30:00.000Z"
- */
 export type ISODateString = string & { readonly __brand: 'ISODateString' };
 
 // =============================================================================
 // User
 // =============================================================================
 
-/**
- * User account information.
- *
- * @example
- * ```typescript
- * const user: User = {
- *   firebase_uid: 'uid123',
- *   email: 'user@example.com',
- *   display_name: 'John Doe',
- *   created_at: '2025-01-15T10:30:00.000Z',
- *   updated_at: '2025-01-15T10:30:00.000Z',
- * };
- * ```
- */
 export interface User {
-  /** Firebase Authentication UID */
   firebase_uid: string;
-  /** User email address, nullable */
   email: string | null;
-  /** User display name, nullable */
   display_name: string | null;
-  /** ISO 8601 timestamp of account creation, nullable */
   created_at: string | null;
-  /** ISO 8601 timestamp of last update, nullable */
   updated_at: string | null;
 }
 
@@ -68,72 +44,16 @@ export interface User {
 // Response Helpers
 // =============================================================================
 
-/**
- * Constructs a successful API response.
- *
- * Creates a {@link BaseResponse} with `success: true`, the provided data payload,
- * and a timestamp set to the current time in ISO 8601 format.
- *
- * @typeParam T - The type of the response payload
- * @param data - The response payload (can be any type, including `undefined` or `null`)
- * @returns A {@link BaseResponse} with `success: true` and `data` property set
- *
- * @example
- * ```typescript
- * // Successful single record
- * const response1 = successResponse({ id: '123', name: 'test' });
- *
- * // Array of records
- * const response2 = successResponse([
- *   { id: '1', value: 100 },
- *   { id: '2', value: 200 },
- * ]);
- *
- * // Null or undefined data (valid, though potentially unusual)
- * const response3 = successResponse(null);
- * ```
- *
- * @internal
- * Timestamp is always included in the response envelope and formatted as ISO 8601.
- */
 export function successResponse<T>(data: T): BaseResponse<T> {
   return { success: true, data, timestamp: new Date().toISOString() };
 }
 
-/**
- * Constructs an error API response.
- *
- * Creates a {@link BaseResponse} with `success: false`, the provided error message,
- * and a timestamp set to the current time in ISO 8601 format.
- *
- * **Note:** This function accepts empty strings as valid error messages. While this
- * is allowed by the runtime and type system, it is generally recommended to provide
- * meaningful, non-empty error descriptions for better debugging and client-side handling.
- *
- * @param error - A descriptive error message (may be empty, though not recommended)
- * @returns A {@link BaseResponse} with `success: false` and `error` property set
- *
- * @example
- * ```typescript
- * // Standard error
- * const response1 = errorResponse('User not found');
- *
- * // Error with context
- * const response2 = errorResponse('Invalid datetime format: expected ISO 8601');
- *
- * // Empty string (allowed but not recommended)
- * const response3 = errorResponse('');
- * ```
- *
- * @internal
- * Timestamp is always included in the response envelope and formatted as ISO 8601.
- */
 export function errorResponse(error: string): BaseResponse<never> {
   return { success: false, error, timestamp: new Date().toISOString() };
 }
 
 // =============================================================================
-// Scanner Enums
+// Enums
 // =============================================================================
 
 export const SizeClass = {
@@ -144,13 +64,11 @@ export type SizeClass = (typeof SizeClass)[keyof typeof SizeClass];
 
 export const ActionType = {
   Navigate: 'navigate',
-  Mouseover: 'mouseover',
+  Hover: 'hover',
   Click: 'click',
   Fill: 'fill',
   Select: 'select',
-  Check: 'check',
-  Toggle: 'toggle',
-  CheckEmail: 'check_email',
+  RadioSelect: 'radio_select',
 } as const;
 export type ActionType = (typeof ActionType)[keyof typeof ActionType];
 
@@ -213,25 +131,22 @@ export const MOBILE_SCREENS: Screen[] = [
 ];
 
 // =============================================================================
-// Scanner Data Types
+// Domain Data Types
 // =============================================================================
 
+/** An interactive element within an HTML component. No coordinates — position resolved at interaction time. */
 export interface ActionableItem {
   stableKey: string;
   selector: string;
   tagName: string;
   role?: string;
   inputType?: string;
-  actionKind: 'click' | 'fill' | 'toggle' | 'select' | 'navigate';
+  actionKind: 'click' | 'fill' | 'select' | 'navigate' | 'radio_select';
   accessibleName?: string;
   textContent?: string;
   href?: string;
   disabled: boolean;
   visible: boolean;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
   attributes: Record<string, unknown>;
   reusableHtmlElementId?: number;
 }
@@ -280,6 +195,7 @@ export interface TestAction {
   amount?: number;
 }
 
+/** Test case definition. Belongs to an app (persistent across scans). Actions linked via test_case_actions junction. */
 export interface TestCase {
   name: string;
   type: TestType;
@@ -289,7 +205,6 @@ export interface TestCase {
   persona_id?: number;
   use_case_id?: number;
   priority: string;
-  actions: TestAction[];
 }
 
 export interface Credentials {
@@ -304,7 +219,7 @@ export interface Credentials {
 // =============================================================================
 
 // =============================================================================
-// Scanner API Contract Types
+// API Contract Types
 // =============================================================================
 
 export interface CreateScanRequest {
@@ -327,6 +242,8 @@ export interface CreateScanResponse {
     | 'duplicate_owned'
     | 'duplicate_unclaimed'
     | 'validation_error';
+  scanId?: number;
+  /** @deprecated Use scanId instead */
   runId?: number;
   projectId?: number;
   message?: string;
@@ -334,21 +251,24 @@ export interface CreateScanResponse {
   suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_project';
 }
 
-export interface RunStreamEvent {
-  runId: number;
+export interface ScanStreamEvent {
+  scanId: number;
   type:
-    | 'run_started'
+    | 'scan_started'
     | 'phase_changed'
     | 'page_discovered'
     | 'page_state_created'
     | 'action_completed'
     | 'issue_detected'
     | 'stats_update'
-    | 'run_completed'
-    | 'run_failed';
+    | 'scan_completed'
+    | 'scan_failed';
   payload: Record<string, unknown>;
   createdAt: string;
 }
+
+/** @deprecated Use ScanStreamEvent instead */
+export type RunStreamEvent = ScanStreamEvent;
 
 export interface ProjectSummaryResponse {
   id: number;
@@ -356,46 +276,66 @@ export interface ProjectSummaryResponse {
   entityId: string;
 }
 
-export interface RunDetailResponse {
+export interface ScanDetailResponse {
   id: number;
+  appId: number;
   status: string;
   phase: string | null;
+  sizeClass: string;
+  pagesFound: number | null;
+  pageStatesFound: number | null;
+  actionsCompleted: number | null;
   startedAt: string | null;
-  completedAt: string | null;
+  endedAt: string | null;
 }
+
+/** @deprecated Use ScanDetailResponse instead */
+export type RunDetailResponse = ScanDetailResponse;
 
 // =============================================================================
 // Scanner API Request/Response Types
 // =============================================================================
 
-// --- Runs ---
+// --- Scans (formerly Runs) ---
 
-export interface PendingRunResponse {
+export interface PendingScanResponse {
   id: number;
   appId: number;
   sizeClass: string;
   status: string;
 }
 
-export interface UpdateRunPhaseRequest {
+/** @deprecated Use PendingScanResponse instead */
+export type PendingRunResponse = PendingScanResponse;
+
+export interface UpdateScanPhaseRequest {
   phase: string;
 }
 
-export interface UpdateRunStatsRequest {
+/** @deprecated Use UpdateScanPhaseRequest */
+export type UpdateRunPhaseRequest = UpdateScanPhaseRequest;
+
+export interface UpdateScanStatsRequest {
   pagesFound?: number;
   pageStatesFound?: number;
   actionsCompleted?: number;
 }
+
+/** @deprecated Use UpdateScanStatsRequest */
+export type UpdateRunStatsRequest = UpdateScanStatsRequest;
 
 export interface UpdatePhaseDurationRequest {
   field: string;
   durationMs: number;
 }
 
-export interface CompleteRunRequest {
+export interface CompleteScanRequest {
   aiSummary?: string;
   totalDurationMs?: number;
 }
+
+/** @deprecated Use CompleteScanRequest */
+export type CompleteRunRequest = CompleteScanRequest;
 
 // --- Pages ---
 
@@ -440,7 +380,6 @@ export interface PageStateResponse {
   normalizedHtmlHash: string | null;
   textHash: string | null;
   actionableHash: string | null;
-  createdByActionId: number | null;
   screenshotPath: string | null;
   rawHtmlPath: string | null;
   contentText: string | null;
@@ -449,16 +388,16 @@ export interface PageStateResponse {
   capturedAt: string | null;
 }
 
-// --- Actionable Items ---
+// --- Actionable Items (belong to HTML components) ---
 
 export interface InsertActionableItemsRequest {
-  pageStateId: number;
+  htmlElementId: number;
   items: ActionableItem[];
 }
 
 export interface ActionableItemResponse {
   id: number;
-  pageStateId: number;
+  htmlElementId: number | null;
   stableKey: string | null;
   selector: string | null;
   tagName: string | null;
@@ -467,16 +406,68 @@ export interface ActionableItemResponse {
   accessibleName: string | null;
   disabled: boolean | null;
   visible: boolean | null;
-  x: number | null;
-  y: number | null;
-  width: number | null;
-  height: number | null;
   attributesJson: unknown;
   reusableHtmlElementId: number | null;
 }
 
-// --- Actions ---
+// --- Action Definitions (app-level, persistent) ---
 
+export interface CreateActionDefinitionRequest {
+  appId: number;
+  type: string;
+  startingPageStateId?: number;
+  targetUrl?: string;
+  actionableItemId?: number;
+  htmlElementId?: number;
+  inputValue?: string;
+}
+
+export interface ActionDefinitionResponse {
+  id: number;
+  appId: number;
+  type: string;
+  startingPageStateId: number | null;
+  targetUrl: string | null;
+  actionableItemId: number | null;
+  htmlElementId: number | null;
+  inputValue: string | null;
+  createdAt: string | null;
+}
+
+// --- Action Executions (scan-level) ---
+
+export interface CreateActionExecutionRequest {
+  scanId: number;
+  actionId: number;
+}
+
+export interface CompleteActionExecutionRequest {
+  targetPageStateId?: number;
+  durationMs?: number;
+  consoleLog?: string;
+  networkLog?: string;
+  screenshotBefore?: string;
+  screenshotAfter?: string;
+}
+
+export interface ActionExecutionResponse {
+  id: number;
+  scanId: number;
+  actionId: number;
+  status: string;
+  targetPageStateId: number | null;
+  durationMs: number | null;
+  screenshotBefore: string | null;
+  screenshotAfter: string | null;
+  consoleLog: string | null;
+  networkLog: string | null;
+  startedAt: string | null;
+  executedAt: string | null;
+}
+
+// --- Legacy action types (deprecated — use ActionDefinition + ActionExecution) ---
+
+/** @deprecated Use CreateActionDefinitionRequest */
 export interface CreateActionRequest {
   runId: number;
   type: string;
@@ -489,6 +480,7 @@ export interface CreateActionRequest {
   inputValue?: string;
 }
 
+/** @deprecated Use CompleteActionExecutionRequest */
 export interface CompleteActionRequest {
   targetPageId?: number;
   targetPageStateId?: number;
@@ -499,6 +491,7 @@ export interface CompleteActionRequest {
   screenshotAfter?: string;
 }
 
+/** @deprecated Use ActionExecutionResponse */
 export interface ActionResponse {
   id: number;
   runId: number;
@@ -588,16 +581,16 @@ export interface FormResponse {
   createdAt: string | null;
 }
 
-// --- Test Cases ---
+// --- Test Cases (app-level, persistent) ---
 
 export interface InsertTestCaseRequest {
-  runId: number;
+  appId: number;
   testCase: TestCase;
 }
 
 export interface TestCaseResponse {
   id: number;
-  runId: number;
+  appId: number;
   name: string;
   testType: string;
   sizeClass: string;
@@ -606,15 +599,30 @@ export interface TestCaseResponse {
   personaId: number | null;
   useCaseId: number | null;
   priority: string;
-  actionsJson: unknown;
   generatedAt: string | null;
+}
+
+// --- Test Case Actions (junction, ordered) ---
+
+export interface CreateTestCaseActionRequest {
+  testCaseId: number;
+  actionId: number;
+  stepOrder: number;
+}
+
+export interface TestCaseActionResponse {
+  id: number;
+  testCaseId: number;
+  actionId: number;
+  stepOrder: number;
+  createdAt: string | null;
 }
 
 // --- Test Runs ---
 
 export interface CreateTestRunRequest {
   testCaseId: number;
-  runId: number;
+  scanId: number;
   screen: string;
 }
 
@@ -630,7 +638,7 @@ export interface CompleteTestRunRequest {
 export interface TestRunResponse {
   id: number;
   testCaseId: number;
-  runId: number;
+  scanId: number;
   screen: string;
   status: string;
   durationMs: number | null;
@@ -645,8 +653,8 @@ export interface TestRunResponse {
 // --- Issues ---
 
 export interface CreateIssueRequest {
-  runId: number;
-  actionId?: number;
+  scanId: number;
+  actionExecutionId?: number;
   testCaseId?: number;
   testRunId?: number;
   type: string;
@@ -661,8 +669,8 @@ export interface CreateIssueRequest {
 
 export interface IssueResponse {
   id: number;
-  runId: number;
-  actionId: number | null;
+  scanId: number;
+  actionExecutionId: number | null;
   testCaseId: number | null;
   testRunId: number | null;
   type: string;
@@ -679,7 +687,7 @@ export interface IssueResponse {
 // --- AI Usage ---
 
 export interface RecordAiUsageRequest {
-  runId: number;
+  scanId: number;
   phase: string;
   model: string;
   promptTokens: number;
@@ -691,9 +699,29 @@ export interface RecordAiUsageRequest {
 // --- Report Emails ---
 
 export interface CreateReportEmailRequest {
-  runId: number;
+  scanId: number;
   userEmail: string;
   deepLinkToken: string;
+}
+
+// --- Credentials ---
+
+export interface CreateCredentialRequest {
+  appId: number;
+  username?: string;
+  email?: string;
+  password: string;
+  twoFactorCode?: string;
+}
+
+export interface CredentialResponse {
+  id: number;
+  appId: number;
+  username: string | null;
+  email: string | null;
+  password: string;
+  twoFactorCode: string | null;
+  createdAt: string | null;
 }
 
 // --- Html Elements ---
@@ -733,25 +761,6 @@ export interface LinkPageStateReusableElementsRequest {
   reusableHtmlElementIds: number[];
 }
 
-// --- Components (deprecated — use Reusable Html Elements) ---
-
-/** @deprecated Use FindOrCreateReusableHtmlElementRequest instead */
-export interface SaveComponentRequest {
-  appId: number;
-  sizeClass: string;
-  component: {
-    name: string;
-    selector: string;
-    hash: string;
-    canonicalPageStateId: number;
-    instances: Array<{
-      pageStateId: number;
-      isIdentical: boolean;
-      hash: string;
-    }>;
-  };
-}
-
 // --- Apps ---
 
 export interface AppResponse {
@@ -767,56 +776,12 @@ export interface AppResponse {
 // Type Guards
 // =============================================================================
 
-/**
- * Type guard to narrow a {@link BaseResponse} to a successful response.
- *
- * Checks if a response has `success: true`, allowing TypeScript to narrow
- * the type to access the `data` property safely.
- *
- * @typeParam T - The expected type of the response data
- * @param response - The response to check
- * @returns `true` if the response is successful, `false` otherwise
- *
- * @example
- * ```typescript
- * async function fetchHistory(): Promise<BaseResponse<History[]>> {
- *   const response = await client.get('/history');
- *   if (isSuccessResponse<History[]>(response)) {
- *     // TypeScript now knows response.data is History[]
- *     const histories = response.data;
- *     return histories;
- *   }
- *   console.error('Failed:', response.error);
- * }
- * ```
- */
 export function isSuccessResponse<T>(
   response: BaseResponse<T>
 ): response is BaseResponse<T> & { success: true; data: T } {
   return response.success === true;
 }
 
-/**
- * Type guard to narrow a {@link BaseResponse} to an error response.
- *
- * Checks if a response has `success: false`, allowing TypeScript to narrow
- * the type to access the `error` property safely.
- *
- * @param response - The response to check
- * @returns `true` if the response is an error, `false` otherwise
- *
- * @example
- * ```typescript
- * async function updateHistory(id: string, value: number): Promise<void> {
- *   const response = await client.patch(`/history/${id}`, { value });
- *   if (isErrorResponse(response)) {
- *     // TypeScript now knows response.error is string
- *     throw new Error(response.error);
- *   }
- *   // Success case
- * }
- * ```
- */
 export function isErrorResponse(
   response: BaseResponse<unknown>
 ): response is BaseResponse<never> & { success: false; error: string } {

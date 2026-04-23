@@ -655,13 +655,11 @@ describe('starter_types', () => {
 
     it('ActionType has all interaction types', () => {
       expect(ActionType.Navigate).toBe('navigate');
-      expect(ActionType.Mouseover).toBe('mouseover');
+      expect(ActionType.Hover).toBe('hover');
       expect(ActionType.Click).toBe('click');
       expect(ActionType.Fill).toBe('fill');
       expect(ActionType.Select).toBe('select');
-      expect(ActionType.Check).toBe('check');
-      expect(ActionType.Toggle).toBe('toggle');
-      expect(ActionType.CheckEmail).toBe('check_email');
+      expect(ActionType.RadioSelect).toBe('radio_select');
     });
 
     it('ActionStatus has open and completed', () => {
