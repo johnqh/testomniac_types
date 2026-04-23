@@ -278,6 +278,7 @@ export interface CreateScanResponse {
   /** @deprecated Use scanId instead */
   runId?: number;
   projectId?: number;
+  appId?: number;
   message?: string;
   streamPath?: string;
   suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_project';
@@ -813,6 +814,12 @@ export interface FindOrCreateReusableHtmlElementRequest {
 export interface LinkPageStateReusableElementsRequest {
   pageStateId: number;
   reusableHtmlElementIds: number[];
+}
+
+export interface PageStateReusableElementResponse {
+  id: number;
+  pageStateId: number;
+  reusableHtmlElementId: number;
 }
 
 // --- Apps ---
