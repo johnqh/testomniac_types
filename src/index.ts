@@ -496,6 +496,13 @@ export interface ActionExecutionResponse {
   networkLog: string | null;
   startedAt: string | null;
   executedAt: string | null;
+  // Joined from action definition (included by /next endpoint)
+  type: string | null;
+  targetUrl: string | null;
+  startingPageStateId: number | null;
+  actionableItemId: number | null;
+  htmlElementId: number | null;
+  inputValue: string | null;
 }
 
 // --- Legacy action types (deprecated — use ActionDefinition + ActionExecution) ---
