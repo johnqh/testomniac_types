@@ -305,7 +305,70 @@ export interface NetworkLogEntry {
   contentType: string;
 }
 
+// =============================================================================
+// Playwright Action Enum
+// =============================================================================
+
+export const PlaywrightAction = {
+  // Navigation (no element)
+  Goto: 'goto',
+  GoBack: 'goBack',
+  GoForward: 'goForward',
+  Reload: 'reload',
+
+  // Element interactions
+  Click: 'click',
+  DoubleClick: 'dblclick',
+  Fill: 'fill',
+  Clear: 'clear',
+  Type: 'type',
+  Press: 'press',
+  SelectOption: 'selectOption',
+  Check: 'check',
+  Uncheck: 'uncheck',
+  Hover: 'hover',
+  Focus: 'focus',
+  ScrollIntoView: 'scrollIntoView',
+  UploadFile: 'uploadFile',
+
+  // Element assertions
+  AssertVisible: 'assertVisible',
+  AssertHidden: 'assertHidden',
+  AssertText: 'assertText',
+  AssertValue: 'assertValue',
+  AssertChecked: 'assertChecked',
+  AssertEnabled: 'assertEnabled',
+  AssertDisabled: 'assertDisabled',
+
+  // Page assertions (no element)
+  AssertURL: 'assertURL',
+  AssertTitle: 'assertTitle',
+
+  // Page-level
+  Screenshot: 'screenshot',
+  WaitForLoadState: 'waitForLoadState',
+  WaitForURL: 'waitForURL',
+  WaitForTimeout: 'waitForTimeout',
+} as const;
+export type PlaywrightAction =
+  (typeof PlaywrightAction)[keyof typeof PlaywrightAction];
+
+// =============================================================================
+// Test Action
+// =============================================================================
+
 export interface TestAction {
+  actionType: PlaywrightAction;
+  pageStateId?: number;
+  elementIdentityId?: number;
+  value?: string;
+  url?: string;
+  playwrightCode: string;
+  description: string;
+}
+
+/** @deprecated Use TestAction with PlaywrightAction enum instead */
+export interface LegacyTestAction {
   action: string;
   url?: string;
   selector?: string;

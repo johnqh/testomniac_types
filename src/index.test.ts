@@ -10,6 +10,7 @@ import {
   IssueType,
   TestType,
   LocatorStrategy,
+  PlaywrightAction,
   resolvePlaywrightRole,
   DESKTOP_SCREENS,
   MOBILE_SCREENS,
@@ -23,6 +24,7 @@ import {
   type FormInfo,
   type TestCase,
   type Credentials,
+  type TestAction,
   type CreateElementIdentityRequest,
   type ElementIdentityResponse,
 } from './index';
@@ -750,10 +752,9 @@ describe('starter_types', () => {
         sizeClass: SizeClass.Desktop,
         suite_tags: ['smoke'],
         priority: 'high',
-        actions: [{ action: 'navigate', url: '/login' }],
       };
       expect(tc.type).toBe('form');
-      expect(tc.actions).toHaveLength(1);
+      expect(tc.suite_tags).toHaveLength(1);
     });
 
     it('Credentials accepts valid objects', () => {
@@ -846,6 +847,85 @@ describe('starter_types', () => {
       expect(LocatorStrategy.Text).toBe('text');
       expect(LocatorStrategy.AltText).toBe('alt-text');
       expect(LocatorStrategy.Css).toBe('css');
+    });
+  });
+
+  describe('PlaywrightAction enum', () => {
+    it('has navigation actions', () => {
+      expect(PlaywrightAction.Goto).toBe('goto');
+      expect(PlaywrightAction.GoBack).toBe('goBack');
+      expect(PlaywrightAction.GoForward).toBe('goForward');
+      expect(PlaywrightAction.Reload).toBe('reload');
+    });
+
+    it('has element interaction actions', () => {
+      expect(PlaywrightAction.Click).toBe('click');
+      expect(PlaywrightAction.DoubleClick).toBe('dblclick');
+      expect(PlaywrightAction.Fill).toBe('fill');
+      expect(PlaywrightAction.Clear).toBe('clear');
+      expect(PlaywrightAction.Type).toBe('type');
+      expect(PlaywrightAction.Press).toBe('press');
+      expect(PlaywrightAction.SelectOption).toBe('selectOption');
+      expect(PlaywrightAction.Check).toBe('check');
+      expect(PlaywrightAction.Uncheck).toBe('uncheck');
+      expect(PlaywrightAction.Hover).toBe('hover');
+      expect(PlaywrightAction.Focus).toBe('focus');
+      expect(PlaywrightAction.ScrollIntoView).toBe('scrollIntoView');
+      expect(PlaywrightAction.UploadFile).toBe('uploadFile');
+    });
+
+    it('has assertion actions', () => {
+      expect(PlaywrightAction.AssertVisible).toBe('assertVisible');
+      expect(PlaywrightAction.AssertHidden).toBe('assertHidden');
+      expect(PlaywrightAction.AssertText).toBe('assertText');
+      expect(PlaywrightAction.AssertValue).toBe('assertValue');
+      expect(PlaywrightAction.AssertChecked).toBe('assertChecked');
+      expect(PlaywrightAction.AssertURL).toBe('assertURL');
+      expect(PlaywrightAction.AssertTitle).toBe('assertTitle');
+    });
+
+    it('has page-level actions', () => {
+      expect(PlaywrightAction.Screenshot).toBe('screenshot');
+      expect(PlaywrightAction.WaitForLoadState).toBe('waitForLoadState');
+      expect(PlaywrightAction.WaitForURL).toBe('waitForURL');
+      expect(PlaywrightAction.WaitForTimeout).toBe('waitForTimeout');
+    });
+  });
+
+  describe('TestAction type', () => {
+    it('constructs a click action with element identity', () => {
+      const action: TestAction = {
+        actionType: PlaywrightAction.Click,
+        elementIdentityId: 42,
+        pageStateId: 10,
+        playwrightCode:
+          "await page.getByRole('button', { name: 'Submit' }).click();",
+        description: "Click 'Submit' button",
+      };
+      expect(action.actionType).toBe('click');
+      expect(action.elementIdentityId).toBe(42);
+    });
+
+    it('constructs a fill action with value', () => {
+      const action: TestAction = {
+        actionType: PlaywrightAction.Fill,
+        elementIdentityId: 15,
+        value: 'Jane Tester',
+        playwrightCode: "await page.getByLabel('Name').fill('Jane Tester');",
+        description: "Type 'Jane Tester' in 'Name' textbox",
+      };
+      expect(action.value).toBe('Jane Tester');
+    });
+
+    it('constructs a navigation action without element', () => {
+      const action: TestAction = {
+        actionType: PlaywrightAction.Goto,
+        url: 'https://example.com',
+        playwrightCode: "await page.goto('https://example.com');",
+        description: 'Navigate to https://example.com',
+      };
+      expect(action.elementIdentityId).toBeUndefined();
+      expect(action.url).toBe('https://example.com');
     });
   });
 
