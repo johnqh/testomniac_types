@@ -336,6 +336,22 @@ export interface PageHashes {
   normalizedHtmlHash: string;
   textHash: string;
   actionableHash: string;
+  fixedBodyHash?: string;
+  reusableElementsHash?: string;
+  patternsHash?: string;
+}
+
+export interface DecomposedPageHashes {
+  fixedBodyHash: string;
+  reusableElementsHash: string;
+  patternsHash: string;
+}
+
+export interface PatternInstance {
+  type: UiPatternType;
+  selector: string;
+  outerHtml: string;
+  hash: string;
 }
 
 export interface NetworkLogEntry {
@@ -502,6 +518,8 @@ export interface TestAction {
   actionType: PlaywrightAction;
   pageStateId?: number;
   elementIdentityId?: number;
+  containerType?: HtmlComponentType;
+  containerElementIdentityId?: number;
   value?: string;
   url?: string;
   playwrightCode: string;
@@ -727,6 +745,7 @@ export interface CreatePageStateRequest {
   contentText?: string;
   bodyHtmlElementId?: number;
   contentHtmlElementId?: number;
+  fixedBodyHtmlElementId?: number;
 }
 
 export interface PageStateResponse {
@@ -737,11 +756,15 @@ export interface PageStateResponse {
   normalizedHtmlHash: string | null;
   textHash: string | null;
   actionableHash: string | null;
+  fixedBodyHash: string | null;
+  reusableElementsHash: string | null;
+  patternsHash: string | null;
   screenshotPath: string | null;
   rawHtmlPath: string | null;
   contentText: string | null;
   bodyHtmlElementId: number | null;
   contentHtmlElementId: number | null;
+  fixedBodyHtmlElementId: number | null;
   capturedAt: string | null;
 }
 
