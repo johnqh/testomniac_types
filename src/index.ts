@@ -141,6 +141,95 @@ export type HtmlComponentType =
   (typeof HtmlComponentType)[keyof typeof HtmlComponentType];
 
 // =============================================================================
+// Element Identity — persistent element identification across scans
+// =============================================================================
+
+export const LocatorStrategy = {
+  TestId: 'test-id',
+  RoleName: 'role-name',
+  Label: 'label',
+  Placeholder: 'placeholder',
+  Text: 'text',
+  AltText: 'alt-text',
+  Css: 'css',
+} as const;
+export type LocatorStrategy =
+  (typeof LocatorStrategy)[keyof typeof LocatorStrategy];
+
+export interface ElementLocator {
+  strategy: LocatorStrategy;
+  value: string;
+  priority: number;
+}
+
+export interface ElementIdentity {
+  role: string;
+  computedName: string;
+  tagName: string;
+  labelText?: string;
+  groupName?: string;
+  placeholder?: string;
+  altText?: string;
+  testId?: string;
+  inputType?: string;
+  nthInGroup?: number;
+  formContext?: string;
+  headingContext?: string;
+  landmarkAncestor?: string;
+  playwrightLocator: string;
+  playwrightScopeChain?: string;
+  isUniqueOnPage: boolean;
+  cssSelector: string;
+  locators: ElementLocator[];
+}
+
+const IMPLICIT_ROLES: Record<string, string> = {
+  BUTTON: 'button',
+  A: 'link',
+  SELECT: 'combobox',
+  TEXTAREA: 'textbox',
+  IMG: 'img',
+  H1: 'heading',
+  H2: 'heading',
+  H3: 'heading',
+  H4: 'heading',
+  H5: 'heading',
+  H6: 'heading',
+  FIELDSET: 'group',
+  NAV: 'navigation',
+  MAIN: 'main',
+  ASIDE: 'complementary',
+  HEADER: 'banner',
+  FOOTER: 'contentinfo',
+  TABLE: 'table',
+  FORM: 'form',
+  UL: 'list',
+  OL: 'list',
+  LI: 'listitem',
+};
+
+const INPUT_TYPE_ROLES: Record<string, string> = {
+  checkbox: 'checkbox',
+  radio: 'radio',
+  number: 'spinbutton',
+  range: 'slider',
+};
+
+export function resolvePlaywrightRole(
+  tagName: string,
+  inputType?: string,
+  ariaRole?: string
+): string {
+  if (ariaRole) return ariaRole;
+  const tag = tagName.toUpperCase();
+  if (tag === 'INPUT') {
+    const type = (inputType || 'text').toLowerCase();
+    return INPUT_TYPE_ROLES[type] || 'textbox';
+  }
+  return IMPLICIT_ROLES[tag] || 'generic';
+}
+
+// =============================================================================
 // Screen Definitions
 // =============================================================================
 
@@ -784,6 +873,68 @@ export interface CredentialResponse {
   password: string;
   twoFactorCode: string | null;
   createdAt: string | null;
+}
+
+// --- Element Identities ---
+
+export interface CreateElementIdentityRequest {
+  appId: number;
+  scanId: number;
+  role: string;
+  computedName: string;
+  tagName: string;
+  labelText?: string;
+  groupName?: string;
+  placeholder?: string;
+  altText?: string;
+  testId?: string;
+  inputType?: string;
+  nthInGroup?: number;
+  formContext?: string;
+  headingContext?: string;
+  landmarkAncestor?: string;
+  playwrightLocator: string;
+  playwrightScopeChain?: string;
+  isUniqueOnPage: boolean;
+  cssSelector: string;
+  locators: ElementLocator[];
+}
+
+export interface UpdateElementIdentityRequest {
+  lastSeenScanId: number;
+  playwrightLocator?: string;
+  playwrightScopeChain?: string;
+  isUniqueOnPage?: boolean;
+  cssSelector?: string;
+  locators?: ElementLocator[];
+}
+
+export interface ElementIdentityResponse {
+  id: number;
+  appId: number;
+  role: string;
+  computedName: string | null;
+  tagName: string;
+  labelText: string | null;
+  groupName: string | null;
+  placeholder: string | null;
+  altText: string | null;
+  testId: string | null;
+  inputType: string | null;
+  nthInGroup: number | null;
+  formContext: string | null;
+  headingContext: string | null;
+  landmarkAncestor: string | null;
+  playwrightLocator: string;
+  playwrightScopeChain: string | null;
+  isUniqueOnPage: boolean;
+  cssSelector: string;
+  locators: ElementLocator[];
+  firstSeenScanId: number;
+  lastSeenScanId: number;
+  timesSeen: number;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 // --- Html Elements ---

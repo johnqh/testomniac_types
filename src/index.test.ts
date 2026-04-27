@@ -9,6 +9,8 @@ import {
   ActionStatus,
   IssueType,
   TestType,
+  LocatorStrategy,
+  resolvePlaywrightRole,
   DESKTOP_SCREENS,
   MOBILE_SCREENS,
   type User,
@@ -21,6 +23,8 @@ import {
   type FormInfo,
   type TestCase,
   type Credentials,
+  type CreateElementIdentityRequest,
+  type ElementIdentityResponse,
 } from './index';
 
 describe('starter_types', () => {
@@ -770,6 +774,134 @@ describe('starter_types', () => {
       expect(date.endsWith('Z')).toBe(true);
       expect(date.includes('T')).toBe(true);
       expect(date.length).toBe(24);
+    });
+  });
+
+  describe('resolvePlaywrightRole', () => {
+    it('returns explicit ARIA role when provided', () => {
+      expect(resolvePlaywrightRole('DIV', undefined, 'button')).toBe('button');
+    });
+
+    it('maps <button> to button', () => {
+      expect(resolvePlaywrightRole('BUTTON')).toBe('button');
+    });
+
+    it('maps <a> to link', () => {
+      expect(resolvePlaywrightRole('A')).toBe('link');
+    });
+
+    it('maps <input type=text> to textbox', () => {
+      expect(resolvePlaywrightRole('INPUT', 'text')).toBe('textbox');
+    });
+
+    it('maps <input type=email> to textbox', () => {
+      expect(resolvePlaywrightRole('INPUT', 'email')).toBe('textbox');
+    });
+
+    it('maps <input type=checkbox> to checkbox', () => {
+      expect(resolvePlaywrightRole('INPUT', 'checkbox')).toBe('checkbox');
+    });
+
+    it('maps <input type=radio> to radio', () => {
+      expect(resolvePlaywrightRole('INPUT', 'radio')).toBe('radio');
+    });
+
+    it('maps <input type=number> to spinbutton', () => {
+      expect(resolvePlaywrightRole('INPUT', 'number')).toBe('spinbutton');
+    });
+
+    it('maps <select> to combobox', () => {
+      expect(resolvePlaywrightRole('SELECT')).toBe('combobox');
+    });
+
+    it('maps <textarea> to textbox', () => {
+      expect(resolvePlaywrightRole('TEXTAREA')).toBe('textbox');
+    });
+
+    it('maps <h1>-<h6> to heading', () => {
+      expect(resolvePlaywrightRole('H1')).toBe('heading');
+      expect(resolvePlaywrightRole('H3')).toBe('heading');
+    });
+
+    it('maps <nav> to navigation', () => {
+      expect(resolvePlaywrightRole('NAV')).toBe('navigation');
+    });
+
+    it('returns generic for unknown tags', () => {
+      expect(resolvePlaywrightRole('DIV')).toBe('generic');
+      expect(resolvePlaywrightRole('SPAN')).toBe('generic');
+    });
+
+    it('maps input with no type to textbox (default)', () => {
+      expect(resolvePlaywrightRole('INPUT')).toBe('textbox');
+    });
+  });
+
+  describe('LocatorStrategy enum', () => {
+    it('has expected values', () => {
+      expect(LocatorStrategy.TestId).toBe('test-id');
+      expect(LocatorStrategy.RoleName).toBe('role-name');
+      expect(LocatorStrategy.Label).toBe('label');
+      expect(LocatorStrategy.Placeholder).toBe('placeholder');
+      expect(LocatorStrategy.Text).toBe('text');
+      expect(LocatorStrategy.AltText).toBe('alt-text');
+      expect(LocatorStrategy.Css).toBe('css');
+    });
+  });
+
+  describe('ElementIdentity API types', () => {
+    it('constructs CreateElementIdentityRequest', () => {
+      const req: CreateElementIdentityRequest = {
+        appId: 1,
+        scanId: 10,
+        role: 'button',
+        computedName: 'Submit',
+        tagName: 'BUTTON',
+        playwrightLocator: "getByRole('button', { name: 'Submit' })",
+        isUniqueOnPage: true,
+        cssSelector: 'button.submit-btn',
+        locators: [
+          {
+            strategy: LocatorStrategy.RoleName,
+            value: "getByRole('button', { name: 'Submit' })",
+            priority: 0,
+          },
+        ],
+      };
+      expect(req.appId).toBe(1);
+      expect(req.locators).toHaveLength(1);
+    });
+
+    it('constructs ElementIdentityResponse', () => {
+      const res: ElementIdentityResponse = {
+        id: 1,
+        appId: 1,
+        role: 'textbox',
+        computedName: 'Email',
+        tagName: 'INPUT',
+        labelText: 'Email Address',
+        groupName: null,
+        placeholder: 'you@example.com',
+        altText: null,
+        testId: null,
+        inputType: 'email',
+        nthInGroup: null,
+        formContext: null,
+        headingContext: 'Login',
+        landmarkAncestor: 'main',
+        playwrightLocator: "getByLabel('Email Address')",
+        playwrightScopeChain: null,
+        isUniqueOnPage: true,
+        cssSelector: 'input#email',
+        locators: [],
+        firstSeenScanId: 10,
+        lastSeenScanId: 10,
+        timesSeen: 1,
+        createdAt: '2026-04-27T00:00:00.000Z',
+        updatedAt: '2026-04-27T00:00:00.000Z',
+      };
+      expect(res.id).toBe(1);
+      expect(res.labelText).toBe('Email Address');
     });
   });
 });
