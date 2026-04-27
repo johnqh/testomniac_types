@@ -306,11 +306,11 @@ export interface NetworkLogEntry {
 }
 
 // =============================================================================
-// Playwright Action Enum
+// Playwright Action Enum (user interactions only)
 // =============================================================================
 
 export const PlaywrightAction = {
-  // Navigation (no element)
+  // Navigation
   Goto: 'goto',
   GoBack: 'goBack',
   GoForward: 'goForward',
@@ -331,20 +331,7 @@ export const PlaywrightAction = {
   ScrollIntoView: 'scrollIntoView',
   UploadFile: 'uploadFile',
 
-  // Element assertions
-  AssertVisible: 'assertVisible',
-  AssertHidden: 'assertHidden',
-  AssertText: 'assertText',
-  AssertValue: 'assertValue',
-  AssertChecked: 'assertChecked',
-  AssertEnabled: 'assertEnabled',
-  AssertDisabled: 'assertDisabled',
-
-  // Page assertions (no element)
-  AssertURL: 'assertURL',
-  AssertTitle: 'assertTitle',
-
-  // Page-level
+  // Page utilities
   Screenshot: 'screenshot',
   WaitForLoadState: 'waitForLoadState',
   WaitForURL: 'waitForURL',
@@ -354,7 +341,121 @@ export type PlaywrightAction =
   (typeof PlaywrightAction)[keyof typeof PlaywrightAction];
 
 // =============================================================================
-// Test Action
+// Expectation Type Enum
+// =============================================================================
+
+export const ExpectationType = {
+  // Visual / Element Content
+  ElementVisible: 'element_visible',
+  ElementHidden: 'element_hidden',
+  ElementExists: 'element_exists',
+  ElementNotExists: 'element_not_exists',
+  ElementCount: 'element_count',
+  TextContent: 'text_content',
+  TextContains: 'text_contains',
+  TextMatches: 'text_matches',
+  TextOnPage: 'text_on_page',
+  TextNotOnPage: 'text_not_on_page',
+  InputValue: 'input_value',
+  AttributeEquals: 'attribute_equals',
+  AttributeContains: 'attribute_contains',
+  HasClass: 'has_class',
+  NotHasClass: 'not_has_class',
+
+  // Element State
+  ElementEnabled: 'element_enabled',
+  ElementDisabled: 'element_disabled',
+  ElementFocused: 'element_focused',
+  ElementChecked: 'element_checked',
+  ElementUnchecked: 'element_unchecked',
+  ElementEditable: 'element_editable',
+  ElementReadonly: 'element_readonly',
+
+  // Page-level
+  UrlEquals: 'url_equals',
+  UrlContains: 'url_contains',
+  UrlMatches: 'url_matches',
+  UrlChanged: 'url_changed',
+  UrlUnchanged: 'url_unchanged',
+  TitleEquals: 'title_equals',
+  TitleContains: 'title_contains',
+  PageLoaded: 'page_loaded',
+
+  // Console
+  NoConsoleErrors: 'no_console_errors',
+  NoConsoleWarnings: 'no_console_warnings',
+  ConsoleContains: 'console_contains',
+  ConsoleNotContains: 'console_not_contains',
+
+  // Network
+  NoNetworkErrors: 'no_network_errors',
+  NoServerErrors: 'no_server_errors',
+  NetworkRequestMade: 'network_request_made',
+  NetworkResponseStatus: 'network_response_status',
+  NetworkResponseContains: 'network_response_contains',
+  NoPendingRequests: 'no_pending_requests',
+
+  // Accessibility
+  NoAriaViolations: 'no_aria_violations',
+  ElementHasRole: 'element_has_role',
+  ElementHasLabel: 'element_has_label',
+
+  // Performance
+  LoadTimeWithin: 'load_time_within',
+  NoLayoutShift: 'no_layout_shift',
+
+  // Form-specific
+  ValidationMessageVisible: 'validation_message_visible',
+  ValidationMessageHidden: 'validation_message_hidden',
+  FormSubmittedSuccessfully: 'form_submitted_successfully',
+  ErrorStateVisible: 'error_state_visible',
+  ErrorStateCleared: 'error_state_cleared',
+
+  // Navigation
+  RedirectedTo: 'redirected_to',
+  HistoryLengthChanged: 'history_length_changed',
+
+  // Storage
+  CookieExists: 'cookie_exists',
+  CookieNotExists: 'cookie_not_exists',
+  CookieValue: 'cookie_value',
+  LocalStorageValue: 'local_storage_value',
+  SessionStorageValue: 'session_storage_value',
+
+  // Security
+  NoMixedContent: 'no_mixed_content',
+  SensitiveDataNotInUrl: 'sensitive_data_not_in_url',
+
+  // Visual Regression
+  ScreenshotMatch: 'screenshot_match',
+} as const;
+export type ExpectationType =
+  (typeof ExpectationType)[keyof typeof ExpectationType];
+
+export const ExpectationSeverity = {
+  MustPass: 'must_pass',
+  ShouldPass: 'should_pass',
+  Info: 'info',
+} as const;
+export type ExpectationSeverity =
+  (typeof ExpectationSeverity)[keyof typeof ExpectationSeverity];
+
+// =============================================================================
+// Expectation
+// =============================================================================
+
+export interface Expectation {
+  expectationType: ExpectationType;
+  elementIdentityId?: number;
+  expectedValue?: string;
+  attributeName?: string;
+  severity: ExpectationSeverity;
+  description: string;
+  playwrightCode: string;
+}
+
+// =============================================================================
+// Test Action (user interactions only)
 // =============================================================================
 
 export interface TestAction {
@@ -379,8 +480,39 @@ export interface LegacyTestAction {
   amount?: number;
 }
 
-/** Test case definition. Belongs to an app (persistent across scans). Actions linked via test_case_actions junction. */
+// =============================================================================
+// Test Step
+// =============================================================================
+
+export interface TestStep {
+  action: TestAction;
+  expectations: Expectation[];
+  description: string;
+  continueOnFailure: boolean;
+}
+
+// =============================================================================
+// Test Case
+// =============================================================================
+
 export interface TestCase {
+  name: string;
+  type: TestType;
+  sizeClass: SizeClass;
+  suite_tags: string[];
+  priority: string;
+  page_id?: number;
+  persona_id?: number;
+  use_case_id?: number;
+  startingPageStateId: number;
+  startingUrl: string;
+  steps: TestStep[];
+  globalExpectations: Expectation[];
+  estimatedDurationMs?: number;
+}
+
+/** @deprecated Use TestCase with steps and expectations */
+export interface LegacyTestCase {
   name: string;
   type: TestType;
   sizeClass: SizeClass;
@@ -780,6 +912,12 @@ export interface InsertTestCaseRequest {
   testCase: TestCase;
 }
 
+/** @deprecated Use InsertTestCaseRequest with new TestCase */
+export interface LegacyInsertTestCaseRequest {
+  appId: number;
+  testCase: LegacyTestCase;
+}
+
 export interface TestCaseResponse {
   id: number;
   appId: number;
@@ -791,6 +929,11 @@ export interface TestCaseResponse {
   personaId: number | null;
   useCaseId: number | null;
   priority: string;
+  startingPageStateId: number | null;
+  startingUrl: string | null;
+  stepsJson: unknown;
+  globalExpectationsJson: unknown;
+  estimatedDurationMs: number | null;
   generatedAt: string | null;
 }
 

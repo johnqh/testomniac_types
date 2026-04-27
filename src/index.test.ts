@@ -11,6 +11,8 @@ import {
   TestType,
   LocatorStrategy,
   PlaywrightAction,
+  ExpectationType,
+  ExpectationSeverity,
   resolvePlaywrightRole,
   DESKTOP_SCREENS,
   MOBILE_SCREENS,
@@ -23,6 +25,7 @@ import {
   type ActionableItem,
   type FormInfo,
   type TestCase,
+  type TestStep,
   type Credentials,
   type TestAction,
   type CreateElementIdentityRequest,
@@ -874,14 +877,13 @@ describe('starter_types', () => {
       expect(PlaywrightAction.UploadFile).toBe('uploadFile');
     });
 
-    it('has assertion actions', () => {
-      expect(PlaywrightAction.AssertVisible).toBe('assertVisible');
-      expect(PlaywrightAction.AssertHidden).toBe('assertHidden');
-      expect(PlaywrightAction.AssertText).toBe('assertText');
-      expect(PlaywrightAction.AssertValue).toBe('assertValue');
-      expect(PlaywrightAction.AssertChecked).toBe('assertChecked');
-      expect(PlaywrightAction.AssertURL).toBe('assertURL');
-      expect(PlaywrightAction.AssertTitle).toBe('assertTitle');
+    it('does not have assertion actions (moved to ExpectationType)', () => {
+      expect(
+        (PlaywrightAction as Record<string, string>).AssertVisible
+      ).toBeUndefined();
+      expect(
+        (PlaywrightAction as Record<string, string>).AssertURL
+      ).toBeUndefined();
     });
 
     it('has page-level actions', () => {
@@ -926,6 +928,133 @@ describe('starter_types', () => {
       };
       expect(action.elementIdentityId).toBeUndefined();
       expect(action.url).toBe('https://example.com');
+    });
+  });
+
+  describe('ExpectationType enum', () => {
+    it('has visual/content expectations', () => {
+      expect(ExpectationType.ElementVisible).toBe('element_visible');
+      expect(ExpectationType.TextOnPage).toBe('text_on_page');
+      expect(ExpectationType.InputValue).toBe('input_value');
+    });
+
+    it('has console expectations', () => {
+      expect(ExpectationType.NoConsoleErrors).toBe('no_console_errors');
+      expect(ExpectationType.ConsoleContains).toBe('console_contains');
+    });
+
+    it('has network expectations', () => {
+      expect(ExpectationType.NoNetworkErrors).toBe('no_network_errors');
+      expect(ExpectationType.NetworkResponseStatus).toBe(
+        'network_response_status'
+      );
+    });
+
+    it('has page-level expectations', () => {
+      expect(ExpectationType.UrlEquals).toBe('url_equals');
+      expect(ExpectationType.UrlChanged).toBe('url_changed');
+      expect(ExpectationType.TitleEquals).toBe('title_equals');
+      expect(ExpectationType.PageLoaded).toBe('page_loaded');
+    });
+
+    it('has storage expectations', () => {
+      expect(ExpectationType.CookieExists).toBe('cookie_exists');
+      expect(ExpectationType.LocalStorageValue).toBe('local_storage_value');
+    });
+
+    it('has security expectations', () => {
+      expect(ExpectationType.NoMixedContent).toBe('no_mixed_content');
+      expect(ExpectationType.SensitiveDataNotInUrl).toBe(
+        'sensitive_data_not_in_url'
+      );
+    });
+  });
+
+  describe('ExpectationSeverity enum', () => {
+    it('has all severity levels', () => {
+      expect(ExpectationSeverity.MustPass).toBe('must_pass');
+      expect(ExpectationSeverity.ShouldPass).toBe('should_pass');
+      expect(ExpectationSeverity.Info).toBe('info');
+    });
+  });
+
+  describe('TestStep and TestCase types', () => {
+    it('constructs a TestStep with action and expectations', () => {
+      const step: TestStep = {
+        action: {
+          actionType: PlaywrightAction.Click,
+          elementIdentityId: 42,
+          playwrightCode:
+            "await page.getByRole('button', { name: 'Submit' }).click();",
+          description: "Click 'Submit' button",
+        },
+        expectations: [
+          {
+            expectationType: ExpectationType.UrlChanged,
+            severity: ExpectationSeverity.MustPass,
+            description: 'URL changed after submit',
+            playwrightCode: 'expect(page.url()).not.toBe(urlBefore);',
+          },
+          {
+            expectationType: ExpectationType.NoConsoleErrors,
+            severity: ExpectationSeverity.ShouldPass,
+            description: 'No console errors',
+            playwrightCode: 'expect(consoleErrors).toHaveLength(0);',
+          },
+        ],
+        description: "Click 'Submit' and verify navigation",
+        continueOnFailure: false,
+      };
+      expect(step.expectations).toHaveLength(2);
+      expect(step.expectations[0].severity).toBe('must_pass');
+    });
+
+    it('constructs a full TestCase with steps and global expectations', () => {
+      const tc: TestCase = {
+        name: 'Login with valid credentials',
+        type: 'form' as TestCase['type'],
+        sizeClass: 'desktop' as TestCase['sizeClass'],
+        suite_tags: ['regression', 'smoke'],
+        priority: 'critical',
+        startingPageStateId: 100,
+        startingUrl: 'https://example.com/login',
+        steps: [
+          {
+            action: {
+              actionType: PlaywrightAction.Fill,
+              elementIdentityId: 15,
+              value: 'jane@example.com',
+              playwrightCode:
+                "await page.getByLabel('Email').fill('jane@example.com');",
+              description: "Type 'jane@example.com' in 'Email' textbox",
+            },
+            expectations: [
+              {
+                expectationType: ExpectationType.InputValue,
+                elementIdentityId: 15,
+                expectedValue: 'jane@example.com',
+                severity: ExpectationSeverity.MustPass,
+                description: 'Email field has value',
+                playwrightCode:
+                  "await expect(page.getByLabel('Email')).toHaveValue('jane@example.com');",
+              },
+            ],
+            description: 'Fill email field',
+            continueOnFailure: false,
+          },
+        ],
+        globalExpectations: [
+          {
+            expectationType: ExpectationType.NoConsoleErrors,
+            severity: ExpectationSeverity.ShouldPass,
+            description: 'No console errors',
+            playwrightCode: 'expect(consoleErrors).toHaveLength(0);',
+          },
+        ],
+      };
+      expect(tc.steps).toHaveLength(1);
+      expect(tc.globalExpectations).toHaveLength(1);
+      expect(tc.startingUrl).toBe('https://example.com/login');
     });
   });
 
