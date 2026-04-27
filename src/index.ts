@@ -136,9 +136,49 @@ export const HtmlComponentType = {
   Breadcrumb: 'breadcrumb',
   LeftMenu: 'leftMenu',
   HamburgerMenu: 'hamburgerMenu',
+  RightSidebar: 'rightSidebar',
+  SearchBar: 'searchBar',
+  UserMenu: 'userMenu',
+  CookieBanner: 'cookieBanner',
+  ChatWidget: 'chatWidget',
+  SocialLinks: 'socialLinks',
+  SkipNav: 'skipNav',
+  LanguageSwitcher: 'languageSwitcher',
+  AnnouncementBar: 'announcementBar',
+  BackToTop: 'backToTop',
 } as const;
 export type HtmlComponentType =
   (typeof HtmlComponentType)[keyof typeof HtmlComponentType];
+
+export const UiPatternType = {
+  Card: 'card',
+  Table: 'table',
+  Form: 'form',
+  Modal: 'modal',
+  Toast: 'toast',
+  Alert: 'alert',
+  Tabs: 'tabs',
+  Accordion: 'accordion',
+  Carousel: 'carousel',
+  Dropdown: 'dropdown',
+  Pagination: 'pagination',
+  Skeleton: 'skeleton',
+  EmptyState: 'emptyState',
+  ErrorMessage: 'errorMessage',
+  ProgressBar: 'progressBar',
+  Tooltip: 'tooltip',
+  Badge: 'badge',
+  Avatar: 'avatar',
+  Tag: 'tag',
+  Stepper: 'stepper',
+} as const;
+export type UiPatternType = (typeof UiPatternType)[keyof typeof UiPatternType];
+
+export interface UiPattern {
+  type: UiPatternType;
+  selector: string;
+  count: number;
+}
 
 // =============================================================================
 // Element Identity — persistent element identification across scans
@@ -1184,6 +1224,22 @@ export interface PageStateReusableElementResponse {
   id: number;
   pageStateId: number;
   reusableHtmlElementId: number;
+}
+
+// --- Page State Patterns ---
+
+export interface InsertPageStatePatternsRequest {
+  pageStateId: number;
+  patterns: UiPattern[];
+}
+
+export interface PageStatePatternResponse {
+  id: number;
+  pageStateId: number;
+  patternType: string;
+  selector: string;
+  count: number;
+  createdAt: string | null;
 }
 
 // --- Projects ---

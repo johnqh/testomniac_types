@@ -13,6 +13,8 @@ import {
   PlaywrightAction,
   ExpectationType,
   ExpectationSeverity,
+  HtmlComponentType,
+  UiPatternType,
   resolvePlaywrightRole,
   DESKTOP_SCREENS,
   MOBILE_SCREENS,
@@ -850,6 +852,62 @@ describe('starter_types', () => {
       expect(LocatorStrategy.Text).toBe('text');
       expect(LocatorStrategy.AltText).toBe('alt-text');
       expect(LocatorStrategy.Css).toBe('css');
+    });
+  });
+
+  describe('HtmlComponentType enum', () => {
+    it('has original 5 types', () => {
+      expect(HtmlComponentType.TopMenu).toBe('topMenu');
+      expect(HtmlComponentType.Footer).toBe('footer');
+      expect(HtmlComponentType.Breadcrumb).toBe('breadcrumb');
+      expect(HtmlComponentType.LeftMenu).toBe('leftMenu');
+      expect(HtmlComponentType.HamburgerMenu).toBe('hamburgerMenu');
+    });
+
+    it('has 10 new types', () => {
+      expect(HtmlComponentType.RightSidebar).toBe('rightSidebar');
+      expect(HtmlComponentType.SearchBar).toBe('searchBar');
+      expect(HtmlComponentType.UserMenu).toBe('userMenu');
+      expect(HtmlComponentType.CookieBanner).toBe('cookieBanner');
+      expect(HtmlComponentType.ChatWidget).toBe('chatWidget');
+      expect(HtmlComponentType.SocialLinks).toBe('socialLinks');
+      expect(HtmlComponentType.SkipNav).toBe('skipNav');
+      expect(HtmlComponentType.LanguageSwitcher).toBe('languageSwitcher');
+      expect(HtmlComponentType.AnnouncementBar).toBe('announcementBar');
+      expect(HtmlComponentType.BackToTop).toBe('backToTop');
+    });
+
+    it('has 15 total types', () => {
+      expect(Object.keys(HtmlComponentType)).toHaveLength(15);
+    });
+  });
+
+  describe('UiPatternType enum', () => {
+    it('has content patterns', () => {
+      expect(UiPatternType.Card).toBe('card');
+      expect(UiPatternType.Table).toBe('table');
+      expect(UiPatternType.Form).toBe('form');
+    });
+
+    it('has interactive patterns', () => {
+      expect(UiPatternType.Modal).toBe('modal');
+      expect(UiPatternType.Toast).toBe('toast');
+      expect(UiPatternType.Tabs).toBe('tabs');
+      expect(UiPatternType.Accordion).toBe('accordion');
+      expect(UiPatternType.Carousel).toBe('carousel');
+      expect(UiPatternType.Dropdown).toBe('dropdown');
+      expect(UiPatternType.Pagination).toBe('pagination');
+    });
+
+    it('has state patterns', () => {
+      expect(UiPatternType.Skeleton).toBe('skeleton');
+      expect(UiPatternType.EmptyState).toBe('emptyState');
+      expect(UiPatternType.ErrorMessage).toBe('errorMessage');
+      expect(UiPatternType.ProgressBar).toBe('progressBar');
+    });
+
+    it('has 20 total types', () => {
+      expect(Object.keys(UiPatternType)).toHaveLength(20);
     });
   });
 
