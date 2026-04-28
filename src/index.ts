@@ -569,6 +569,27 @@ export interface TestCase {
   estimatedDurationMs?: number;
 }
 
+// =============================================================================
+// Test Suite
+// =============================================================================
+
+export interface TestSuite {
+  name: string;
+  description: string;
+  startingPageStateId: number;
+  startingUrl: string;
+  sizeClass: SizeClass;
+  testCases: TestCase[];
+  dependencyTestCaseId?: number;
+  personaIds?: number[];
+  reusableHtmlElementId?: number;
+  reusableHtmlElementType?: HtmlComponentType;
+  patternType?: UiPatternType;
+  priority: string;
+  suite_tags: string[];
+  estimatedDurationMs?: number;
+}
+
 /** @deprecated Use TestCase with steps and expectations */
 export interface LegacyTestCase {
   name: string;
@@ -965,6 +986,33 @@ export interface FormResponse {
   fieldCount: number | null;
   formType: string | null;
   fieldsJson: unknown;
+  createdAt: string | null;
+}
+
+// --- Test Suites ---
+
+export interface InsertTestSuiteRequest {
+  appId: number;
+  testSuite: TestSuite;
+}
+
+export interface TestSuiteResponse {
+  id: number;
+  appId: number;
+  name: string;
+  description: string;
+  startingPageStateId: number;
+  startingUrl: string;
+  sizeClass: string;
+  testCasesJson: unknown;
+  dependencyTestCaseId: number | null;
+  personaIdsJson: unknown;
+  reusableHtmlElementId: number | null;
+  reusableHtmlElementType: string | null;
+  patternType: string | null;
+  priority: string;
+  suiteTags: string[];
+  estimatedDurationMs: number | null;
   createdAt: string | null;
 }
 

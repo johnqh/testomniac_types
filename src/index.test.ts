@@ -30,6 +30,7 @@ import {
   type TestStep,
   type Credentials,
   type TestAction,
+  type TestSuite,
   type CreateElementIdentityRequest,
   type ElementIdentityResponse,
 } from './index';
@@ -1113,6 +1114,59 @@ describe('starter_types', () => {
       expect(tc.steps).toHaveLength(1);
       expect(tc.globalExpectations).toHaveLength(1);
       expect(tc.startingUrl).toBe('https://example.com/login');
+    });
+  });
+
+  describe('TestSuite type', () => {
+    it('constructs a test suite for a reusable element', () => {
+      const suite: TestSuite = {
+        name: 'Top Menu Tests',
+        description: 'Test the top menu navigation links and dropdowns',
+        startingPageStateId: 100,
+        startingUrl: 'https://example.com',
+        sizeClass: 'desktop',
+        testCases: [],
+        reusableHtmlElementId: 42,
+        reusableHtmlElementType: 'topMenu',
+        priority: 'high',
+        suite_tags: ['regression', 'smoke'],
+      };
+      expect(suite.reusableHtmlElementType).toBe('topMenu');
+      expect(suite.patternType).toBeUndefined();
+    });
+
+    it('constructs a test suite for a UI pattern', () => {
+      const suite: TestSuite = {
+        name: 'Product List Tests',
+        description:
+          'Test pagination, sorting, and filtering on the product list',
+        startingPageStateId: 200,
+        startingUrl: 'https://example.com/products',
+        sizeClass: 'desktop',
+        testCases: [],
+        patternType: 'pagination',
+        priority: 'medium',
+        suite_tags: ['regression'],
+      };
+      expect(suite.patternType).toBe('pagination');
+      expect(suite.reusableHtmlElementId).toBeUndefined();
+    });
+
+    it('constructs a test suite with dependency and personas', () => {
+      const suite: TestSuite = {
+        name: 'Dashboard Tests',
+        description: 'Test dashboard after login',
+        startingPageStateId: 300,
+        startingUrl: 'https://example.com/dashboard',
+        sizeClass: 'desktop',
+        testCases: [],
+        dependencyTestCaseId: 10,
+        personaIds: [1, 2, 3],
+        priority: 'critical',
+        suite_tags: ['regression', 'smoke'],
+      };
+      expect(suite.dependencyTestCaseId).toBe(10);
+      expect(suite.personaIds).toHaveLength(3);
     });
   });
 
