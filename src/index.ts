@@ -72,26 +72,61 @@ export const ActionType = {
 } as const;
 export type ActionType = (typeof ActionType)[keyof typeof ActionType];
 
+export const ScanStatus = {
+  Pending: 'pending',
+  Running: 'running',
+  Completed: 'completed',
+  Failed: 'failed',
+} as const;
+export type ScanStatus = (typeof ScanStatus)[keyof typeof ScanStatus];
+
+export const DecompositionJobStatus = {
+  Pending: 'pending',
+  Done: 'done',
+} as const;
+export type DecompositionJobStatus =
+  (typeof DecompositionJobStatus)[keyof typeof DecompositionJobStatus];
+
+export const TestRunStatus = {
+  Planned: 'planned',
+  Running: 'running',
+  Completed: 'completed',
+} as const;
+export type TestRunStatus = (typeof TestRunStatus)[keyof typeof TestRunStatus];
+
+export const FindingType = {
+  Error: 'error',
+  Warning: 'warning',
+} as const;
+export type FindingType = (typeof FindingType)[keyof typeof FindingType];
+
+/** @deprecated Action/ActionExecution removed — use TestAction within TestCase */
 export const ActionStatus = {
   Open: 'open',
   Completed: 'completed',
 } as const;
+/** @deprecated */
 export type ActionStatus = (typeof ActionStatus)[keyof typeof ActionStatus];
 
+/** @deprecated Issue removed — use TestRunFinding */
 export const IssueSeverity = {
   Bug: 'bug',
   Warning: 'warning',
 } as const;
+/** @deprecated */
 export type IssueSeverity = (typeof IssueSeverity)[keyof typeof IssueSeverity];
 
+/** @deprecated Issue removed — use TestRunFinding */
 export const IssueStatus = {
   Open: 'open',
   Rejected: 'rejected',
   Qa: 'qa',
   Closed: 'closed',
 } as const;
+/** @deprecated */
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus];
 
+/** @deprecated Issue removed — use TestRunFinding */
 export const IssueRuleName = {
   BrokenLink: 'broken_link',
   DuplicateHeading: 'duplicate_heading',
@@ -106,6 +141,7 @@ export const IssueRuleName = {
   ConsoleError: 'console_error',
   NetworkError: 'network_error',
 } as const;
+/** @deprecated */
 export type IssueRuleName = (typeof IssueRuleName)[keyof typeof IssueRuleName];
 
 /** @deprecated Use IssueSeverity + IssueRuleName instead */
@@ -511,7 +547,7 @@ export interface Expectation {
 }
 
 // =============================================================================
-// Test Action (user interactions only)
+// Test Action (embedded in TestStep — JSON within test case)
 // =============================================================================
 
 export interface TestAction {
@@ -521,7 +557,7 @@ export interface TestAction {
   containerType?: HtmlComponentType;
   containerElementIdentityId?: number;
   value?: string;
-  url?: string;
+  path?: string;
   playwrightCode: string;
   description: string;
 }
@@ -550,44 +586,47 @@ export interface TestStep {
 }
 
 // =============================================================================
-// Test Case
+// Test Case (domain object — used for generation)
 // =============================================================================
 
 export interface TestCase {
-  name: string;
+  title: string;
   type: TestType;
   sizeClass: SizeClass;
   suite_tags: string[];
-  priority: string;
+  priority: number;
   page_id?: number;
   persona_id?: number;
   use_case_id?: number;
+  reusableHtmlElementId?: number;
+  patternType?: UiPatternType;
+  dependencyTestCaseId?: number;
   startingPageStateId: number;
-  startingUrl: string;
+  startingPath: string;
   steps: TestStep[];
   globalExpectations: Expectation[];
   estimatedDurationMs?: number;
 }
 
 // =============================================================================
-// Test Suite
+// Test Suite (domain object — used for generation)
 // =============================================================================
 
 export interface TestSuite {
-  name: string;
+  title: string;
   description: string;
   startingPageStateId: number;
-  startingUrl: string;
+  startingPath: string;
   sizeClass: SizeClass;
-  testCases: TestCase[];
   dependencyTestCaseId?: number;
   personaIds?: number[];
   reusableHtmlElementId?: number;
   reusableHtmlElementType?: HtmlComponentType;
   patternType?: UiPatternType;
-  priority: string;
+  priority: number;
   suite_tags: string[];
   estimatedDurationMs?: number;
+  decompositionJobId?: number;
 }
 
 /** @deprecated Use TestCase with steps and expectations */
@@ -651,12 +690,14 @@ export interface ScanStreamEvent {
   scanId: number;
   type:
     | 'scan_started'
-    | 'phase_changed'
     | 'page_discovered'
     | 'page_state_created'
-    | 'action_completed'
-    | 'issue_detected'
     | 'stats_update'
+    | 'decomposition_job_created'
+    | 'decomposition_job_completed'
+    | 'test_suite_created'
+    | 'test_run_completed'
+    | 'finding_created'
     | 'scan_completed'
     | 'scan_failed';
   payload: Record<string, unknown>;
@@ -668,19 +709,24 @@ export type RunStreamEvent = ScanStreamEvent;
 
 export interface ProjectSummaryResponse {
   id: number;
-  name: string;
+  title: string;
   entityId: string;
 }
 
 export interface ScanDetailResponse {
   id: number;
   appId: number;
+  scanUrl: string;
+  createdByUserId: string;
+  ownedByUserId: string | null;
   status: string;
-  phase: string | null;
   sizeClass: string;
   pagesFound: number | null;
   pageStatesFound: number | null;
-  actionsCompleted: number | null;
+  testRunsCompleted: number | null;
+  aiSummary: string | null;
+  totalDurationMs: number | null;
+  createdAt: string | null;
   startedAt: string | null;
   endedAt: string | null;
 }
@@ -692,11 +738,12 @@ export type RunDetailResponse = ScanDetailResponse;
 // Scanner API Request/Response Types
 // =============================================================================
 
-// --- Scans (formerly Runs) ---
+// --- Scans ---
 
 export interface PendingScanResponse {
   id: number;
   appId: number;
+  scanUrl: string;
   sizeClass: string;
   status: string;
 }
@@ -704,22 +751,24 @@ export interface PendingScanResponse {
 /** @deprecated Use PendingScanResponse instead */
 export type PendingRunResponse = PendingScanResponse;
 
+/** @deprecated No more linear phases */
 export interface UpdateScanPhaseRequest {
   phase: string;
 }
 
-/** @deprecated Use UpdateScanPhaseRequest */
+/** @deprecated */
 export type UpdateRunPhaseRequest = UpdateScanPhaseRequest;
 
 export interface UpdateScanStatsRequest {
   pagesFound?: number;
   pageStatesFound?: number;
-  actionsCompleted?: number;
+  testRunsCompleted?: number;
 }
 
 /** @deprecated Use UpdateScanStatsRequest */
 export type UpdateRunStatsRequest = UpdateScanStatsRequest;
 
+/** @deprecated No more per-phase durations */
 export interface UpdatePhaseDurationRequest {
   field: string;
   durationMs: number;
@@ -737,13 +786,13 @@ export type CompleteRunRequest = CompleteScanRequest;
 
 export interface FindOrCreatePageRequest {
   appId: number;
-  url: string;
+  relativePath: string;
 }
 
 export interface PageResponse {
   id: number;
   appId: number;
-  url: string;
+  relativePath: string;
   routeKey: string | null;
   requiresLogin: boolean | null;
   createdAt: string | null;
@@ -767,6 +816,7 @@ export interface CreatePageStateRequest {
   bodyHtmlElementId?: number;
   contentHtmlElementId?: number;
   fixedBodyHtmlElementId?: number;
+  createdByTestRunId?: number;
 }
 
 export interface PageStateResponse {
@@ -786,6 +836,7 @@ export interface PageStateResponse {
   bodyHtmlElementId: number | null;
   contentHtmlElementId: number | null;
   fixedBodyHtmlElementId: number | null;
+  createdByTestRunId: number | null;
   capturedAt: string | null;
 }
 
@@ -811,8 +862,9 @@ export interface ActionableItemResponse {
   reusableHtmlElementId: number | null;
 }
 
-// --- Action Definitions (app-level, persistent) ---
+// --- Action Definitions (deprecated — removed) ---
 
+/** @deprecated Action removed — use TestAction within TestCase */
 export interface CreateActionDefinitionRequest {
   appId: number;
   type: string;
@@ -823,6 +875,7 @@ export interface CreateActionDefinitionRequest {
   inputValue?: string;
 }
 
+/** @deprecated Action removed */
 export interface ActionDefinitionResponse {
   id: number;
   appId: number;
@@ -835,13 +888,15 @@ export interface ActionDefinitionResponse {
   createdAt: string | null;
 }
 
-// --- Action Executions (scan-level) ---
+// --- Action Executions (deprecated — removed, replaced by TestRun) ---
 
+/** @deprecated ActionExecution removed — use TestRun */
 export interface CreateActionExecutionRequest {
   scanId: number;
   actionId: number;
 }
 
+/** @deprecated */
 export interface CompleteActionExecutionRequest {
   targetPageStateId?: number;
   durationMs?: number;
@@ -851,6 +906,7 @@ export interface CompleteActionExecutionRequest {
   screenshotAfter?: string;
 }
 
+/** @deprecated */
 export interface ActionExecutionResponse {
   id: number;
   scanId: number;
@@ -864,7 +920,6 @@ export interface ActionExecutionResponse {
   networkLog: string | null;
   startedAt: string | null;
   executedAt: string | null;
-  // Joined from action definition (included by /next endpoint)
   type: string | null;
   targetUrl: string | null;
   startingPageStateId: number | null;
@@ -873,7 +928,7 @@ export interface ActionExecutionResponse {
   inputValue: string | null;
 }
 
-// --- Legacy action types (deprecated — use ActionDefinition + ActionExecution) ---
+// --- Legacy action types (deprecated) ---
 
 /** @deprecated Use CreateActionDefinitionRequest */
 export interface CreateActionRequest {
@@ -926,28 +981,28 @@ export interface ActionResponse {
 
 export interface CreatePersonaRequest {
   appId: number;
-  name: string;
+  title: string;
   description: string;
 }
 
 export interface PersonaResponse {
   id: number;
   appId: number;
-  name: string;
+  title: string;
   description: string | null;
   createdAt: string | null;
 }
 
 export interface CreateUseCaseRequest {
   personaId: number;
-  name: string;
+  title: string;
   description: string;
 }
 
 export interface UseCaseResponse {
   id: number;
   personaId: number;
-  name: string;
+  title: string;
   description: string | null;
   createdAt: string | null;
 }
@@ -989,6 +1044,56 @@ export interface FormResponse {
   createdAt: string | null;
 }
 
+// --- AI Decomposition Jobs ---
+
+export interface CreateDecompositionJobRequest {
+  scanId: number;
+  pageStateId: number;
+  personaId?: number;
+}
+
+export interface DecompositionJobResponse {
+  id: number;
+  scanId: number;
+  pageStateId: number;
+  personaId: number | null;
+  status: string;
+  createdAt: string | null;
+  completedAt: string | null;
+}
+
+// --- Expertise ---
+
+export interface ExpertiseResponse {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  createdAt: string | null;
+}
+
+export interface CreateExpertiseRequest {
+  slug: string;
+  title: string;
+  description: string;
+}
+
+export interface ExpertiseRuleResponse {
+  id: number;
+  expertiseId: number;
+  title: string;
+  description: string;
+  aiEndpointUrl: string | null;
+  createdAt: string | null;
+}
+
+export interface CreateExpertiseRuleRequest {
+  expertiseId: number;
+  title: string;
+  description: string;
+  aiEndpointUrl?: string;
+}
+
 // --- Test Suites ---
 
 export interface InsertTestSuiteRequest {
@@ -999,21 +1104,45 @@ export interface InsertTestSuiteRequest {
 export interface TestSuiteResponse {
   id: number;
   appId: number;
-  name: string;
+  decompositionJobId: number | null;
+  title: string;
   description: string;
   startingPageStateId: number;
-  startingUrl: string;
+  startingPath: string;
   sizeClass: string;
-  testCasesJson: unknown;
   dependencyTestCaseId: number | null;
   personaIdsJson: unknown;
   reusableHtmlElementId: number | null;
   reusableHtmlElementType: string | null;
   patternType: string | null;
-  priority: string;
+  priority: number;
   suiteTags: string[];
   estimatedDurationMs: number | null;
   createdAt: string | null;
+}
+
+// --- Test Suite Junction Tables ---
+
+export interface CreateTestSuiteSuiteLinkRequest {
+  parentSuiteId: number;
+  childSuiteId: number;
+}
+
+export interface TestSuiteSuiteLinkResponse {
+  id: number;
+  parentSuiteId: number;
+  childSuiteId: number;
+}
+
+export interface CreateTestSuiteCaseLinkRequest {
+  testSuiteId: number;
+  testCaseId: number;
+}
+
+export interface TestSuiteCaseLinkResponse {
+  id: number;
+  testSuiteId: number;
+  testCaseId: number;
 }
 
 // --- Test Cases (app-level, persistent) ---
@@ -1032,30 +1161,70 @@ export interface LegacyInsertTestCaseRequest {
 export interface TestCaseResponse {
   id: number;
   appId: number;
-  name: string;
+  title: string;
   testType: string;
   sizeClass: string;
   suiteTags: string[];
+  priority: number;
+  reusableHtmlElementId: number | null;
+  patternType: string | null;
+  dependencyTestCaseId: number | null;
   pageId: number | null;
   personaId: number | null;
   useCaseId: number | null;
-  priority: string;
   startingPageStateId: number | null;
-  startingUrl: string | null;
+  startingPath: string | null;
   stepsJson: unknown;
   globalExpectationsJson: unknown;
   estimatedDurationMs: number | null;
   generatedAt: string | null;
 }
 
-// --- Test Case Actions (junction, ordered) ---
+// --- Test Actions (persisted, parent/child with TestCase) ---
 
+export interface CreateTestActionRequest {
+  testCaseId: number;
+  stepOrder: number;
+  actionType: PlaywrightAction;
+  pageStateId?: number;
+  elementIdentityId?: number;
+  containerType?: HtmlComponentType;
+  containerElementIdentityId?: number;
+  value?: string;
+  path?: string;
+  playwrightCode: string;
+  description: string;
+  expectations?: Expectation[];
+  continueOnFailure?: boolean;
+}
+
+export interface TestActionResponse {
+  id: number;
+  testCaseId: number;
+  stepOrder: number;
+  actionType: string;
+  pageStateId: number | null;
+  elementIdentityId: number | null;
+  containerType: string | null;
+  containerElementIdentityId: number | null;
+  value: string | null;
+  path: string | null;
+  playwrightCode: string;
+  description: string;
+  expectations: unknown;
+  continueOnFailure: boolean;
+}
+
+// --- Test Case Actions (deprecated — replaced by TestAction parent/child) ---
+
+/** @deprecated Use CreateTestActionRequest */
 export interface CreateTestCaseActionRequest {
   testCaseId: number;
   actionId: number;
   stepOrder: number;
 }
 
+/** @deprecated */
 export interface TestCaseActionResponse {
   id: number;
   testCaseId: number;
@@ -1067,9 +1236,10 @@ export interface TestCaseActionResponse {
 // --- Test Runs ---
 
 export interface CreateTestRunRequest {
-  testCaseId: number;
+  testCaseId?: number;
+  testSuiteId?: number;
   scanId: number;
-  screen: string;
+  sizeClass: string;
 }
 
 export interface CompleteTestRunRequest {
@@ -1083,21 +1253,44 @@ export interface CompleteTestRunRequest {
 
 export interface TestRunResponse {
   id: number;
-  testCaseId: number;
+  testCaseId: number | null;
+  testSuiteId: number | null;
   scanId: number;
-  screen: string;
+  sizeClass: string;
   status: string;
   durationMs: number | null;
   errorMessage: string | null;
   screenshotPath: string | null;
   consoleLog: string | null;
   networkLog: string | null;
+  createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
 }
 
-// --- Issues ---
+// --- Test Run Findings ---
 
+export interface CreateTestRunFindingRequest {
+  testRunId: number;
+  expertiseRuleId?: number;
+  type: FindingType;
+  title: string;
+  description: string;
+}
+
+export interface TestRunFindingResponse {
+  id: number;
+  testRunId: number;
+  expertiseRuleId: number | null;
+  type: string;
+  title: string;
+  description: string;
+  createdAt: string | null;
+}
+
+// --- Issues (deprecated — replaced by TestRunFinding) ---
+
+/** @deprecated Use CreateTestRunFindingRequest */
 export interface CreateIssueRequest {
   appId: number;
   scanId?: number;
@@ -1118,6 +1311,7 @@ export interface CreateIssueRequest {
   pageStateId?: number;
 }
 
+/** @deprecated Use TestRunFindingResponse */
 export interface IssueResponse {
   id: number;
   appId: number;
@@ -1140,20 +1334,23 @@ export interface IssueResponse {
   createdAt: string | null;
 }
 
-// --- Issue Dedup ---
+// --- Issue Dedup (deprecated) ---
 
+/** @deprecated */
 export interface FindTestCaseByActionsRequest {
   appId: number;
   actionIds: number[];
 }
 
+/** @deprecated */
 export interface FindIssueByRuleRequest {
   testCaseId: number;
   ruleName: string;
 }
 
-// --- AI Usage ---
+// --- AI Usage (deprecated — removed) ---
 
+/** @deprecated AI Usage removed */
 export interface RecordAiUsageRequest {
   scanId: number;
   phase: string;
@@ -1317,14 +1514,14 @@ export interface PageStatePatternResponse {
 
 export interface CreateProjectRequest {
   entityId: string;
-  name: string;
+  title: string;
   description?: string;
 }
 
 export interface ProjectResponse {
   id: number;
   entityId: string | null;
-  name: string;
+  title: string;
   description: string | null;
   createdAt: string | null;
 }
@@ -1333,14 +1530,14 @@ export interface ProjectResponse {
 
 export interface CreateAppRequest {
   projectId: number;
-  name: string;
+  title: string;
   url: string;
 }
 
 export interface AppResponse {
   id: number;
   projectId: number;
-  name: string;
+  title: string;
   baseUrl: string | null;
   normalizedBaseUrl: string;
   createdAt: string | null;
