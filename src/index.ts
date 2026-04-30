@@ -660,6 +660,8 @@ export interface CreateScanRequest {
   url: string;
   email?: string;
   sizeClass?: 'desktop' | 'mobile';
+  createdByUserId?: string;
+  ownedByUserId?: string;
   credentials?: {
     username?: string;
     email?: string;
@@ -777,6 +779,7 @@ export interface UpdatePhaseDurationRequest {
 export interface CompleteScanRequest {
   aiSummary?: string;
   totalDurationMs?: number;
+  status?: ScanStatus;
 }
 
 /** @deprecated Use CompleteScanRequest */
