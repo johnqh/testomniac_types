@@ -1369,6 +1369,14 @@ export interface CreateReportEmailRequest {
   deepLinkToken: string;
 }
 
+export interface ReportEmailResponse {
+  id: number;
+  scanId: number;
+  userEmail: string;
+  deepLinkToken: string;
+  sentAt: string | null;
+}
+
 // --- Credentials ---
 
 export interface CreateCredentialRequest {
@@ -1523,7 +1531,11 @@ export interface ProjectResponse {
   entityId: string | null;
   title: string;
   description: string | null;
+  contactEmail: string | null;
+  claimedByUserId: string | null;
+  claimedAt: string | null;
   createdAt: string | null;
+  updatedAt: string | null;
 }
 
 // --- Apps ---
