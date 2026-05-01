@@ -753,11 +753,15 @@ describe('starter_types', () => {
 
     it('TestCase accepts valid objects', () => {
       const tc: TestCase = {
-        name: 'Login test',
+        title: 'Login test',
         type: TestType.Form,
         sizeClass: SizeClass.Desktop,
         suite_tags: ['smoke'],
-        priority: 'high',
+        priority: 1,
+        startingPageStateId: 1,
+        startingPath: '/login',
+        steps: [],
+        globalExpectations: [],
       };
       expect(tc.type).toBe('form');
       expect(tc.suite_tags).toHaveLength(1);
@@ -981,12 +985,12 @@ describe('starter_types', () => {
     it('constructs a navigation action without element', () => {
       const action: TestAction = {
         actionType: PlaywrightAction.Goto,
-        url: 'https://example.com',
-        playwrightCode: "await page.goto('https://example.com');",
-        description: 'Navigate to https://example.com',
+        path: '/products',
+        playwrightCode: "await page.goto('/products');",
+        description: 'Navigate to /products',
       };
       expect(action.elementIdentityId).toBeUndefined();
-      expect(action.url).toBe('https://example.com');
+      expect(action.path).toBe('/products');
     });
   });
 
@@ -1070,13 +1074,13 @@ describe('starter_types', () => {
 
     it('constructs a full TestCase with steps and global expectations', () => {
       const tc: TestCase = {
-        name: 'Login with valid credentials',
+        title: 'Login with valid credentials',
         type: 'form' as TestCase['type'],
         sizeClass: 'desktop' as TestCase['sizeClass'],
         suite_tags: ['regression', 'smoke'],
-        priority: 'critical',
+        priority: 1,
         startingPageStateId: 100,
-        startingUrl: 'https://example.com/login',
+        startingPath: '/login',
         steps: [
           {
             action: {
@@ -1113,22 +1117,21 @@ describe('starter_types', () => {
       };
       expect(tc.steps).toHaveLength(1);
       expect(tc.globalExpectations).toHaveLength(1);
-      expect(tc.startingUrl).toBe('https://example.com/login');
+      expect(tc.startingPath).toBe('/login');
     });
   });
 
   describe('TestSuite type', () => {
     it('constructs a test suite for a reusable element', () => {
       const suite: TestSuite = {
-        name: 'Top Menu Tests',
+        title: 'Top Menu Tests',
         description: 'Test the top menu navigation links and dropdowns',
         startingPageStateId: 100,
-        startingUrl: 'https://example.com',
+        startingPath: '/',
         sizeClass: 'desktop',
-        testCases: [],
         reusableHtmlElementId: 42,
         reusableHtmlElementType: 'topMenu',
-        priority: 'high',
+        priority: 1,
         suite_tags: ['regression', 'smoke'],
       };
       expect(suite.reusableHtmlElementType).toBe('topMenu');
@@ -1137,15 +1140,14 @@ describe('starter_types', () => {
 
     it('constructs a test suite for a UI pattern', () => {
       const suite: TestSuite = {
-        name: 'Product List Tests',
+        title: 'Product List Tests',
         description:
           'Test pagination, sorting, and filtering on the product list',
         startingPageStateId: 200,
-        startingUrl: 'https://example.com/products',
+        startingPath: '/products',
         sizeClass: 'desktop',
-        testCases: [],
         patternType: 'pagination',
-        priority: 'medium',
+        priority: 2,
         suite_tags: ['regression'],
       };
       expect(suite.patternType).toBe('pagination');
@@ -1154,15 +1156,14 @@ describe('starter_types', () => {
 
     it('constructs a test suite with dependency and personas', () => {
       const suite: TestSuite = {
-        name: 'Dashboard Tests',
+        title: 'Dashboard Tests',
         description: 'Test dashboard after login',
         startingPageStateId: 300,
-        startingUrl: 'https://example.com/dashboard',
+        startingPath: '/dashboard',
         sizeClass: 'desktop',
-        testCases: [],
         dependencyTestCaseId: 10,
         personaIds: [1, 2, 3],
-        priority: 'critical',
+        priority: 1,
         suite_tags: ['regression', 'smoke'],
       };
       expect(suite.dependencyTestCaseId).toBe(10);
@@ -1173,8 +1174,8 @@ describe('starter_types', () => {
   describe('ElementIdentity API types', () => {
     it('constructs CreateElementIdentityRequest', () => {
       const req: CreateElementIdentityRequest = {
-        appId: 1,
-        scanId: 10,
+        runnerId: 1,
+        testRunId: 10,
         role: 'button',
         computedName: 'Submit',
         tagName: 'BUTTON',
@@ -1189,14 +1190,14 @@ describe('starter_types', () => {
           },
         ],
       };
-      expect(req.appId).toBe(1);
+      expect(req.runnerId).toBe(1);
       expect(req.locators).toHaveLength(1);
     });
 
     it('constructs ElementIdentityResponse', () => {
       const res: ElementIdentityResponse = {
         id: 1,
-        appId: 1,
+        runnerId: 1,
         role: 'textbox',
         computedName: 'Email',
         tagName: 'INPUT',
@@ -1215,8 +1216,8 @@ describe('starter_types', () => {
         isUniqueOnPage: true,
         cssSelector: 'input#email',
         locators: [],
-        firstSeenScanId: 10,
-        lastSeenScanId: 10,
+        firstSeenTestRunId: 10,
+        lastSeenTestRunId: 10,
         timesSeen: 1,
         createdAt: '2026-04-27T00:00:00.000Z',
         updatedAt: '2026-04-27T00:00:00.000Z',

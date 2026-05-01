@@ -680,11 +680,11 @@ export interface CreateDiscoveryRunResponse {
     | 'duplicate_unclaimed'
     | 'validation_error';
   testRunId?: number;
-  projectId?: number;
-  appId?: number;
+  productId?: number;
+  runnerId?: number;
   message?: string;
   streamPath?: string;
-  suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_project';
+  suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_product';
 }
 
 export interface TestRunStreamEvent {
@@ -707,11 +707,14 @@ export interface TestRunStreamEvent {
   createdAt: string;
 }
 
-export interface ProjectSummaryResponse {
+export interface ProductSummaryResponse {
   id: number;
   title: string;
   entityId: string;
 }
+
+/** @deprecated Use ProductSummaryResponse */
+export type ProjectSummaryResponse = ProductSummaryResponse;
 
 // =============================================================================
 // Scanner API Request/Response Types
@@ -720,13 +723,13 @@ export interface ProjectSummaryResponse {
 // --- Pages ---
 
 export interface FindOrCreatePageRequest {
-  appId: number;
+  runnerId: number;
   relativePath: string;
 }
 
 export interface PageResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   relativePath: string;
   routeKey: string | null;
   requiresLogin: boolean | null;
@@ -801,7 +804,7 @@ export interface ActionableItemResponse {
 
 /** @deprecated Action removed — use TestAction within TestCase */
 export interface CreateActionDefinitionRequest {
-  appId: number;
+  runnerId: number;
   type: string;
   startingPageStateId?: number;
   targetUrl?: string;
@@ -813,7 +816,7 @@ export interface CreateActionDefinitionRequest {
 /** @deprecated Action removed */
 export interface ActionDefinitionResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   type: string;
   startingPageStateId: number | null;
   targetUrl: string | null;
@@ -915,14 +918,14 @@ export interface ActionResponse {
 // --- Personas / Use Cases / Input Values ---
 
 export interface CreatePersonaRequest {
-  appId: number;
+  productId: number;
   title: string;
   description: string;
 }
 
 export interface PersonaResponse {
   id: number;
-  appId: number;
+  productId: number;
   title: string;
   description: string | null;
   createdAt: string | null;
@@ -1032,13 +1035,13 @@ export interface CreateExpertiseRuleRequest {
 // --- Test Suites ---
 
 export interface InsertTestSuiteRequest {
-  appId: number;
+  runnerId: number;
   testSuite: TestSuite;
 }
 
 export interface TestSuiteResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   decompositionJobId: number | null;
   title: string;
   description: string;
@@ -1060,7 +1063,7 @@ export interface TestSuiteResponse {
 
 export interface TestSuiteBundleResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   title: string;
   description: string | null;
   createdAt: string | null;
@@ -1068,7 +1071,7 @@ export interface TestSuiteBundleResponse {
 }
 
 export interface CreateTestSuiteBundleRequest {
-  appId: number;
+  runnerId: number;
   title: string;
   description?: string;
 }
@@ -1092,20 +1095,20 @@ export interface TestSuiteBundleSuiteLinkResponse {
 // --- Test Cases (app-level, persistent) ---
 
 export interface InsertTestCaseRequest {
-  appId: number;
+  runnerId: number;
   testSuiteId: number;
   testCase: TestCase;
 }
 
 /** @deprecated Use InsertTestCaseRequest with new TestCase */
 export interface LegacyInsertTestCaseRequest {
-  appId: number;
+  runnerId: number;
   testCase: LegacyTestCase;
 }
 
 export interface TestCaseResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   testSuiteId: number;
   title: string;
   testType: string;
@@ -1253,7 +1256,7 @@ export interface TestSuiteBundleRunResponse {
 // --- Test Runs ---
 
 export interface CreateTestRunRequest {
-  appId: number;
+  runnerId: number;
   testCaseRunId?: number;
   testSuiteRunId?: number;
   testSuiteBundleRunId?: number;
@@ -1283,7 +1286,7 @@ export interface UpdateTestRunStatsRequest {
 
 export interface TestRunResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   testCaseRunId: number | null;
   testSuiteRunId: number | null;
   testSuiteBundleRunId: number | null;
@@ -1329,7 +1332,7 @@ export interface TestRunFindingResponse {
 
 /** @deprecated Use CreateTestRunFindingRequest */
 export interface CreateIssueRequest {
-  appId: number;
+  runnerId: number;
   testRunId?: number;
   testCaseId?: number;
   testCaseRunId?: number;
@@ -1351,7 +1354,7 @@ export interface CreateIssueRequest {
 /** @deprecated Use TestRunFindingResponse */
 export interface IssueResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   testRunId: number | null;
   testCaseId: number | null;
   testCaseRunId: number | null;
@@ -1375,7 +1378,7 @@ export interface IssueResponse {
 
 /** @deprecated */
 export interface FindTestCaseByActionsRequest {
-  appId: number;
+  runnerId: number;
   actionIds: number[];
 }
 
@@ -1414,30 +1417,37 @@ export interface ReportEmailResponse {
   sentAt: string | null;
 }
 
-// --- Credentials ---
+// --- Test Credentials ---
 
-export interface CreateCredentialRequest {
-  appId: number;
-  username?: string;
+export interface CreateTestCredentialRequest {
+  productId: number;
+  personaId?: number;
+  signic: boolean;
   email?: string;
-  password: string;
-  twoFactorCode?: string;
+  password?: string;
+  verificationCode?: string;
 }
 
-export interface CredentialResponse {
+export interface TestCredentialResponse {
   id: number;
-  appId: number;
-  username: string | null;
+  productId: number;
+  personaId: number | null;
+  signic: boolean;
   email: string | null;
-  password: string;
-  twoFactorCode: string | null;
+  password: string | null;
+  verificationCode: string | null;
   createdAt: string | null;
 }
+
+/** @deprecated Use CreateTestCredentialRequest */
+export type CreateCredentialRequest = CreateTestCredentialRequest;
+/** @deprecated Use TestCredentialResponse */
+export type CredentialResponse = TestCredentialResponse;
 
 // --- Element Identities ---
 
 export interface CreateElementIdentityRequest {
-  appId: number;
+  runnerId: number;
   testRunId: number;
   role: string;
   computedName: string;
@@ -1470,7 +1480,7 @@ export interface UpdateElementIdentityRequest {
 
 export interface ElementIdentityResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   role: string;
   computedName: string | null;
   tagName: string;
@@ -1514,7 +1524,7 @@ export interface CreateHtmlElementRequest {
 
 export interface ReusableHtmlElementResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   type: HtmlComponentType;
   htmlElementId: number;
   htmlHash: string | null;
@@ -1522,7 +1532,7 @@ export interface ReusableHtmlElementResponse {
 }
 
 export interface FindOrCreateReusableHtmlElementRequest {
-  appId: number;
+  runnerId: number;
   type: HtmlComponentType;
   html: string;
   hash: string;
@@ -1555,15 +1565,15 @@ export interface PageStatePatternResponse {
   createdAt: string | null;
 }
 
-// --- Projects ---
+// --- Products ---
 
-export interface CreateProjectRequest {
+export interface CreateProductRequest {
   entityId: string;
   title: string;
   description?: string;
 }
 
-export interface ProjectResponse {
+export interface ProductResponse {
   id: number;
   entityId: string | null;
   title: string;
@@ -1575,20 +1585,118 @@ export interface ProjectResponse {
   updatedAt: string | null;
 }
 
-// --- Apps ---
+/** @deprecated Use CreateProductRequest */
+export type CreateProjectRequest = CreateProductRequest;
+/** @deprecated Use ProductResponse */
+export type ProjectResponse = ProductResponse;
 
-export interface CreateAppRequest {
-  projectId: number;
+// --- Runners ---
+
+export const RunnerType = {
+  Worker: 'worker',
+  Extension: 'extension',
+} as const;
+export type RunnerType = (typeof RunnerType)[keyof typeof RunnerType];
+
+export interface CreateRunnerRequest {
+  productId: number;
   title: string;
-  url: string;
+  type: RunnerType;
+  ownerEntityId?: string;
 }
 
-export interface AppResponse {
+export interface RunnerResponse {
   id: number;
-  projectId: number;
+  productId: number;
   title: string;
-  baseUrl: string | null;
-  normalizedBaseUrl: string;
+  type: string;
+  ownerEntityId: string | null;
+  createdAt: string | null;
+}
+
+/** @deprecated Use CreateRunnerRequest */
+export type CreateAppRequest = CreateRunnerRequest;
+/** @deprecated Use RunnerResponse */
+export type AppResponse = RunnerResponse;
+
+// --- Test Environments ---
+
+export interface CreateTestEnvironmentRequest {
+  productId: number;
+  title: string;
+  baseUrl: string;
+  githubBranch?: string;
+}
+
+export interface UpdateTestEnvironmentRequest {
+  title?: string;
+  baseUrl?: string;
+  githubBranch?: string | null;
+}
+
+export interface TestEnvironmentResponse {
+  id: number;
+  productId: number;
+  title: string;
+  baseUrl: string;
+  githubBranch: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+// --- Product Settings ---
+
+export interface ProductSettingsResponse {
+  id: number;
+  productId: number;
+  githubLink: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface UpdateProductSettingsRequest {
+  githubLink?: string | null;
+}
+
+// --- API Keys ---
+
+export interface CreateApiKeyRequest {
+  productId: number;
+  title: string;
+}
+
+export interface ApiKeyResponse {
+  id: number;
+  productId: number;
+  title: string;
+  apiKey: string;
+  createdAt: string | null;
+}
+
+// --- Test Files ---
+
+export interface CreateTestFileRequest {
+  productId: number;
+  title: string;
+  filePath: string;
+}
+
+export interface TestFileResponse {
+  id: number;
+  productId: number;
+  title: string;
+  filePath: string;
+  createdAt: string | null;
+}
+
+// --- Test Activities ---
+
+export interface TestActivityResponse {
+  id: number;
+  productId: number;
+  eventType: string;
+  testRunId: number | null;
+  testSuiteId: number | null;
   createdAt: string | null;
 }
 
@@ -1596,7 +1704,7 @@ export interface AppResponse {
 
 export interface TestScheduleResponse {
   id: number;
-  appId: number;
+  runnerId: number;
   title: string;
   testSuiteId: number | null;
   testCaseId: number | null;
@@ -1616,7 +1724,7 @@ export interface TestScheduleResponse {
 }
 
 export interface CreateTestScheduleRequest {
-  appId: number;
+  runnerId: number;
   title: string;
   testSuiteId?: number;
   testCaseId?: number;
