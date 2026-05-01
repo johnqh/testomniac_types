@@ -72,14 +72,6 @@ export const ActionType = {
 } as const;
 export type ActionType = (typeof ActionType)[keyof typeof ActionType];
 
-export const ScanStatus = {
-  Pending: 'pending',
-  Running: 'running',
-  Completed: 'completed',
-  Failed: 'failed',
-} as const;
-export type ScanStatus = (typeof ScanStatus)[keyof typeof ScanStatus];
-
 export const DecompositionJobStatus = {
   Pending: 'pending',
   Done: 'done',
@@ -88,11 +80,22 @@ export type DecompositionJobStatus =
   (typeof DecompositionJobStatus)[keyof typeof DecompositionJobStatus];
 
 export const TestRunStatus = {
+  Pending: 'pending',
   Planned: 'planned',
   Running: 'running',
   Completed: 'completed',
+  Failed: 'failed',
 } as const;
 export type TestRunStatus = (typeof TestRunStatus)[keyof typeof TestRunStatus];
+
+export const RecurrenceType = {
+  OneTime: 'one_time',
+  Weekday: 'weekday',
+  Daily: 'daily',
+  Weekly: 'weekly',
+} as const;
+export type RecurrenceType =
+  (typeof RecurrenceType)[keyof typeof RecurrenceType];
 
 export const FindingType = {
   Error: 'error',
@@ -656,10 +659,9 @@ export interface Credentials {
 // API Contract Types
 // =============================================================================
 
-export interface CreateScanRequest {
+export interface CreateDiscoveryRunRequest {
   url: string;
-  email?: string;
-  sizeClass?: 'desktop' | 'mobile';
+  sizeClass?: SizeClass;
   createdByUserId?: string;
   ownedByUserId?: string;
   credentials?: {
@@ -669,18 +671,15 @@ export interface CreateScanRequest {
     twoFactorCode?: string;
   };
   reportEmail?: string;
-  plugins?: string[];
 }
 
-export interface CreateScanResponse {
+export interface CreateDiscoveryRunResponse {
   status:
     | 'pending'
     | 'duplicate_owned'
     | 'duplicate_unclaimed'
     | 'validation_error';
-  scanId?: number;
-  /** @deprecated Use scanId instead */
-  runId?: number;
+  testRunId?: number;
   projectId?: number;
   appId?: number;
   message?: string;
@@ -688,26 +687,25 @@ export interface CreateScanResponse {
   suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_project';
 }
 
-export interface ScanStreamEvent {
-  scanId: number;
+export interface TestRunStreamEvent {
+  testRunId: number;
+  rootTestRunId: number;
   type:
-    | 'scan_started'
+    | 'run_started'
     | 'page_discovered'
     | 'page_state_created'
     | 'stats_update'
     | 'decomposition_job_created'
     | 'decomposition_job_completed'
     | 'test_suite_created'
-    | 'test_run_completed'
+    | 'child_run_created'
+    | 'child_run_completed'
     | 'finding_created'
-    | 'scan_completed'
-    | 'scan_failed';
+    | 'run_completed'
+    | 'run_failed';
   payload: Record<string, unknown>;
   createdAt: string;
 }
-
-/** @deprecated Use ScanStreamEvent instead */
-export type RunStreamEvent = ScanStreamEvent;
 
 export interface ProjectSummaryResponse {
   id: number;
@@ -715,75 +713,9 @@ export interface ProjectSummaryResponse {
   entityId: string;
 }
 
-export interface ScanDetailResponse {
-  id: number;
-  appId: number;
-  scanUrl: string;
-  createdByUserId: string;
-  ownedByUserId: string | null;
-  status: string;
-  sizeClass: string;
-  pagesFound: number | null;
-  pageStatesFound: number | null;
-  testRunsCompleted: number | null;
-  aiSummary: string | null;
-  totalDurationMs: number | null;
-  createdAt: string | null;
-  startedAt: string | null;
-  endedAt: string | null;
-}
-
-/** @deprecated Use ScanDetailResponse instead */
-export type RunDetailResponse = ScanDetailResponse;
-
 // =============================================================================
 // Scanner API Request/Response Types
 // =============================================================================
-
-// --- Scans ---
-
-export interface PendingScanResponse {
-  id: number;
-  appId: number;
-  scanUrl: string;
-  sizeClass: string;
-  status: string;
-}
-
-/** @deprecated Use PendingScanResponse instead */
-export type PendingRunResponse = PendingScanResponse;
-
-/** @deprecated No more linear phases */
-export interface UpdateScanPhaseRequest {
-  phase: string;
-}
-
-/** @deprecated */
-export type UpdateRunPhaseRequest = UpdateScanPhaseRequest;
-
-export interface UpdateScanStatsRequest {
-  pagesFound?: number;
-  pageStatesFound?: number;
-  testRunsCompleted?: number;
-}
-
-/** @deprecated Use UpdateScanStatsRequest */
-export type UpdateRunStatsRequest = UpdateScanStatsRequest;
-
-/** @deprecated No more per-phase durations */
-export interface UpdatePhaseDurationRequest {
-  field: string;
-  durationMs: number;
-}
-
-export interface CompleteScanRequest {
-  aiSummary?: string;
-  totalDurationMs?: number;
-  status?: ScanStatus;
-}
-
-/** @deprecated Use CompleteScanRequest */
-export type CompleteRunRequest = CompleteScanRequest;
 
 // --- Pages ---
 
@@ -895,7 +827,7 @@ export interface ActionDefinitionResponse {
 
 /** @deprecated ActionExecution removed — use TestRun */
 export interface CreateActionExecutionRequest {
-  scanId: number;
+  testRunId: number;
   actionId: number;
 }
 
@@ -912,7 +844,7 @@ export interface CompleteActionExecutionRequest {
 /** @deprecated */
 export interface ActionExecutionResponse {
   id: number;
-  scanId: number;
+  testRunId: number;
   actionId: number;
   status: string;
   targetPageStateId: number | null;
@@ -935,7 +867,7 @@ export interface ActionExecutionResponse {
 
 /** @deprecated Use CreateActionDefinitionRequest */
 export interface CreateActionRequest {
-  runId: number;
+  testRunId: number;
   type: string;
   actionableItemId?: number;
   startingPageStateId?: number;
@@ -960,7 +892,7 @@ export interface CompleteActionRequest {
 /** @deprecated Use ActionExecutionResponse */
 export interface ActionResponse {
   id: number;
-  runId: number;
+  testRunId: number;
   type: string;
   actionableItemId: number | null;
   startingPageStateId: number | null;
@@ -1050,14 +982,14 @@ export interface FormResponse {
 // --- AI Decomposition Jobs ---
 
 export interface CreateDecompositionJobRequest {
-  scanId: number;
+  testRunId: number;
   pageStateId: number;
   personaId?: number;
 }
 
 export interface DecompositionJobResponse {
   id: number;
-  scanId: number;
+  testRunId: number;
   pageStateId: number;
   personaId: number | null;
   status: string;
@@ -1124,34 +1056,44 @@ export interface TestSuiteResponse {
   createdAt: string | null;
 }
 
-// --- Test Suite Junction Tables ---
+// --- Test Suite Bundles ---
 
-export interface CreateTestSuiteSuiteLinkRequest {
-  parentSuiteId: number;
-  childSuiteId: number;
-}
-
-export interface TestSuiteSuiteLinkResponse {
+export interface TestSuiteBundleResponse {
   id: number;
-  parentSuiteId: number;
-  childSuiteId: number;
+  appId: number;
+  title: string;
+  description: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
-export interface CreateTestSuiteCaseLinkRequest {
+export interface CreateTestSuiteBundleRequest {
+  appId: number;
+  title: string;
+  description?: string;
+}
+
+export interface UpdateTestSuiteBundleRequest {
+  title?: string;
+  description?: string;
+}
+
+export interface TestSuiteBundleSuiteLinkRequest {
+  testSuiteBundleId: number;
   testSuiteId: number;
-  testCaseId: number;
 }
 
-export interface TestSuiteCaseLinkResponse {
+export interface TestSuiteBundleSuiteLinkResponse {
   id: number;
+  testSuiteBundleId: number;
   testSuiteId: number;
-  testCaseId: number;
 }
 
 // --- Test Cases (app-level, persistent) ---
 
 export interface InsertTestCaseRequest {
   appId: number;
+  testSuiteId: number;
   testCase: TestCase;
 }
 
@@ -1164,6 +1106,7 @@ export interface LegacyInsertTestCaseRequest {
 export interface TestCaseResponse {
   id: number;
   appId: number;
+  testSuiteId: number;
   title: string;
   testType: string;
   sizeClass: string;
@@ -1236,45 +1179,136 @@ export interface TestCaseActionResponse {
   createdAt: string | null;
 }
 
-// --- Test Runs ---
+// --- Test Case Runs ---
 
-export interface CreateTestRunRequest {
-  testCaseId?: number;
-  testSuiteId?: number;
-  scanId: number;
-  sizeClass: string;
+export interface CreateTestCaseRunRequest {
+  testCaseId: number;
+  testSuiteRunId?: number;
 }
 
-export interface CompleteTestRunRequest {
+export interface CompleteTestCaseRunRequest {
   status: string;
-  durationMs: number;
+  durationMs?: number;
   errorMessage?: string;
   screenshotPath?: string;
   consoleLog?: string;
   networkLog?: string;
 }
 
-export interface TestRunResponse {
+export interface TestCaseRunResponse {
   id: number;
-  testCaseId: number | null;
-  testSuiteId: number | null;
-  scanId: number;
-  sizeClass: string;
+  testCaseId: number;
+  testSuiteRunId: number | null;
   status: string;
   durationMs: number | null;
   errorMessage: string | null;
   screenshotPath: string | null;
   consoleLog: string | null;
   networkLog: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string | null;
+}
+
+// --- Test Suite Runs ---
+
+export interface CreateTestSuiteRunRequest {
+  testSuiteId: number;
+  testSuiteBundleRunId?: number;
+}
+
+export interface CompleteTestSuiteRunRequest {
+  status: string;
+}
+
+export interface TestSuiteRunResponse {
+  id: number;
+  testSuiteId: number;
+  testSuiteBundleRunId: number | null;
+  status: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string | null;
+}
+
+// --- Test Suite Bundle Runs ---
+
+export interface CreateTestSuiteBundleRunRequest {
+  testSuiteBundleId: number;
+}
+
+export interface CompleteTestSuiteBundleRunRequest {
+  status: string;
+}
+
+export interface TestSuiteBundleRunResponse {
+  id: number;
+  testSuiteBundleId: number;
+  status: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string | null;
+}
+
+// --- Test Runs ---
+
+export interface CreateTestRunRequest {
+  appId: number;
+  testCaseRunId?: number;
+  testSuiteRunId?: number;
+  testSuiteBundleRunId?: number;
+  discovery?: boolean;
+  parentTestRunId?: number;
+  rootTestRunId?: number;
+  sizeClass: string;
+  createdByUserId?: string;
+  ownedByUserId?: string;
+  scanUrl?: string;
+}
+
+export interface CompleteTestRunRequest {
+  status: string;
+  aiSummary?: string;
+  totalDurationMs?: number;
+  pagesFound?: number;
+  pageStatesFound?: number;
+  testRunsCompleted?: number;
+}
+
+export interface UpdateTestRunStatsRequest {
+  pagesFound?: number;
+  pageStatesFound?: number;
+  testRunsCompleted?: number;
+}
+
+export interface TestRunResponse {
+  id: number;
+  appId: number;
+  testCaseRunId: number | null;
+  testSuiteRunId: number | null;
+  testSuiteBundleRunId: number | null;
+  discovery: boolean;
+  parentTestRunId: number | null;
+  rootTestRunId: number | null;
+  sizeClass: string;
+  status: string;
+  createdByUserId: string | null;
+  ownedByUserId: string | null;
+  scanUrl: string | null;
+  pagesFound: number | null;
+  pageStatesFound: number | null;
+  testRunsCompleted: number | null;
+  aiSummary: string | null;
+  totalDurationMs: number | null;
   createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
 }
 
-// --- Test Run Findings ---
+// --- Test Run Findings (attached to Test Case Run) ---
 
 export interface CreateTestRunFindingRequest {
-  testRunId: number;
+  testCaseRunId: number;
   expertiseRuleId?: number;
   type: FindingType;
   title: string;
@@ -1283,7 +1317,7 @@ export interface CreateTestRunFindingRequest {
 
 export interface TestRunFindingResponse {
   id: number;
-  testRunId: number;
+  testCaseRunId: number;
   expertiseRuleId: number | null;
   type: string;
   title: string;
@@ -1296,9 +1330,9 @@ export interface TestRunFindingResponse {
 /** @deprecated Use CreateTestRunFindingRequest */
 export interface CreateIssueRequest {
   appId: number;
-  scanId?: number;
-  testCaseId?: number;
   testRunId?: number;
+  testCaseId?: number;
+  testCaseRunId?: number;
   severity: IssueSeverity;
   ruleName: string;
   title: string;
@@ -1318,9 +1352,9 @@ export interface CreateIssueRequest {
 export interface IssueResponse {
   id: number;
   appId: number;
-  scanId: number | null;
-  testCaseId: number | null;
   testRunId: number | null;
+  testCaseId: number | null;
+  testCaseRunId: number | null;
   severity: string;
   ruleName: string;
   title: string;
@@ -1355,7 +1389,7 @@ export interface FindIssueByRuleRequest {
 
 /** @deprecated AI Usage removed */
 export interface RecordAiUsageRequest {
-  scanId: number;
+  testRunId: number;
   phase: string;
   model: string;
   promptTokens: number;
@@ -1367,14 +1401,14 @@ export interface RecordAiUsageRequest {
 // --- Report Emails ---
 
 export interface CreateReportEmailRequest {
-  scanId: number;
+  rootTestRunId: number;
   userEmail: string;
   deepLinkToken: string;
 }
 
 export interface ReportEmailResponse {
   id: number;
-  scanId: number;
+  rootTestRunId: number;
   userEmail: string;
   deepLinkToken: string;
   sentAt: string | null;
@@ -1404,7 +1438,7 @@ export interface CredentialResponse {
 
 export interface CreateElementIdentityRequest {
   appId: number;
-  scanId: number;
+  testRunId: number;
   role: string;
   computedName: string;
   tagName: string;
@@ -1426,7 +1460,7 @@ export interface CreateElementIdentityRequest {
 }
 
 export interface UpdateElementIdentityRequest {
-  lastSeenScanId: number;
+  lastSeenTestRunId: number;
   playwrightLocator?: string;
   playwrightScopeChain?: string;
   isUniqueOnPage?: boolean;
@@ -1455,8 +1489,8 @@ export interface ElementIdentityResponse {
   isUniqueOnPage: boolean;
   cssSelector: string;
   locators: ElementLocator[];
-  firstSeenScanId: number;
-  lastSeenScanId: number;
+  firstSeenTestRunId: number;
+  lastSeenTestRunId: number;
   timesSeen: number;
   createdAt: string | null;
   updatedAt: string | null;
@@ -1556,6 +1590,57 @@ export interface AppResponse {
   baseUrl: string | null;
   normalizedBaseUrl: string;
   createdAt: string | null;
+}
+
+// --- Test Schedules ---
+
+export interface TestScheduleResponse {
+  id: number;
+  appId: number;
+  title: string;
+  testSuiteId: number | null;
+  testCaseId: number | null;
+  testSuiteBundleId: number | null;
+  discovery: boolean;
+  recurrenceType: string;
+  timeOfDay: string;
+  dayOfWeek: number | null;
+  timezone: string;
+  enabled: boolean;
+  sizeClass: string;
+  createdByUserId: string;
+  lastRunAt: string | null;
+  nextRunAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface CreateTestScheduleRequest {
+  appId: number;
+  title: string;
+  testSuiteId?: number;
+  testCaseId?: number;
+  testSuiteBundleId?: number;
+  discovery?: boolean;
+  recurrenceType: RecurrenceType;
+  timeOfDay: string;
+  dayOfWeek?: number;
+  timezone: string;
+  sizeClass: SizeClass;
+}
+
+export interface UpdateTestScheduleRequest {
+  title?: string;
+  testSuiteId?: number | null;
+  testCaseId?: number | null;
+  testSuiteBundleId?: number | null;
+  discovery?: boolean;
+  recurrenceType?: RecurrenceType;
+  timeOfDay?: string;
+  dayOfWeek?: number | null;
+  timezone?: string;
+  enabled?: boolean;
+  sizeClass?: SizeClass;
 }
 
 // =============================================================================
