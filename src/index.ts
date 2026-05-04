@@ -348,7 +348,7 @@ export interface ActionableItem {
   disabled: boolean;
   visible: boolean;
   attributes: Record<string, unknown>;
-  reusableHtmlElementId?: number;
+  scaffoldId?: number;
 }
 
 export interface FormField {
@@ -376,13 +376,13 @@ export interface PageHashes {
   textHash: string;
   actionableHash: string;
   fixedBodyHash?: string;
-  reusableElementsHash?: string;
+  scaffoldsHash?: string;
   patternsHash?: string;
 }
 
 export interface DecomposedPageHashes {
   fixedBodyHash: string;
-  reusableElementsHash: string;
+  scaffoldsHash: string;
   patternsHash: string;
 }
 
@@ -601,7 +601,7 @@ export interface TestCase {
   page_id?: number;
   persona_id?: number;
   use_case_id?: number;
-  reusableHtmlElementId?: number;
+  scaffoldId?: number;
   patternType?: UiPatternType;
   dependencyTestCaseId?: number;
   startingPageStateId: number;
@@ -623,8 +623,8 @@ export interface TestSuite {
   sizeClass: SizeClass;
   dependencyTestCaseId?: number;
   personaIds?: number[];
-  reusableHtmlElementId?: number;
-  reusableHtmlElementType?: HtmlComponentType;
+  scaffoldId?: number;
+  scaffoldType?: HtmlComponentType;
   patternType?: UiPatternType;
   priority: number;
   suite_tags: string[];
@@ -766,7 +766,7 @@ export interface PageStateResponse {
   textHash: string | null;
   actionableHash: string | null;
   fixedBodyHash: string | null;
-  reusableElementsHash: string | null;
+  scaffoldsHash: string | null;
   patternsHash: string | null;
   screenshotPath: string | null;
   rawHtmlPath: string | null;
@@ -797,7 +797,7 @@ export interface ActionableItemResponse {
   disabled: boolean | null;
   visible: boolean | null;
   attributesJson: unknown;
-  reusableHtmlElementId: number | null;
+  scaffoldId: number | null;
 }
 
 // --- Action Definitions (deprecated — removed) ---
@@ -1050,8 +1050,8 @@ export interface TestSuiteResponse {
   sizeClass: string;
   dependencyTestCaseId: number | null;
   personaIdsJson: unknown;
-  reusableHtmlElementId: number | null;
-  reusableHtmlElementType: string | null;
+  scaffoldId: number | null;
+  scaffoldType: string | null;
   patternType: string | null;
   priority: number;
   suiteTags: string[];
@@ -1115,7 +1115,7 @@ export interface TestCaseResponse {
   sizeClass: string;
   suiteTags: string[];
   priority: number;
-  reusableHtmlElementId: number | null;
+  scaffoldId: number | null;
   patternType: string | null;
   dependencyTestCaseId: number | null;
   pageId: number | null;
@@ -1520,9 +1520,9 @@ export interface CreateHtmlElementRequest {
   hash: string;
 }
 
-// --- Reusable Html Elements ---
+// --- Scaffolds ---
 
-export interface ReusableHtmlElementResponse {
+export interface ScaffoldResponse {
   id: number;
   runnerId: number;
   type: HtmlComponentType;
@@ -1531,23 +1531,34 @@ export interface ReusableHtmlElementResponse {
   createdAt: string | null;
 }
 
-export interface FindOrCreateReusableHtmlElementRequest {
+export interface FindOrCreateScaffoldRequest {
   runnerId: number;
   type: HtmlComponentType;
   html: string;
   hash: string;
 }
 
-export interface LinkPageStateReusableElementsRequest {
+export interface LinkPageStateScaffoldsRequest {
   pageStateId: number;
-  reusableHtmlElementIds: number[];
+  scaffoldIds: number[];
 }
 
-export interface PageStateReusableElementResponse {
+export interface PageStateScaffoldResponse {
   id: number;
   pageStateId: number;
-  reusableHtmlElementId: number;
+  scaffoldId: number;
 }
+
+/** @deprecated Use ScaffoldResponse */
+export type ReusableHtmlElementResponse = ScaffoldResponse;
+/** @deprecated Use FindOrCreateScaffoldRequest */
+export type FindOrCreateReusableHtmlElementRequest =
+  FindOrCreateScaffoldRequest;
+/** @deprecated Use LinkPageStateScaffoldsRequest */
+export type LinkPageStateReusableElementsRequest =
+  LinkPageStateScaffoldsRequest;
+/** @deprecated Use PageStateScaffoldResponse */
+export type PageStateReusableElementResponse = PageStateScaffoldResponse;
 
 // --- Page State Patterns ---
 

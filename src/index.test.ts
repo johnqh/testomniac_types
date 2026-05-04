@@ -1122,19 +1122,19 @@ describe('starter_types', () => {
   });
 
   describe('TestSuite type', () => {
-    it('constructs a test suite for a reusable element', () => {
+    it('constructs a test suite for a scaffold', () => {
       const suite: TestSuite = {
         title: 'Top Menu Tests',
         description: 'Test the top menu navigation links and dropdowns',
         startingPageStateId: 100,
         startingPath: '/',
         sizeClass: 'desktop',
-        reusableHtmlElementId: 42,
-        reusableHtmlElementType: 'topMenu',
+        scaffoldId: 42,
+        scaffoldType: 'topMenu',
         priority: 1,
         suite_tags: ['regression', 'smoke'],
       };
-      expect(suite.reusableHtmlElementType).toBe('topMenu');
+      expect(suite.scaffoldType).toBe('topMenu');
       expect(suite.patternType).toBeUndefined();
     });
 
@@ -1151,7 +1151,7 @@ describe('starter_types', () => {
         suite_tags: ['regression'],
       };
       expect(suite.patternType).toBe('pagination');
-      expect(suite.reusableHtmlElementId).toBeUndefined();
+      expect(suite.scaffoldId).toBeUndefined();
     });
 
     it('constructs a test suite with dependency and personas', () => {
