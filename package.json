@@ -1,6 +1,6 @@
 {
   "name": "@sudobility/testomniac_types",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "Shared TypeScript types for the Testomniac ecosystem",
   "type": "module",
   "main": "./dist/index.js",

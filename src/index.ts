@@ -609,6 +609,7 @@ export interface TestCase {
   steps: TestStep[];
   globalExpectations: Expectation[];
   estimatedDurationMs?: number;
+  uid?: string;
 }
 
 // =============================================================================
@@ -630,6 +631,7 @@ export interface TestSuite {
   suite_tags: string[];
   estimatedDurationMs?: number;
   decompositionJobId?: number;
+  uid?: string;
 }
 
 /** @deprecated Use TestCase with steps and expectations */
@@ -1056,6 +1058,7 @@ export interface TestSuiteResponse {
   priority: number;
   suiteTags: string[];
   estimatedDurationMs: number | null;
+  uid: string | null;
   createdAt: string | null;
 }
 
@@ -1066,6 +1069,7 @@ export interface TestSuiteBundleResponse {
   runnerId: number;
   title: string;
   description: string | null;
+  uid: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -1074,6 +1078,7 @@ export interface CreateTestSuiteBundleRequest {
   runnerId: number;
   title: string;
   description?: string;
+  uid?: string;
 }
 
 export interface UpdateTestSuiteBundleRequest {
@@ -1126,6 +1131,7 @@ export interface TestCaseResponse {
   stepsJson: unknown;
   globalExpectationsJson: unknown;
   estimatedDurationMs: number | null;
+  uid: string | null;
   generatedAt: string | null;
 }
 
@@ -1193,6 +1199,8 @@ export interface CompleteTestCaseRunRequest {
   status: string;
   durationMs?: number;
   errorMessage?: string;
+  expectedOutcome?: string;
+  observedOutcome?: string;
   screenshotPath?: string;
   consoleLog?: string;
   networkLog?: string;
@@ -1205,6 +1213,8 @@ export interface TestCaseRunResponse {
   status: string;
   durationMs: number | null;
   errorMessage: string | null;
+  expectedOutcome: string | null;
+  observedOutcome: string | null;
   screenshotPath: string | null;
   consoleLog: string | null;
   networkLog: string | null;
@@ -1260,12 +1270,15 @@ export interface CreateTestRunRequest {
   testCaseRunId?: number;
   testSuiteRunId?: number;
   testSuiteBundleRunId?: number;
+  testEnvironmentId?: number;
   discovery?: boolean;
   parentTestRunId?: number;
   rootTestRunId?: number;
   sizeClass: string;
   createdByUserId?: string;
   ownedByUserId?: string;
+  runnerInstanceId?: string;
+  runnerInstanceName?: string;
   scanUrl?: string;
 }
 
@@ -1290,6 +1303,7 @@ export interface TestRunResponse {
   testCaseRunId: number | null;
   testSuiteRunId: number | null;
   testSuiteBundleRunId: number | null;
+  testEnvironmentId: number | null;
   discovery: boolean;
   parentTestRunId: number | null;
   rootTestRunId: number | null;
@@ -1297,6 +1311,8 @@ export interface TestRunResponse {
   status: string;
   createdByUserId: string | null;
   ownedByUserId: string | null;
+  runnerInstanceId: string | null;
+  runnerInstanceName: string | null;
   scanUrl: string | null;
   pagesFound: number | null;
   pageStatesFound: number | null;
