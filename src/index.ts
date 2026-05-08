@@ -604,7 +604,7 @@ export interface TestCase {
   scaffoldId?: number;
   patternType?: UiPatternType;
   dependencyTestCaseId?: number;
-  startingPageStateId: number;
+  startingPageStateId?: number;
   startingPath: string;
   steps: TestStep[];
   globalExpectations: Expectation[];
@@ -619,7 +619,7 @@ export interface TestCase {
 export interface TestSuite {
   title: string;
   description: string;
-  startingPageStateId: number;
+  startingPageStateId?: number;
   startingPath: string;
   sizeClass: SizeClass;
   dependencyTestCaseId?: number;
@@ -663,9 +663,13 @@ export interface Credentials {
 
 export interface CreateDiscoveryRunRequest {
   url: string;
+  productId?: number;
+  testEnvironmentId?: number;
   sizeClass?: SizeClass;
   createdByUserId?: string;
   ownedByUserId?: string;
+  environmentLabel?: string;
+  environmentKind?: EnvironmentKind;
   credentials?: {
     username?: string;
     email?: string;
@@ -684,6 +688,7 @@ export interface CreateDiscoveryRunResponse {
   testRunId?: number;
   productId?: number;
   runnerId?: number;
+  testEnvironmentId?: number;
   message?: string;
   streamPath?: string;
   suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_product';
@@ -727,6 +732,51 @@ export type ProjectSummaryResponse = ProductSummaryResponse;
 export interface FindOrCreatePageRequest {
   runnerId: number;
   relativePath: string;
+}
+
+export interface DiscoveredPage {
+  relativePath: string;
+  sourcePagePath?: string;
+  sourceLabel?: string;
+  isPublic?: boolean;
+}
+
+export interface CreateDiscoveredPagesRequest {
+  testEnvironmentId: number;
+  pages: DiscoveredPage[];
+}
+
+export interface DiscoveredPageResponse {
+  id: number;
+  testEnvironmentId: number;
+  relativePath: string;
+  sourcePagePath: string | null;
+  sourceLabel: string | null;
+  isPublic: boolean;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface CreatePageVisitRequest {
+  testRunId: number;
+  testEnvironmentId: number;
+  relativePath: string;
+  status: string;
+  redirectPath?: string;
+  requiresLogin?: boolean;
+  errorMessage?: string;
+}
+
+export interface PageVisitResponse {
+  id: number;
+  testRunId: number;
+  testEnvironmentId: number;
+  relativePath: string;
+  status: string;
+  redirectPath: string | null;
+  requiresLogin: boolean | null;
+  errorMessage: string | null;
+  createdAt: string | null;
 }
 
 export interface PageResponse {
@@ -1652,23 +1702,62 @@ export interface CreateTestEnvironmentRequest {
   productId: number;
   title: string;
   baseUrl: string;
+  kind?: EnvironmentKind;
+  label?: string;
+  ownerUserId?: string;
   githubBranch?: string;
 }
 
 export interface UpdateTestEnvironmentRequest {
   title?: string;
   baseUrl?: string;
+  kind?: EnvironmentKind;
+  label?: string;
+  ownerUserId?: string | null;
   githubBranch?: string | null;
 }
+
+export const EnvironmentKind = {
+  Local: 'local',
+  Shared: 'shared',
+} as const;
+export type EnvironmentKind =
+  (typeof EnvironmentKind)[keyof typeof EnvironmentKind];
 
 export interface TestEnvironmentResponse {
   id: number;
   productId: number;
   title: string;
   baseUrl: string;
+  kind: EnvironmentKind;
+  label: string;
+  ownerUserId: string | null;
   githubBranch: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+}
+
+export const ResolvedEnvironmentMode = {
+  LocalUserOwned: 'local_user_owned',
+  SharedLabeled: 'shared_labeled',
+} as const;
+export type ResolvedEnvironmentMode =
+  (typeof ResolvedEnvironmentMode)[keyof typeof ResolvedEnvironmentMode];
+
+export interface ResolveEnvironmentRequest {
+  productId: number;
+  url: string;
+  baseUrl: string;
+  source: 'extension' | 'server';
+  environmentLabel?: string;
+}
+
+export interface ResolveEnvironmentResponse {
+  testEnvironmentId: number;
+  kind: EnvironmentKind;
+  label: string;
+  ownerUserId: string | null;
+  resolutionMode: ResolvedEnvironmentMode;
 }
 
 // --- Product Settings ---
