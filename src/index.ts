@@ -1839,6 +1839,25 @@ export interface TestScenarioSequenceTestCaseLinkResponse {
   stepOrder: number;
 }
 
+// --- Test Scenario Sequence Runs ---
+
+export interface CreateTestScenarioSequenceRunRequest {
+  testScenarioSequenceId: number;
+}
+
+export interface CompleteTestScenarioSequenceRunRequest {
+  status: string;
+}
+
+export interface TestScenarioSequenceRunResponse {
+  id: number;
+  testScenarioSequenceId: number;
+  status: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string | null;
+}
+
 // =============================================================================
 // Type Guards
 // =============================================================================
