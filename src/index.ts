@@ -1778,6 +1778,67 @@ export interface UpdateTestScheduleRequest {
   sizeClass?: SizeClass;
 }
 
+// --- Test Scenarios ---
+
+export interface CreateTestScenarioRequest {
+  runnerId: number;
+  title: string;
+  startingPath: string;
+  prompt: string;
+  personaId?: number;
+  sizeClass?: SizeClass;
+}
+
+export interface UpdateTestScenarioRequest {
+  title?: string;
+  startingPath?: string;
+  prompt?: string;
+  personaId?: number | null;
+  sizeClass?: SizeClass;
+}
+
+export interface TestScenarioResponse {
+  id: number;
+  runnerId: number;
+  title: string;
+  startingPath: string;
+  prompt: string;
+  personaId: number | null;
+  sizeClass: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+// --- Test Scenario Sequences ---
+
+export interface CreateTestScenarioSequenceRequest {
+  testScenarioId: number;
+  testEnvironmentId: number;
+}
+
+export interface TestScenarioSequenceResponse {
+  id: number;
+  testScenarioId: number;
+  testEnvironmentId: number;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+// --- Test Scenario Sequence Test Cases (many-to-many join with ordering) ---
+
+export interface TestScenarioSequenceTestCaseLinkRequest {
+  testScenarioSequenceId: number;
+  testCaseId: number;
+  stepOrder: number;
+}
+
+export interface TestScenarioSequenceTestCaseLinkResponse {
+  id: number;
+  testScenarioSequenceId: number;
+  testCaseId: number;
+  stepOrder: number;
+}
+
 // =============================================================================
 // Type Guards
 // =============================================================================
