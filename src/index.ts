@@ -103,7 +103,7 @@ export const FindingType = {
 } as const;
 export type FindingType = (typeof FindingType)[keyof typeof FindingType];
 
-/** @deprecated Action/ActionExecution removed — use TestAction within TestCase */
+/** @deprecated Action/ActionExecution removed — use TestAction within TestElement */
 export const ActionStatus = {
   Open: 'open',
   Completed: 'completed',
@@ -550,7 +550,7 @@ export interface Expectation {
 }
 
 // =============================================================================
-// Test Action (embedded in TestStep — JSON within test case)
+// Test Action (embedded in TestStep — JSON within test element)
 // =============================================================================
 
 export interface TestAction {
@@ -589,21 +589,21 @@ export interface TestStep {
 }
 
 // =============================================================================
-// Test Case (domain object — used for generation)
+// Test Element (domain object — used for generation)
 // =============================================================================
 
-export interface TestCase {
+export interface TestElement {
   title: string;
   type: TestType;
   sizeClass: SizeClass;
-  suite_tags: string[];
+  surface_tags: string[];
   priority: number;
   page_id?: number;
   persona_id?: number;
   use_case_id?: number;
   scaffoldId?: number;
   patternType?: UiPatternType;
-  dependencyTestCaseId?: number;
+  dependencyTestElementId?: number;
   startingPageStateId?: number;
   startingPath: string;
   steps: TestStep[];
@@ -613,33 +613,33 @@ export interface TestCase {
 }
 
 // =============================================================================
-// Test Suite (domain object — used for generation)
+// Test Surface (domain object — used for generation)
 // =============================================================================
 
-export interface TestSuite {
+export interface TestSurface {
   title: string;
   description: string;
   startingPageStateId?: number;
   startingPath: string;
   sizeClass: SizeClass;
-  dependencyTestCaseId?: number;
+  dependencyTestElementId?: number;
   personaIds?: number[];
   scaffoldId?: number;
   scaffoldType?: HtmlComponentType;
   patternType?: UiPatternType;
   priority: number;
-  suite_tags: string[];
+  surface_tags: string[];
   estimatedDurationMs?: number;
   decompositionJobId?: number;
   uid?: string;
 }
 
-/** @deprecated Use TestCase with steps and expectations */
-export interface LegacyTestCase {
+/** @deprecated Use TestElement with steps and expectations */
+export interface LegacyTestElement {
   name: string;
   type: TestType;
   sizeClass: SizeClass;
-  suite_tags: string[];
+  surface_tags: string[];
   page_id?: number;
   persona_id?: number;
   use_case_id?: number;
@@ -704,7 +704,7 @@ export interface TestRunStreamEvent {
     | 'stats_update'
     | 'decomposition_job_created'
     | 'decomposition_job_completed'
-    | 'test_suite_created'
+    | 'test_surface_created'
     | 'child_run_created'
     | 'child_run_completed'
     | 'finding_created'
@@ -854,7 +854,7 @@ export interface ActionableItemResponse {
 
 // --- Action Definitions (deprecated — removed) ---
 
-/** @deprecated Action removed — use TestAction within TestCase */
+/** @deprecated Action removed — use TestAction within TestElement */
 export interface CreateActionDefinitionRequest {
   runnerId: number;
   type: string;
@@ -1084,14 +1084,14 @@ export interface CreateExpertiseRuleRequest {
   aiEndpointUrl?: string;
 }
 
-// --- Test Suites ---
+// --- Test Surfaces ---
 
-export interface InsertTestSuiteRequest {
+export interface InsertTestSurfaceRequest {
   runnerId: number;
-  testSuite: TestSuite;
+  testSurface: TestSurface;
 }
 
-export interface TestSuiteResponse {
+export interface TestSurfaceResponse {
   id: number;
   runnerId: number;
   decompositionJobId: number | null;
@@ -1100,21 +1100,21 @@ export interface TestSuiteResponse {
   startingPageStateId: number;
   startingPath: string;
   sizeClass: string;
-  dependencyTestCaseId: number | null;
+  dependencyTestElementId: number | null;
   personaIdsJson: unknown;
   scaffoldId: number | null;
   scaffoldType: string | null;
   patternType: string | null;
   priority: number;
-  suiteTags: string[];
+  surfaceTags: string[];
   estimatedDurationMs: number | null;
   uid: string | null;
   createdAt: string | null;
 }
 
-// --- Test Suite Bundles ---
+// --- Test Surface Bundles ---
 
-export interface TestSuiteBundleResponse {
+export interface TestSurfaceBundleResponse {
   id: number;
   runnerId: number;
   title: string;
@@ -1124,55 +1124,55 @@ export interface TestSuiteBundleResponse {
   updatedAt: string | null;
 }
 
-export interface CreateTestSuiteBundleRequest {
+export interface CreateTestSurfaceBundleRequest {
   runnerId: number;
   title: string;
   description?: string;
   uid?: string;
 }
 
-export interface UpdateTestSuiteBundleRequest {
+export interface UpdateTestSurfaceBundleRequest {
   title?: string;
   description?: string;
 }
 
-export interface TestSuiteBundleSuiteLinkRequest {
-  testSuiteBundleId: number;
-  testSuiteId: number;
+export interface TestSurfaceBundleSurfaceLinkRequest {
+  testSurfaceBundleId: number;
+  testSurfaceId: number;
 }
 
-export interface TestSuiteBundleSuiteLinkResponse {
+export interface TestSurfaceBundleSurfaceLinkResponse {
   id: number;
-  testSuiteBundleId: number;
-  testSuiteId: number;
+  testSurfaceBundleId: number;
+  testSurfaceId: number;
 }
 
-// --- Test Cases (app-level, persistent) ---
+// --- Test Elements (app-level, persistent) ---
 
-export interface InsertTestCaseRequest {
+export interface InsertTestElementRequest {
   runnerId: number;
-  testSuiteId: number;
-  testCase: TestCase;
+  testSurfaceId: number;
+  testElement: TestElement;
 }
 
-/** @deprecated Use InsertTestCaseRequest with new TestCase */
-export interface LegacyInsertTestCaseRequest {
+/** @deprecated Use InsertTestElementRequest with new TestElement */
+export interface LegacyInsertTestElementRequest {
   runnerId: number;
-  testCase: LegacyTestCase;
+  testElement: LegacyTestElement;
 }
 
-export interface TestCaseResponse {
+export interface TestElementResponse {
   id: number;
   runnerId: number;
-  testSuiteId: number;
+  testSurfaceId: number;
   title: string;
   testType: string;
   sizeClass: string;
-  suiteTags: string[];
+  surfaceTags: string[];
   priority: number;
   scaffoldId: number | null;
   patternType: string | null;
-  dependencyTestCaseId: number | null;
+  dependencyTestElementId: number | null;
   pageId: number | null;
   personaId: number | null;
   useCaseId: number | null;
@@ -1185,10 +1185,10 @@ export interface TestCaseResponse {
   generatedAt: string | null;
 }
 
-// --- Test Actions (persisted, parent/child with TestCase) ---
+// --- Test Actions (persisted, parent/child with TestElement) ---
 
 export interface CreateTestActionRequest {
-  testCaseId: number;
+  testElementId: number;
   stepOrder: number;
   actionType: PlaywrightAction;
   pageStateId?: number;
@@ -1205,7 +1205,7 @@ export interface CreateTestActionRequest {
 
 export interface TestActionResponse {
   id: number;
-  testCaseId: number;
+  testElementId: number;
   stepOrder: number;
   actionType: string;
   pageStateId: number | null;
@@ -1220,32 +1220,32 @@ export interface TestActionResponse {
   continueOnFailure: boolean;
 }
 
-// --- Test Case Actions (deprecated — replaced by TestAction parent/child) ---
+// --- Test Element Actions (deprecated — replaced by TestAction parent/child) ---
 
 /** @deprecated Use CreateTestActionRequest */
-export interface CreateTestCaseActionRequest {
-  testCaseId: number;
+export interface CreateTestElementActionRequest {
+  testElementId: number;
   actionId: number;
   stepOrder: number;
 }
 
 /** @deprecated */
-export interface TestCaseActionResponse {
+export interface TestElementActionResponse {
   id: number;
-  testCaseId: number;
+  testElementId: number;
   actionId: number;
   stepOrder: number;
   createdAt: string | null;
 }
 
-// --- Test Case Runs ---
+// --- Test Element Runs ---
 
-export interface CreateTestCaseRunRequest {
-  testCaseId: number;
-  testSuiteRunId?: number;
+export interface CreateTestElementRunRequest {
+  testElementId: number;
+  testSurfaceRunId?: number;
 }
 
-export interface CompleteTestCaseRunRequest {
+export interface CompleteTestElementRunRequest {
   status: string;
   durationMs?: number;
   errorMessage?: string;
@@ -1256,10 +1256,10 @@ export interface CompleteTestCaseRunRequest {
   networkLog?: string;
 }
 
-export interface TestCaseRunResponse {
+export interface TestElementRunResponse {
   id: number;
-  testCaseId: number;
-  testSuiteRunId: number | null;
+  testElementId: number;
+  testSurfaceRunId: number | null;
   status: string;
   durationMs: number | null;
   errorMessage: string | null;
@@ -1273,40 +1273,40 @@ export interface TestCaseRunResponse {
   createdAt: string | null;
 }
 
-// --- Test Suite Runs ---
+// --- Test Surface Runs ---
 
-export interface CreateTestSuiteRunRequest {
-  testSuiteId: number;
-  testSuiteBundleRunId?: number;
+export interface CreateTestSurfaceRunRequest {
+  testSurfaceId: number;
+  testSurfaceBundleRunId?: number;
 }
 
-export interface CompleteTestSuiteRunRequest {
+export interface CompleteTestSurfaceRunRequest {
   status: string;
 }
 
-export interface TestSuiteRunResponse {
+export interface TestSurfaceRunResponse {
   id: number;
-  testSuiteId: number;
-  testSuiteBundleRunId: number | null;
+  testSurfaceId: number;
+  testSurfaceBundleRunId: number | null;
   status: string;
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string | null;
 }
 
-// --- Test Suite Bundle Runs ---
+// --- Test Surface Bundle Runs ---
 
-export interface CreateTestSuiteBundleRunRequest {
-  testSuiteBundleId: number;
+export interface CreateTestSurfaceBundleRunRequest {
+  testSurfaceBundleId: number;
 }
 
-export interface CompleteTestSuiteBundleRunRequest {
+export interface CompleteTestSurfaceBundleRunRequest {
   status: string;
 }
 
-export interface TestSuiteBundleRunResponse {
+export interface TestSurfaceBundleRunResponse {
   id: number;
-  testSuiteBundleId: number;
+  testSurfaceBundleId: number;
   status: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -1317,9 +1317,9 @@ export interface TestSuiteBundleRunResponse {
 
 export interface CreateTestRunRequest {
   runnerId: number;
-  testCaseRunId?: number;
-  testSuiteRunId?: number;
-  testSuiteBundleRunId?: number;
+  testElementRunId?: number;
+  testSurfaceRunId?: number;
+  testSurfaceBundleRunId?: number;
   testEnvironmentId?: number;
   discovery?: boolean;
   parentTestRunId?: number;
@@ -1350,9 +1350,9 @@ export interface UpdateTestRunStatsRequest {
 export interface TestRunResponse {
   id: number;
   runnerId: number;
-  testCaseRunId: number | null;
-  testSuiteRunId: number | null;
-  testSuiteBundleRunId: number | null;
+  testElementRunId: number | null;
+  testSurfaceRunId: number | null;
+  testSurfaceBundleRunId: number | null;
   testEnvironmentId: number | null;
   discovery: boolean;
   parentTestRunId: number | null;
@@ -1374,10 +1374,10 @@ export interface TestRunResponse {
   completedAt: string | null;
 }
 
-// --- Test Run Findings (attached to Test Case Run) ---
+// --- Test Run Findings (attached to Test Element Run) ---
 
 export interface CreateTestRunFindingRequest {
-  testCaseRunId: number;
+  testElementRunId: number;
   expertiseRuleId?: number;
   type: FindingType;
   title: string;
@@ -1386,7 +1386,7 @@ export interface CreateTestRunFindingRequest {
 
 export interface TestRunFindingResponse {
   id: number;
-  testCaseRunId: number;
+  testElementRunId: number;
   expertiseRuleId: number | null;
   type: string;
   title: string;
@@ -1400,8 +1400,8 @@ export interface TestRunFindingResponse {
 export interface CreateIssueRequest {
   runnerId: number;
   testRunId?: number;
-  testCaseId?: number;
-  testCaseRunId?: number;
+  testElementId?: number;
+  testElementRunId?: number;
   severity: IssueSeverity;
   ruleName: string;
   title: string;
@@ -1422,8 +1422,8 @@ export interface IssueResponse {
   id: number;
   runnerId: number;
   testRunId: number | null;
-  testCaseId: number | null;
-  testCaseRunId: number | null;
+  testElementId: number | null;
+  testElementRunId: number | null;
   severity: string;
   ruleName: string;
   title: string;
@@ -1443,14 +1443,14 @@ export interface IssueResponse {
 // --- Issue Dedup (deprecated) ---
 
 /** @deprecated */
-export interface FindTestCaseByActionsRequest {
+export interface FindTestElementByActionsRequest {
   runnerId: number;
   actionIds: number[];
 }
 
 /** @deprecated */
 export interface FindIssueByRuleRequest {
-  testCaseId: number;
+  testElementId: number;
   ruleName: string;
 }
 
@@ -1812,7 +1812,7 @@ export interface TestActivityResponse {
   productId: number;
   eventType: string;
   testRunId: number | null;
-  testSuiteId: number | null;
+  testSurfaceId: number | null;
   createdAt: string | null;
 }
 
@@ -1822,9 +1822,9 @@ export interface TestScheduleResponse {
   id: number;
   runnerId: number;
   title: string;
-  testSuiteId: number | null;
-  testCaseId: number | null;
-  testSuiteBundleId: number | null;
+  testSurfaceId: number | null;
+  testElementId: number | null;
+  testSurfaceBundleId: number | null;
   discovery: boolean;
   recurrenceType: string;
   timeOfDay: string;
@@ -1842,9 +1842,9 @@ export interface TestScheduleResponse {
 export interface CreateTestScheduleRequest {
   runnerId: number;
   title: string;
-  testSuiteId?: number;
-  testCaseId?: number;
-  testSuiteBundleId?: number;
+  testSurfaceId?: number;
+  testElementId?: number;
+  testSurfaceBundleId?: number;
   discovery?: boolean;
   recurrenceType: RecurrenceType;
   timeOfDay: string;
@@ -1855,9 +1855,9 @@ export interface CreateTestScheduleRequest {
 
 export interface UpdateTestScheduleRequest {
   title?: string;
-  testSuiteId?: number | null;
-  testCaseId?: number | null;
-  testSuiteBundleId?: number | null;
+  testSurfaceId?: number | null;
+  testElementId?: number | null;
+  testSurfaceBundleId?: number | null;
   discovery?: boolean;
   recurrenceType?: RecurrenceType;
   timeOfDay?: string;
@@ -1913,18 +1913,18 @@ export interface TestScenarioSequenceResponse {
   updatedAt: string | null;
 }
 
-// --- Test Scenario Sequence Test Cases (many-to-many join with ordering) ---
+// --- Test Scenario Sequence Test Elements (many-to-many join with ordering) ---
 
-export interface TestScenarioSequenceTestCaseLinkRequest {
+export interface TestScenarioSequenceTestElementLinkRequest {
   testScenarioSequenceId: number;
-  testCaseId: number;
+  testElementId: number;
   stepOrder: number;
 }
 
-export interface TestScenarioSequenceTestCaseLinkResponse {
+export interface TestScenarioSequenceTestElementLinkResponse {
   id: number;
   testScenarioSequenceId: number;
-  testCaseId: number;
+  testElementId: number;
   stepOrder: number;
 }
 

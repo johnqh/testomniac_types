@@ -26,11 +26,11 @@ import {
   type ISODateString,
   type ActionableItem,
   type FormInfo,
-  type TestCase,
+  type TestElement,
   type TestStep,
   type Credentials,
   type TestAction,
-  type TestSuite,
+  type TestSurface,
   type CreateElementIdentityRequest,
   type ElementIdentityResponse,
 } from './index';
@@ -751,12 +751,12 @@ describe('starter_types', () => {
       expect(form.fieldCount).toBe(1);
     });
 
-    it('TestCase accepts valid objects', () => {
-      const tc: TestCase = {
+    it('TestElement accepts valid objects', () => {
+      const tc: TestElement = {
         title: 'Login test',
         type: TestType.Form,
         sizeClass: SizeClass.Desktop,
-        suite_tags: ['smoke'],
+        surface_tags: ['smoke'],
         priority: 1,
         startingPageStateId: 1,
         startingPath: '/login',
@@ -764,7 +764,7 @@ describe('starter_types', () => {
         globalExpectations: [],
       };
       expect(tc.type).toBe('form');
-      expect(tc.suite_tags).toHaveLength(1);
+      expect(tc.surface_tags).toHaveLength(1);
     });
 
     it('Credentials accepts valid objects', () => {
@@ -1041,7 +1041,7 @@ describe('starter_types', () => {
     });
   });
 
-  describe('TestStep and TestCase types', () => {
+  describe('TestStep and TestElement types', () => {
     it('constructs a TestStep with action and expectations', () => {
       const step: TestStep = {
         action: {
@@ -1072,12 +1072,12 @@ describe('starter_types', () => {
       expect(step.expectations[0].severity).toBe('must_pass');
     });
 
-    it('constructs a full TestCase with steps and global expectations', () => {
-      const tc: TestCase = {
+    it('constructs a full TestElement with steps and global expectations', () => {
+      const tc: TestElement = {
         title: 'Login with valid credentials',
-        type: 'form' as TestCase['type'],
-        sizeClass: 'desktop' as TestCase['sizeClass'],
-        suite_tags: ['regression', 'smoke'],
+        type: 'form' as TestElement['type'],
+        sizeClass: 'desktop' as TestElement['sizeClass'],
+        surface_tags: ['regression', 'smoke'],
         priority: 1,
         startingPageStateId: 100,
         startingPath: '/login',
@@ -1121,9 +1121,9 @@ describe('starter_types', () => {
     });
   });
 
-  describe('TestSuite type', () => {
-    it('constructs a test suite for a scaffold', () => {
-      const suite: TestSuite = {
+  describe('TestSurface type', () => {
+    it('constructs a test surface for a scaffold', () => {
+      const surface: TestSurface = {
         title: 'Top Menu Tests',
         description: 'Test the top menu navigation links and dropdowns',
         startingPageStateId: 100,
@@ -1132,14 +1132,14 @@ describe('starter_types', () => {
         scaffoldId: 42,
         scaffoldType: 'topMenu',
         priority: 1,
-        suite_tags: ['regression', 'smoke'],
+        surface_tags: ['regression', 'smoke'],
       };
-      expect(suite.scaffoldType).toBe('topMenu');
-      expect(suite.patternType).toBeUndefined();
+      expect(surface.scaffoldType).toBe('topMenu');
+      expect(surface.patternType).toBeUndefined();
     });
 
-    it('constructs a test suite for a UI pattern', () => {
-      const suite: TestSuite = {
+    it('constructs a test surface for a UI pattern', () => {
+      const surface: TestSurface = {
         title: 'Product List Tests',
         description:
           'Test pagination, sorting, and filtering on the product list',
@@ -1148,26 +1148,26 @@ describe('starter_types', () => {
         sizeClass: 'desktop',
         patternType: 'pagination',
         priority: 2,
-        suite_tags: ['regression'],
+        surface_tags: ['regression'],
       };
-      expect(suite.patternType).toBe('pagination');
-      expect(suite.scaffoldId).toBeUndefined();
+      expect(surface.patternType).toBe('pagination');
+      expect(surface.scaffoldId).toBeUndefined();
     });
 
-    it('constructs a test suite with dependency and personas', () => {
-      const suite: TestSuite = {
+    it('constructs a test surface with dependency and personas', () => {
+      const surface: TestSurface = {
         title: 'Dashboard Tests',
         description: 'Test dashboard after login',
         startingPageStateId: 300,
         startingPath: '/dashboard',
         sizeClass: 'desktop',
-        dependencyTestCaseId: 10,
+        dependencyTestElementId: 10,
         personaIds: [1, 2, 3],
         priority: 1,
-        suite_tags: ['regression', 'smoke'],
+        surface_tags: ['regression', 'smoke'],
       };
-      expect(suite.dependencyTestCaseId).toBe(10);
-      expect(suite.personaIds).toHaveLength(3);
+      expect(surface.dependencyTestElementId).toBe(10);
+      expect(surface.personaIds).toHaveLength(3);
     });
   });
 
