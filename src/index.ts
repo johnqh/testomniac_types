@@ -666,6 +666,7 @@ export interface CreateDiscoveryRunRequest {
   productId?: number;
   testEnvironmentId?: number;
   sizeClass?: SizeClass;
+  expertiseSlugs?: string[];
   createdByUserId?: string;
   ownedByUserId?: string;
   environmentLabel?: string;
@@ -1322,6 +1323,7 @@ export interface CreateTestRunRequest {
   testSurfaceBundleRunId?: number;
   testEnvironmentId?: number;
   discovery?: boolean;
+  expertiseSlugsJson?: string[];
   parentTestRunId?: number;
   rootTestRunId?: number;
   sizeClass: string;
@@ -1355,6 +1357,7 @@ export interface TestRunResponse {
   testSurfaceBundleRunId: number | null;
   testEnvironmentId: number | null;
   discovery: boolean;
+  expertiseSlugsJson: string[] | null;
   parentTestRunId: number | null;
   rootTestRunId: number | null;
   sizeClass: string;
