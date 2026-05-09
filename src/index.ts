@@ -599,6 +599,7 @@ export interface TestElement {
   surface_tags: string[];
   priority: number;
   page_id?: number;
+  target_page_id?: number;
   persona_id?: number;
   use_case_id?: number;
   scaffoldId?: number;
@@ -732,6 +733,7 @@ export type ProjectSummaryResponse = ProductSummaryResponse;
 
 export interface FindOrCreatePageRequest {
   runnerId: number;
+  testEnvironmentId?: number;
   relativePath: string;
 }
 
@@ -783,6 +785,7 @@ export interface PageVisitResponse {
 export interface PageResponse {
   id: number;
   runnerId: number;
+  testEnvironmentId: number | null;
   relativePath: string;
   routeKey: string | null;
   requiresLogin: boolean | null;
@@ -1089,12 +1092,14 @@ export interface CreateExpertiseRuleRequest {
 
 export interface InsertTestSurfaceRequest {
   runnerId: number;
+  testEnvironmentId?: number;
   testSurface: TestSurface;
 }
 
 export interface TestSurfaceResponse {
   id: number;
   runnerId: number;
+  testEnvironmentId: number | null;
   decompositionJobId: number | null;
   title: string;
   description: string;
@@ -1153,6 +1158,7 @@ export interface TestSurfaceBundleSurfaceLinkResponse {
 export interface InsertTestElementRequest {
   runnerId: number;
   testSurfaceId: number;
+  testEnvironmentId?: number;
   testElement: TestElement;
 }
 
@@ -1165,6 +1171,7 @@ export interface LegacyInsertTestElementRequest {
 export interface TestElementResponse {
   id: number;
   runnerId: number;
+  testEnvironmentId: number | null;
   testSurfaceId: number;
   title: string;
   testType: string;
@@ -1175,6 +1182,7 @@ export interface TestElementResponse {
   patternType: string | null;
   dependencyTestElementId: number | null;
   pageId: number | null;
+  targetPageId: number | null;
   personaId: number | null;
   useCaseId: number | null;
   startingPageStateId: number | null;
@@ -1207,6 +1215,7 @@ export interface CreateTestActionRequest {
 export interface TestActionResponse {
   id: number;
   testElementId: number;
+  testEnvironmentId: number | null;
   stepOrder: number;
   actionType: string;
   pageStateId: number | null;
@@ -1261,6 +1270,7 @@ export interface TestElementRunResponse {
   id: number;
   testElementId: number;
   testSurfaceRunId: number | null;
+  testEnvironmentId: number | null;
   status: string;
   durationMs: number | null;
   errorMessage: string | null;
@@ -1289,6 +1299,7 @@ export interface TestSurfaceRunResponse {
   id: number;
   testSurfaceId: number;
   testSurfaceBundleRunId: number | null;
+  testEnvironmentId: number | null;
   status: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -1308,6 +1319,7 @@ export interface CompleteTestSurfaceBundleRunRequest {
 export interface TestSurfaceBundleRunResponse {
   id: number;
   testSurfaceBundleId: number;
+  testEnvironmentId: number | null;
   status: string;
   startedAt: string | null;
   completedAt: string | null;
