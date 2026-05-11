@@ -645,6 +645,7 @@ export interface TestElement {
   globalExpectations: Expectation[];
   estimatedDurationMs?: number;
   uid?: string;
+  generatedKey?: string;
 }
 
 // =============================================================================
@@ -1226,6 +1227,7 @@ export interface TestElementResponse {
   globalExpectationsJson: unknown;
   estimatedDurationMs: number | null;
   uid: string | null;
+  generatedKey: string | null;
   isActive: boolean;
   isGenerated: boolean;
   generatedAt: string | null;
