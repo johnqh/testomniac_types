@@ -1008,6 +1008,7 @@ describe('starter_types', () => {
 
     it('has network expectations', () => {
       expect(ExpectationType.NoNetworkErrors).toBe('no_network_errors');
+      expect(ExpectationType.NetworkRequestMade).toBe('network_request_made');
       expect(ExpectationType.NetworkResponseStatus).toBe(
         'network_response_status'
       );
@@ -1026,6 +1027,7 @@ describe('starter_types', () => {
       expect(ExpectationType.ModalOpened).toBe('modal_opened');
       expect(ExpectationType.MediaLoaded).toBe('media_loaded');
       expect(ExpectationType.VideoPlayable).toBe('video_playable');
+      expect(ExpectationType.EmptyStateVisible).toBe('empty_state_visible');
     });
 
     it('has storage expectations', () => {
@@ -1049,7 +1051,29 @@ describe('starter_types', () => {
       );
       expect(ExpectationType.CartSummaryChanged).toBe('cart_summary_changed');
       expect(ExpectationType.CountChanged).toBe('count_changed');
+      expect(ExpectationType.ResultsChanged).toBe('results_changed');
+      expect(ExpectationType.CollectionOrderChanged).toBe(
+        'collection_order_changed'
+      );
       expect(ExpectationType.LanguageConsistent).toBe('language_consistent');
+    });
+
+    it('has dialog, persistence, and feedback expectations', () => {
+      expect(ExpectationType.DialogClosed).toBe('dialog_closed');
+      expect(ExpectationType.FocusReturned).toBe('focus_returned');
+      expect(ExpectationType.FeedbackVisible).toBe('feedback_visible');
+      expect(ExpectationType.StatePersistsAfterReload).toBe(
+        'state_persists_after_reload'
+      );
+      expect(ExpectationType.BackNavigationRestoresState).toBe(
+        'back_navigation_restores_state'
+      );
+      expect(ExpectationType.ForwardNavigationReappliesState).toBe(
+        'forward_navigation_reapplies_state'
+      );
+      expect(ExpectationType.ExpandedStateChanged).toBe(
+        'expanded_state_changed'
+      );
     });
   });
 
