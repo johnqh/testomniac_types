@@ -1054,6 +1054,7 @@ describe('starter_types', () => {
       );
       expect(ExpectationType.CartSummaryChanged).toBe('cart_summary_changed');
       expect(ExpectationType.CountChanged).toBe('count_changed');
+      expect(ExpectationType.RowCountChanged).toBe('row_count_changed');
       expect(ExpectationType.ResultsChanged).toBe('results_changed');
       expect(ExpectationType.ResultsRestored).toBe('results_restored');
       expect(ExpectationType.CollectionOrderChanged).toBe(
@@ -1067,6 +1068,9 @@ describe('starter_types', () => {
       expect(ExpectationType.DialogClosed).toBe('dialog_closed');
       expect(ExpectationType.FocusReturned).toBe('focus_returned');
       expect(ExpectationType.FeedbackVisible).toBe('feedback_visible');
+      expect(ExpectationType.FeedbackNotDuplicated).toBe(
+        'feedback_not_duplicated'
+      );
       expect(ExpectationType.StatePersistsAfterReload).toBe(
         'state_persists_after_reload'
       );
