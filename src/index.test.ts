@@ -1055,9 +1055,11 @@ describe('starter_types', () => {
       expect(ExpectationType.CartSummaryChanged).toBe('cart_summary_changed');
       expect(ExpectationType.CountChanged).toBe('count_changed');
       expect(ExpectationType.ResultsChanged).toBe('results_changed');
+      expect(ExpectationType.ResultsRestored).toBe('results_restored');
       expect(ExpectationType.CollectionOrderChanged).toBe(
         'collection_order_changed'
       );
+      expect(ExpectationType.VariantStateChanged).toBe('variant_state_changed');
       expect(ExpectationType.LanguageConsistent).toBe('language_consistent');
     });
 
