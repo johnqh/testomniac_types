@@ -1194,6 +1194,7 @@ export interface InsertTestElementRequest {
   testSurfaceId: number;
   testEnvironmentId?: number;
   testElement: TestElement;
+  isGenerated?: boolean;
 }
 
 /** @deprecated Use InsertTestElementRequest with new TestElement */
@@ -1225,7 +1226,13 @@ export interface TestElementResponse {
   globalExpectationsJson: unknown;
   estimatedDurationMs: number | null;
   uid: string | null;
+  isActive: boolean;
+  isGenerated: boolean;
   generatedAt: string | null;
+}
+
+export interface RetireTestElementsRequest {
+  testElementIds: number[];
 }
 
 // --- Test Actions (persisted, parent/child with TestElement) ---
