@@ -1018,6 +1018,14 @@ describe('starter_types', () => {
       expect(ExpectationType.UrlChanged).toBe('url_changed');
       expect(ExpectationType.TitleEquals).toBe('title_equals');
       expect(ExpectationType.PageLoaded).toBe('page_loaded');
+      expect(ExpectationType.NavigationOrStateChanged).toBe(
+        'navigation_or_state_changed'
+      );
+      expect(ExpectationType.PageResponsive).toBe('page_responsive');
+      expect(ExpectationType.LoadingCompletes).toBe('loading_completes');
+      expect(ExpectationType.ModalOpened).toBe('modal_opened');
+      expect(ExpectationType.MediaLoaded).toBe('media_loaded');
+      expect(ExpectationType.VideoPlayable).toBe('video_playable');
     });
 
     it('has storage expectations', () => {
@@ -1030,6 +1038,18 @@ describe('starter_types', () => {
       expect(ExpectationType.SensitiveDataNotInUrl).toBe(
         'sensitive_data_not_in_url'
       );
+    });
+
+    it('has richer validation, commerce, and content expectations', () => {
+      expect(ExpectationType.RequiredErrorShownForField).toBe(
+        'required_error_shown_for_field'
+      );
+      expect(ExpectationType.FieldErrorClearsAfterFix).toBe(
+        'field_error_clears_after_fix'
+      );
+      expect(ExpectationType.CartSummaryChanged).toBe('cart_summary_changed');
+      expect(ExpectationType.CountChanged).toBe('count_changed');
+      expect(ExpectationType.LanguageConsistent).toBe('language_consistent');
     });
   });
 
@@ -1118,6 +1138,42 @@ describe('starter_types', () => {
       expect(tc.steps).toHaveLength(1);
       expect(tc.globalExpectations).toHaveLength(1);
       expect(tc.startingPath).toBe('/login');
+    });
+
+    it('supports richer expectation metadata fields', () => {
+      const step: TestStep = {
+        action: {
+          actionType: PlaywrightAction.Click,
+          elementIdentityId: 1,
+          playwrightCode: "await page.getByRole('button').click();",
+          description: 'Click button',
+        },
+        expectations: [
+          {
+            expectationType: ExpectationType.NavigationOrStateChanged,
+            severity: ExpectationSeverity.ShouldPass,
+            description: 'Button should change the page meaningfully',
+            targetPath: '#submit',
+            secondaryTargetPath: '#results',
+            expectedCountDelta: 1,
+            expectedTextTokens: ['success'],
+            forbiddenTextTokens: ['error'],
+            timeoutMs: 5000,
+            expectNoChange: false,
+            playwrightCode: '/* runtime expectation */',
+          },
+        ],
+        description: 'Run richer expectation metadata',
+        continueOnFailure: false,
+      };
+
+      expect(step.expectations[0].targetPath).toBe('#submit');
+      expect(step.expectations[0].secondaryTargetPath).toBe('#results');
+      expect(step.expectations[0].expectedCountDelta).toBe(1);
+      expect(step.expectations[0].expectedTextTokens).toEqual(['success']);
+      expect(step.expectations[0].forbiddenTextTokens).toEqual(['error']);
+      expect(step.expectations[0].timeoutMs).toBe(5000);
+      expect(step.expectations[0].expectNoChange).toBe(false);
     });
   });
 

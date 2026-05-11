@@ -505,6 +505,17 @@ export const ExpectationType = {
   FormSubmittedSuccessfully: 'form_submitted_successfully',
   ErrorStateVisible: 'error_state_visible',
   ErrorStateCleared: 'error_state_cleared',
+  RequiredErrorShownForField: 'required_error_shown_for_field',
+  FieldErrorClearsAfterFix: 'field_error_clears_after_fix',
+  CartSummaryChanged: 'cart_summary_changed',
+  CountChanged: 'count_changed',
+  NavigationOrStateChanged: 'navigation_or_state_changed',
+  PageResponsive: 'page_responsive',
+  LoadingCompletes: 'loading_completes',
+  ModalOpened: 'modal_opened',
+  MediaLoaded: 'media_loaded',
+  VideoPlayable: 'video_playable',
+  LanguageConsistent: 'language_consistent',
 
   // Navigation
   RedirectedTo: 'redirected_to',
@@ -544,6 +555,13 @@ export interface Expectation {
   elementIdentityId?: number;
   expectedValue?: string;
   attributeName?: string;
+  targetPath?: string;
+  secondaryTargetPath?: string;
+  expectedCountDelta?: number;
+  expectedTextTokens?: string[];
+  forbiddenTextTokens?: string[];
+  timeoutMs?: number;
+  expectNoChange?: boolean;
   severity: ExpectationSeverity;
   description: string;
   playwrightCode: string;
