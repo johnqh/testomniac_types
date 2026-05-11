@@ -398,6 +398,7 @@ export interface NetworkLogEntry {
   url: string;
   status: number;
   contentType: string;
+  timestampMs?: number;
 }
 
 // =============================================================================
@@ -486,6 +487,7 @@ export const ExpectationType = {
   NoNetworkErrors: 'no_network_errors',
   NoServerErrors: 'no_server_errors',
   NetworkRequestMade: 'network_request_made',
+  NoDuplicateMutationRequests: 'no_duplicate_mutation_requests',
   NetworkResponseStatus: 'network_response_status',
   NetworkResponseContains: 'network_response_contains',
   NoPendingRequests: 'no_pending_requests',

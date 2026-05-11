@@ -1009,6 +1009,9 @@ describe('starter_types', () => {
     it('has network expectations', () => {
       expect(ExpectationType.NoNetworkErrors).toBe('no_network_errors');
       expect(ExpectationType.NetworkRequestMade).toBe('network_request_made');
+      expect(ExpectationType.NoDuplicateMutationRequests).toBe(
+        'no_duplicate_mutation_requests'
+      );
       expect(ExpectationType.NetworkResponseStatus).toBe(
         'network_response_status'
       );
@@ -1198,6 +1201,18 @@ describe('starter_types', () => {
       expect(step.expectations[0].forbiddenTextTokens).toEqual(['error']);
       expect(step.expectations[0].timeoutMs).toBe(5000);
       expect(step.expectations[0].expectNoChange).toBe(false);
+    });
+
+    it('supports network log timestamps for request correlation', () => {
+      const entry = {
+        method: 'POST',
+        url: 'https://example.com/api/cart',
+        status: 200,
+        contentType: 'application/json',
+        timestampMs: 123456789,
+      };
+
+      expect(entry.timestampMs).toBe(123456789);
     });
   });
 
