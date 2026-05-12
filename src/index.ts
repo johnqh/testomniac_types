@@ -103,7 +103,7 @@ export const FindingType = {
 } as const;
 export type FindingType = (typeof FindingType)[keyof typeof FindingType];
 
-/** @deprecated Action/ActionExecution removed — use TestAction within TestElement */
+/** @deprecated Action/ActionExecution removed — use TestAction within TestInteraction */
 export const ActionStatus = {
   Open: 'open',
   Completed: 'completed',
@@ -584,7 +584,7 @@ export interface Expectation {
 }
 
 // =============================================================================
-// Test Action (embedded in TestStep — JSON within test element)
+// Test Action (embedded in TestStep — JSON within test interaction)
 // =============================================================================
 
 export interface TestAction {
@@ -623,10 +623,10 @@ export interface TestStep {
 }
 
 // =============================================================================
-// Test Element (domain object — used for generation)
+// Test Interaction (domain object — used for generation)
 // =============================================================================
 
-export interface TestElement {
+export interface TestInteraction {
   title: string;
   type: TestType;
   sizeClass: SizeClass;
@@ -638,7 +638,7 @@ export interface TestElement {
   use_case_id?: number;
   scaffoldId?: number;
   patternType?: UiPatternType;
-  dependencyTestElementId?: number;
+  dependencyTestInteractionId?: number;
   startingPageStateId?: number;
   startingPath: string;
   steps: TestStep[];
@@ -658,7 +658,7 @@ export interface TestSurface {
   startingPageStateId?: number;
   startingPath: string;
   sizeClass: SizeClass;
-  dependencyTestElementId?: number;
+  dependencyTestInteractionId?: number;
   personaIds?: number[];
   scaffoldId?: number;
   scaffoldType?: HtmlComponentType;
@@ -670,8 +670,8 @@ export interface TestSurface {
   uid?: string;
 }
 
-/** @deprecated Use TestElement with steps and expectations */
-export interface LegacyTestElement {
+/** @deprecated Use TestInteraction with steps and expectations */
+export interface LegacyTestInteraction {
   name: string;
   type: TestType;
   sizeClass: SizeClass;
@@ -893,7 +893,7 @@ export interface ActionableItemResponse {
 
 // --- Action Definitions (deprecated — removed) ---
 
-/** @deprecated Action removed — use TestAction within TestElement */
+/** @deprecated Action removed — use TestAction within TestInteraction */
 export interface CreateActionDefinitionRequest {
   runnerId: number;
   type: string;
@@ -1141,7 +1141,7 @@ export interface TestSurfaceResponse {
   startingPageStateId: number;
   startingPath: string;
   sizeClass: string;
-  dependencyTestElementId: number | null;
+  dependencyTestInteractionId: number | null;
   personaIdsJson: unknown;
   scaffoldId: number | null;
   scaffoldType: string | null;
@@ -1188,23 +1188,23 @@ export interface TestSurfaceBundleSurfaceLinkResponse {
   testSurfaceId: number;
 }
 
-// --- Test Elements (app-level, persistent) ---
+// --- Test Interactions (app-level, persistent) ---
 
-export interface InsertTestElementRequest {
+export interface InsertTestInteractionRequest {
   runnerId: number;
   testSurfaceId: number;
   testEnvironmentId?: number;
-  testElement: TestElement;
+  testInteraction: TestInteraction;
   isGenerated?: boolean;
 }
 
-/** @deprecated Use InsertTestElementRequest with new TestElement */
-export interface LegacyInsertTestElementRequest {
+/** @deprecated Use InsertTestInteractionRequest with new TestInteraction */
+export interface LegacyInsertTestInteractionRequest {
   runnerId: number;
-  testElement: LegacyTestElement;
+  testInteraction: LegacyTestInteraction;
 }
 
-export interface TestElementResponse {
+export interface TestInteractionResponse {
   id: number;
   runnerId: number;
   testEnvironmentId: number | null;
@@ -1216,7 +1216,7 @@ export interface TestElementResponse {
   priority: number;
   scaffoldId: number | null;
   patternType: string | null;
-  dependencyTestElementId: number | null;
+  dependencyTestInteractionId: number | null;
   pageId: number | null;
   targetPageId: number | null;
   personaId: number | null;
@@ -1233,14 +1233,14 @@ export interface TestElementResponse {
   generatedAt: string | null;
 }
 
-export interface RetireTestElementsRequest {
-  testElementIds: number[];
+export interface RetireTestInteractionsRequest {
+  testInteractionIds: number[];
 }
 
-// --- Test Actions (persisted, parent/child with TestElement) ---
+// --- Test Actions (persisted, parent/child with TestInteraction) ---
 
 export interface CreateTestActionRequest {
-  testElementId: number;
+  testInteractionId: number;
   stepOrder: number;
   actionType: PlaywrightAction;
   pageStateId?: number;
@@ -1257,7 +1257,7 @@ export interface CreateTestActionRequest {
 
 export interface TestActionResponse {
   id: number;
-  testElementId: number;
+  testInteractionId: number;
   testEnvironmentId: number | null;
   stepOrder: number;
   actionType: string;
@@ -1273,32 +1273,32 @@ export interface TestActionResponse {
   continueOnFailure: boolean;
 }
 
-// --- Test Element Actions (deprecated — replaced by TestAction parent/child) ---
+// --- Test Interaction Actions (deprecated — replaced by TestAction parent/child) ---
 
 /** @deprecated Use CreateTestActionRequest */
-export interface CreateTestElementActionRequest {
-  testElementId: number;
+export interface CreateTestInteractionActionRequest {
+  testInteractionId: number;
   actionId: number;
   stepOrder: number;
 }
 
 /** @deprecated */
-export interface TestElementActionResponse {
+export interface TestInteractionActionResponse {
   id: number;
-  testElementId: number;
+  testInteractionId: number;
   actionId: number;
   stepOrder: number;
   createdAt: string | null;
 }
 
-// --- Test Element Runs ---
+// --- Test Interaction Runs ---
 
-export interface CreateTestElementRunRequest {
-  testElementId: number;
+export interface CreateTestInteractionRunRequest {
+  testInteractionId: number;
   testSurfaceRunId?: number;
 }
 
-export interface CompleteTestElementRunRequest {
+export interface CompleteTestInteractionRunRequest {
   status: string;
   durationMs?: number;
   errorMessage?: string;
@@ -1309,9 +1309,9 @@ export interface CompleteTestElementRunRequest {
   networkLog?: string;
 }
 
-export interface TestElementRunResponse {
+export interface TestInteractionRunResponse {
   id: number;
-  testElementId: number;
+  testInteractionId: number;
   testSurfaceRunId: number | null;
   testEnvironmentId: number | null;
   status: string;
@@ -1373,7 +1373,7 @@ export interface TestSurfaceBundleRunResponse {
 
 export interface CreateTestRunRequest {
   runnerId: number;
-  testElementRunId?: number;
+  testInteractionRunId?: number;
   testSurfaceRunId?: number;
   testSurfaceBundleRunId?: number;
   testEnvironmentId?: number;
@@ -1407,7 +1407,7 @@ export interface UpdateTestRunStatsRequest {
 export interface TestRunResponse {
   id: number;
   runnerId: number;
-  testElementRunId: number | null;
+  testInteractionRunId: number | null;
   testSurfaceRunId: number | null;
   testSurfaceBundleRunId: number | null;
   testEnvironmentId: number | null;
@@ -1432,10 +1432,10 @@ export interface TestRunResponse {
   completedAt: string | null;
 }
 
-// --- Test Run Findings (attached to Test Element Run) ---
+// --- Test Run Findings (attached to Test Interaction Run) ---
 
 export interface CreateTestRunFindingRequest {
-  testElementRunId: number;
+  testInteractionRunId: number;
   expertiseRuleId?: number;
   type: FindingType;
   title: string;
@@ -1444,7 +1444,7 @@ export interface CreateTestRunFindingRequest {
 
 export interface TestRunFindingResponse {
   id: number;
-  testElementRunId: number;
+  testInteractionRunId: number;
   expertiseRuleId: number | null;
   type: string;
   title: string;
@@ -1458,8 +1458,8 @@ export interface TestRunFindingResponse {
 export interface CreateIssueRequest {
   runnerId: number;
   testRunId?: number;
-  testElementId?: number;
-  testElementRunId?: number;
+  testInteractionId?: number;
+  testInteractionRunId?: number;
   severity: IssueSeverity;
   ruleName: string;
   title: string;
@@ -1480,8 +1480,8 @@ export interface IssueResponse {
   id: number;
   runnerId: number;
   testRunId: number | null;
-  testElementId: number | null;
-  testElementRunId: number | null;
+  testInteractionId: number | null;
+  testInteractionRunId: number | null;
   severity: string;
   ruleName: string;
   title: string;
@@ -1501,14 +1501,14 @@ export interface IssueResponse {
 // --- Issue Dedup (deprecated) ---
 
 /** @deprecated */
-export interface FindTestElementByActionsRequest {
+export interface FindTestInteractionByActionsRequest {
   runnerId: number;
   actionIds: number[];
 }
 
 /** @deprecated */
 export interface FindIssueByRuleRequest {
-  testElementId: number;
+  testInteractionId: number;
   ruleName: string;
 }
 
@@ -1881,7 +1881,7 @@ export interface TestScheduleResponse {
   runnerId: number;
   title: string;
   testSurfaceId: number | null;
-  testElementId: number | null;
+  testInteractionId: number | null;
   testSurfaceBundleId: number | null;
   discovery: boolean;
   recurrenceType: string;
@@ -1901,7 +1901,7 @@ export interface CreateTestScheduleRequest {
   runnerId: number;
   title: string;
   testSurfaceId?: number;
-  testElementId?: number;
+  testInteractionId?: number;
   testSurfaceBundleId?: number;
   discovery?: boolean;
   recurrenceType: RecurrenceType;
@@ -1914,7 +1914,7 @@ export interface CreateTestScheduleRequest {
 export interface UpdateTestScheduleRequest {
   title?: string;
   testSurfaceId?: number | null;
-  testElementId?: number | null;
+  testInteractionId?: number | null;
   testSurfaceBundleId?: number | null;
   discovery?: boolean;
   recurrenceType?: RecurrenceType;
@@ -1971,18 +1971,18 @@ export interface TestScenarioSequenceResponse {
   updatedAt: string | null;
 }
 
-// --- Test Scenario Sequence Test Elements (many-to-many join with ordering) ---
+// --- Test Scenario Sequence Test Interactions (many-to-many join with ordering) ---
 
-export interface TestScenarioSequenceTestElementLinkRequest {
+export interface TestScenarioSequenceTestInteractionLinkRequest {
   testScenarioSequenceId: number;
-  testElementId: number;
+  testInteractionId: number;
   stepOrder: number;
 }
 
-export interface TestScenarioSequenceTestElementLinkResponse {
+export interface TestScenarioSequenceTestInteractionLinkResponse {
   id: number;
   testScenarioSequenceId: number;
-  testElementId: number;
+  testInteractionId: number;
   stepOrder: number;
 }
 

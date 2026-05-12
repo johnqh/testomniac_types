@@ -26,7 +26,7 @@ import {
   type ISODateString,
   type ActionableItem,
   type FormInfo,
-  type TestElement,
+  type TestInteraction,
   type TestStep,
   type Credentials,
   type TestAction,
@@ -751,8 +751,8 @@ describe('starter_types', () => {
       expect(form.fieldCount).toBe(1);
     });
 
-    it('TestElement accepts valid objects', () => {
-      const tc: TestElement = {
+    it('TestInteraction accepts valid objects', () => {
+      const tc: TestInteraction = {
         title: 'Login test',
         type: TestType.Form,
         sizeClass: SizeClass.Desktop,
@@ -1094,7 +1094,7 @@ describe('starter_types', () => {
     });
   });
 
-  describe('TestStep and TestElement types', () => {
+  describe('TestStep and TestInteraction types', () => {
     it('constructs a TestStep with action and expectations', () => {
       const step: TestStep = {
         action: {
@@ -1125,11 +1125,11 @@ describe('starter_types', () => {
       expect(step.expectations[0].severity).toBe('must_pass');
     });
 
-    it('constructs a full TestElement with steps and global expectations', () => {
-      const tc: TestElement = {
+    it('constructs a full TestInteraction with steps and global expectations', () => {
+      const tc: TestInteraction = {
         title: 'Login with valid credentials',
-        type: 'form' as TestElement['type'],
-        sizeClass: 'desktop' as TestElement['sizeClass'],
+        type: 'form' as TestInteraction['type'],
+        sizeClass: 'desktop' as TestInteraction['sizeClass'],
         surface_tags: ['regression', 'smoke'],
         priority: 1,
         startingPageStateId: 100,
@@ -1262,12 +1262,12 @@ describe('starter_types', () => {
         startingPageStateId: 300,
         startingPath: '/dashboard',
         sizeClass: 'desktop',
-        dependencyTestElementId: 10,
+        dependencyTestInteractionId: 10,
         personaIds: [1, 2, 3],
         priority: 1,
         surface_tags: ['regression', 'smoke'],
       };
-      expect(surface.dependencyTestElementId).toBe(10);
+      expect(surface.dependencyTestInteractionId).toBe(10);
       expect(surface.personaIds).toHaveLength(3);
     });
   });
