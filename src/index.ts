@@ -1188,6 +1188,32 @@ export interface TestSurfaceBundleSurfaceLinkResponse {
   testSurfaceId: number;
 }
 
+// --- Test Surface Bundle Interactions (junction) ---
+
+export interface TestSurfaceBundleInteractionLinkRequest {
+  testSurfaceBundleId: number;
+  testInteractionId: number;
+}
+
+export interface TestSurfaceBundleInteractionLinkResponse {
+  id: number;
+  testSurfaceBundleId: number;
+  testInteractionId: number;
+}
+
+// --- Test Surface Bundle Scenarios (junction) ---
+
+export interface TestSurfaceBundleScenarioLinkRequest {
+  testSurfaceBundleId: number;
+  testScenarioId: number;
+}
+
+export interface TestSurfaceBundleScenarioLinkResponse {
+  id: number;
+  testSurfaceBundleId: number;
+  testScenarioId: number;
+}
+
 // --- Test Interactions (app-level, persistent) ---
 
 export interface InsertTestInteractionRequest {
