@@ -687,7 +687,26 @@ export interface Credentials {
   username?: string;
   password: string;
   twoFactorCode?: string;
+  authProvider?: AuthProvider;
 }
+
+// =============================================================================
+// Auth Providers
+// =============================================================================
+
+export const AuthProvider = {
+  EmailPassword: 'email_password',
+  Google: 'google',
+  Apple: 'apple',
+  Microsoft: 'microsoft',
+  Twitter: 'twitter',
+  Facebook: 'facebook',
+  Github: 'github',
+  Linkedin: 'linkedin',
+  Okta: 'okta',
+  Saml: 'saml',
+} as const;
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider];
 
 // =============================================================================
 // Type Guards
@@ -714,6 +733,10 @@ export interface CreateDiscoveryRunRequest {
     twoFactorCode?: string;
   };
   reportEmail?: string;
+  scanScopePath?: string;
+  entityCredentialId?: number;
+  loginUrl?: string;
+  continueWithLogin?: boolean;
 }
 
 export interface CreateDiscoveryRunResponse {
@@ -824,6 +847,7 @@ export interface PageResponse {
   relativePath: string;
   routeKey: string | null;
   requiresLogin: boolean | null;
+  isLoginPage: boolean | null;
   createdAt: string | null;
 }
 
@@ -1453,6 +1477,9 @@ export interface TestRunResponse {
   testRunsCompleted: number | null;
   aiSummary: string | null;
   totalDurationMs: number | null;
+  scanScopePath: string | null;
+  entityCredentialId: number | null;
+  loginUrl: string | null;
   createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
@@ -1593,6 +1620,43 @@ export interface TestCredentialResponse {
 export type CreateCredentialRequest = CreateTestCredentialRequest;
 /** @deprecated Use TestCredentialResponse */
 export type CredentialResponse = TestCredentialResponse;
+
+// --- Entity Credentials ---
+
+export interface CreateEntityCredentialRequest {
+  entityId: string;
+  label: string;
+  authProvider: AuthProvider;
+  loginUrl?: string;
+  email?: string;
+  username?: string;
+  password?: string;
+  twoFactorCode?: string;
+}
+
+export interface UpdateEntityCredentialRequest {
+  label?: string;
+  authProvider?: AuthProvider;
+  loginUrl?: string;
+  email?: string;
+  username?: string;
+  password?: string;
+  twoFactorCode?: string;
+}
+
+export interface EntityCredentialResponse {
+  id: number;
+  entityId: string;
+  label: string;
+  authProvider: AuthProvider;
+  loginUrl: string | null;
+  email: string | null;
+  username: string | null;
+  hasPassword: boolean;
+  hasTwoFactorCode: boolean;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
 // --- Element Identities ---
 
