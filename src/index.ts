@@ -103,6 +103,16 @@ export const FindingType = {
 } as const;
 export type FindingType = (typeof FindingType)[keyof typeof FindingType];
 
+export const FindingPriority = {
+  Crash: 0,
+  Critical: 1,
+  Major: 2,
+  Minor: 3,
+  Suggestion: 4,
+} as const;
+export type FindingPriority =
+  (typeof FindingPriority)[keyof typeof FindingPriority];
+
 /** @deprecated Action/ActionExecution removed — use TestAction within TestInteraction */
 export const ActionStatus = {
   Open: 'open',
@@ -579,6 +589,7 @@ export interface Expectation {
   timeoutMs?: number;
   expectNoChange?: boolean;
   severity: ExpectationSeverity;
+  priority?: number;
   description: string;
   playwrightCode: string;
 }
@@ -1491,6 +1502,7 @@ export interface CreateTestRunFindingRequest {
   testInteractionRunId: number;
   expertiseRuleId?: number;
   type: FindingType;
+  priority: number;
   title: string;
   description: string;
 }
@@ -1500,6 +1512,7 @@ export interface TestRunFindingResponse {
   testInteractionRunId: number;
   expertiseRuleId: number | null;
   type: string;
+  priority: number;
   title: string;
   description: string;
   createdAt: string | null;
