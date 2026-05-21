@@ -1057,6 +1057,21 @@ export interface PersonaResponse {
   createdAt: string | null;
 }
 
+export interface UpdatePersonaRequest {
+  title?: string;
+  description?: string;
+}
+
+export interface DetectPersonasRequest {
+  productId: number;
+}
+
+export interface DetectPersonasResponse {
+  personas: PersonaResponse[];
+  detected: number;
+  replaced: number;
+}
+
 export interface CreateUseCaseRequest {
   personaId: number;
   title: string;
