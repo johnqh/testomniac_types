@@ -1522,14 +1522,26 @@ export interface CreateTestRunFindingRequest {
   description: string;
 }
 
+export interface EnsureTestRunFindingRequest {
+  testRunId: number;
+  testInteractionRunId: number;
+  type: FindingType;
+  priority: number;
+  title: string;
+  description: string;
+  path?: string;
+}
+
 export interface TestRunFindingResponse {
   id: number;
-  testInteractionRunId: number;
+  testRunId: number | null;
+  path: string | null;
   expertiseRuleId: number | null;
   type: string;
   priority: number;
   title: string;
   description: string;
+  interactionRunIds: number[];
   createdAt: string | null;
 }
 
