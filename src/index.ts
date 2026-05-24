@@ -748,6 +748,7 @@ export interface CreateDiscoveryRunRequest {
   entityCredentialId?: number;
   loginUrl?: string;
   continueWithLogin?: boolean;
+  quickScan?: boolean;
 }
 
 export interface CreateDiscoveryRunResponse {
@@ -1506,6 +1507,7 @@ export interface TestRunResponse {
   scanScopePath: string | null;
   entityCredentialId: number | null;
   loginUrl: string | null;
+  quickScan: boolean;
   createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
