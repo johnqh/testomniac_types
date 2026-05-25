@@ -1809,6 +1809,7 @@ export interface ScaffoldResponse {
   type: HtmlComponentType;
   htmlElementId: number;
   htmlHash: string | null;
+  screenshotPath: string | null;
   createdAt: string | null;
 }
 
