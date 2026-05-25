@@ -1042,12 +1042,35 @@ export interface ActionResponse {
   executedAt: string | null;
 }
 
+// --- UI Colors ---
+
+export const UiColor = {
+  Red: 'red',
+  Pink: 'pink',
+  Purple: 'purple',
+  DeepPurple: 'deep_purple',
+  Indigo: 'indigo',
+  Blue: 'blue',
+  Cyan: 'cyan',
+  Teal: 'teal',
+  Green: 'green',
+  Lime: 'lime',
+  Amber: 'amber',
+  Orange: 'orange',
+  Brown: 'brown',
+  Gray: 'gray',
+} as const;
+export type UiColor = (typeof UiColor)[keyof typeof UiColor];
+
+export const UI_COLOR_VALUES = Object.values(UiColor) as UiColor[];
+
 // --- Personas / Use Cases / Input Values ---
 
 export interface CreatePersonaRequest {
   productId: number;
   title: string;
   description: string;
+  color?: UiColor;
 }
 
 export interface PersonaResponse {
@@ -1055,12 +1078,14 @@ export interface PersonaResponse {
   productId: number;
   title: string;
   description: string | null;
+  color: string | null;
   createdAt: string | null;
 }
 
 export interface UpdatePersonaRequest {
   title?: string;
   description?: string;
+  color?: UiColor;
 }
 
 export interface DetectPersonasRequest {
