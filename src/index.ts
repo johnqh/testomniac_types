@@ -2163,6 +2163,17 @@ export interface TestScenarioSequenceRunResponse {
   createdAt: string | null;
 }
 
+// --- Generate Sequence ---
+
+export interface GenerateSequenceRequest {
+  testEnvironmentId: number;
+}
+
+export interface GenerateSequenceResponse {
+  sequence: TestScenarioSequenceResponse;
+  interactions: TestInteractionResponse[];
+}
+
 // =============================================================================
 // Type Guards
 // =============================================================================
