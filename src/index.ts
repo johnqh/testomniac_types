@@ -1427,7 +1427,13 @@ export interface TestInteractionRunResponse {
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string | null;
+  blocked?: boolean;
 }
+
+export type BatchTestInteractionRunsResponse = Record<
+  string,
+  TestInteractionRunResponse[]
+>;
 
 // --- Test Surface Runs ---
 
