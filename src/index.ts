@@ -1300,6 +1300,15 @@ export interface InsertTestInteractionRequest {
   isGenerated?: boolean;
 }
 
+export interface BatchTestInteractionItem extends InsertTestInteractionRequest {
+  testSurfaceRunId: number;
+}
+
+export interface BatchTestInteractionResult {
+  testInteraction: TestInteractionResponse;
+  testInteractionRun: TestInteractionRunResponse;
+}
+
 /** @deprecated Use InsertTestInteractionRequest with new TestInteraction */
 export interface LegacyInsertTestInteractionRequest {
   runnerId: number;
