@@ -763,6 +763,7 @@ export interface CreateDiscoveryRunResponse {
   runnerId?: number;
   testEnvironmentId?: number;
   message?: string;
+  status_update?: string;
   streamPath?: string;
   suggestedNextStep?: 'watch_progress' | 'contact_owner' | 'claim_product';
 }
@@ -774,6 +775,7 @@ export interface TestRunStreamEvent {
     | 'run_started'
     | 'page_discovered'
     | 'page_state_created'
+    | 'status_update'
     | 'stats_update'
     | 'decomposition_job_created'
     | 'decomposition_job_completed'
@@ -1097,6 +1099,7 @@ export interface DetectPersonasResponse {
   personas: PersonaResponse[];
   detected: number;
   replaced: number;
+  status_update?: string;
 }
 
 export interface CreateUseCaseRequest {
@@ -1414,6 +1417,7 @@ export interface CompleteTestInteractionRunRequest {
   status: string;
   durationMs?: number;
   errorMessage?: string;
+  status_update?: string;
   expectedOutcome?: string;
   observedOutcome?: string;
   screenshotPath?: string;
@@ -1427,6 +1431,7 @@ export interface TestInteractionRunResponse {
   testSurfaceRunId: number | null;
   testEnvironmentId: number | null;
   status: string;
+  status_update?: string | null;
   durationMs: number | null;
   errorMessage: string | null;
   expectedOutcome: string | null;
@@ -1514,12 +1519,14 @@ export interface CompleteTestRunRequest {
   pagesFound?: number;
   pageStatesFound?: number;
   testRunsCompleted?: number;
+  status_update?: string;
 }
 
 export interface UpdateTestRunStatsRequest {
   pagesFound?: number;
   pageStatesFound?: number;
   testRunsCompleted?: number;
+  status_update?: string;
 }
 
 export interface TestRunResponse {
@@ -1540,6 +1547,7 @@ export interface TestRunResponse {
   runnerInstanceId: string | null;
   runnerInstanceName: string | null;
   scanUrl: string | null;
+  status_update?: string | null;
   pagesFound: number | null;
   pageStatesFound: number | null;
   testRunsCompleted: number | null;
