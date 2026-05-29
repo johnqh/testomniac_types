@@ -1,11 +1,11 @@
-# @sudobility/starter_types
+# @sudobility/testomniac_types
 
 Shared TypeScript type definitions for the Starter API ecosystem.
 
 ## Installation
 
 ```bash
-bun add @sudobility/starter_types
+bun add @sudobility/testomniac_types
 ```
 
 Peer dependency:
@@ -26,23 +26,23 @@ import {
   errorResponse,
   BaseResponse,
   NetworkClient,
-} from "@sudobility/starter_types";
+} from '@sudobility/testomniac_types';
 
 // Wrap API responses
 const ok = successResponse({ items: [] }); // { success: true, data: { items: [] } }
-const err = errorResponse("Not found"); // { success: false, error: "Not found" }
+const err = errorResponse('Not found'); // { success: false, error: "Not found" }
 ```
 
 ## Types
 
-| Type | Description |
-|------|-------------|
-| `History` | Core data type (`id`, `user_id`, `datetime`, `value`, timestamps) |
-| `HistoryCreateRequest` | `{ datetime, value }` |
-| `HistoryUpdateRequest` | `{ datetime?, value? }` |
-| `HistoryTotalResponse` | `{ total }` |
-| `successResponse<T>` | Wraps data in `BaseResponse<T>` with `success: true` |
-| `errorResponse` | Wraps error string in `BaseResponse<never>` with `success: false` |
+| Type                   | Description                                                       |
+| ---------------------- | ----------------------------------------------------------------- |
+| `History`              | Core data type (`id`, `user_id`, `datetime`, `value`, timestamps) |
+| `HistoryCreateRequest` | `{ datetime, value }`                                             |
+| `HistoryUpdateRequest` | `{ datetime?, value? }`                                           |
+| `HistoryTotalResponse` | `{ total }`                                                       |
+| `successResponse<T>`   | Wraps data in `BaseResponse<T>` with `success: true`              |
+| `errorResponse`        | Wraps error string in `BaseResponse<never>` with `success: false` |
 
 Re-exports from `@sudobility/types`: `ApiResponse`, `BaseResponse`, `NetworkClient`, `Optional`.
 
@@ -59,13 +59,13 @@ bun run verify         # All checks + build (use before commit)
 
 ## Related Packages
 
-- **starter_api** -- Backend API server (Hono + PostgreSQL)
-- **starter_client** -- API client SDK with TanStack Query hooks
-- **starter_lib** -- Business logic library with Zustand stores
-- **starter_app** -- React web application
-- **starter_app_rn** -- React Native mobile app
+- **testomniac_api** -- Backend API server (Hono + PostgreSQL)
+- **testomniac_client** -- API client SDK with TanStack Query hooks
+- **testomniac_lib** -- Business logic library with Zustand stores
+- **testomniac_app** -- React web application
+- **testomniac_app_rn** -- React Native mobile app
 
-All other starter_* projects depend on this package.
+All other testomniac\_\* projects depend on this package.
 
 ## License
 

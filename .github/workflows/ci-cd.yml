@@ -1,5 +1,5 @@
 ---
-# CI/CD workflow for starter_types
+# CI/CD workflow for testomniac_types
 # Automatically publishes to NPM when NPM_TOKEN is configured
 
 name: CI/CD
@@ -23,6 +23,6 @@ jobs:
   cicd:
     uses: johnqh/workflows/.github/workflows/unified-cicd.yml@main
     with:
-      npm-access: "public"
+      npm-access: 'public'
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

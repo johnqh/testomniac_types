@@ -35,7 +35,7 @@ import {
   type ElementIdentityResponse,
 } from './index';
 
-describe('starter_types', () => {
+describe('testomniac_types', () => {
   describe('successResponse', () => {
     it('should create a success response with data', () => {
       const data = { id: '123', name: 'Test' };

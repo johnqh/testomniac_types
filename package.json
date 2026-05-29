@@ -1,6 +1,6 @@
 {
   "name": "@sudobility/testomniac_types",
-  "version": "0.0.66",
+  "version": "0.0.67",
   "description": "Shared TypeScript types for the Testomniac ecosystem",
   "type": "module",
   "main": "./dist/index.js",
@@ -60,6 +60,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnqh/entitystarter_types.git"
+    "url": "https://github.com/johnqh/entitytestomniac_types.git"
   }
 }
