@@ -749,6 +749,7 @@ export interface CreateDiscoveryRunRequest {
   loginUrl?: string;
   continueWithLogin?: boolean;
   quickScan?: boolean;
+  scanMode?: 'full' | 'partial' | 'minimum';
 }
 
 export interface CreateDiscoveryRunResponse {
@@ -1548,6 +1549,7 @@ export interface TestRunResponse {
   entityCredentialId: number | null;
   loginUrl: string | null;
   quickScan: boolean;
+  scanMode: 'full' | 'partial' | 'minimum';
   createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
