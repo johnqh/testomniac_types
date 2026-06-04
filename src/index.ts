@@ -1102,6 +1102,16 @@ export interface DetectPersonasResponse {
   status_update?: string;
 }
 
+export interface DetectTestScenariosRequest {
+  productId: number;
+}
+
+export interface DetectTestScenariosResponse {
+  scenarios: TestScenarioResponse[];
+  detected: number;
+  status_update?: string;
+}
+
 export interface CreateUseCaseRequest {
   personaId: number;
   title: string;
