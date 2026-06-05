@@ -2237,6 +2237,8 @@ export interface EnsurePageStateRequest {
   }>;
   scaffoldSelectorByItemSelector: Record<string, string>;
   createdByTestRunId?: number;
+  /** Pre-processed forms to store (with formType already computed client-side) */
+  forms?: Array<{ form: FormInfo; formType?: string }>;
 }
 
 export interface EnsurePageStateResponse {
@@ -2332,6 +2334,21 @@ export interface GenerateAllSurfaceInteractionsResponse {
 
 export interface DetectPersonasAndScenariosRequest {
   productId: number;
+}
+
+// --- POST /combined/complete-interaction-run ---
+
+export interface CompleteInteractionRunCombinedRequest {
+  testInteractionRunId: number;
+  status: string;
+  durationMs?: number;
+  errorMessage?: string;
+  status_update?: string;
+  expectedOutcome?: string;
+  observedOutcome?: string;
+  screenshotPath?: string;
+  consoleLog?: string;
+  networkLog?: string;
 }
 
 export interface DetectPersonasAndScenariosResponse {
