@@ -2328,6 +2328,19 @@ export interface GenerateAllSurfaceInteractionsResponse {
 // Type Guards
 // =============================================================================
 
+// --- POST /combined/detect-personas-and-scenarios ---
+
+export interface DetectPersonasAndScenariosRequest {
+  productId: number;
+}
+
+export interface DetectPersonasAndScenariosResponse {
+  personas: PersonaResponse[];
+  scenarios: TestScenarioResponse[];
+  personasDetected: number;
+  scenariosDetected: number;
+}
+
 export function isSuccessResponse<T>(
   response: BaseResponse<T>
 ): response is BaseResponse<T> & { success: true; data: T } {
