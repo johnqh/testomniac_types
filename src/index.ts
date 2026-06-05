@@ -2210,6 +2210,121 @@ export interface GenerateSequenceResponse {
 }
 
 // =============================================================================
+// Combined Endpoints
+// =============================================================================
+
+// --- POST /combined/ensure-page-state ---
+
+export interface EnsurePageStateRequest {
+  /** Provide pageId directly, OR relativePath for server-side find-or-create */
+  pageId?: number;
+  /** If provided (with runnerId + testEnvironmentId), server does find-or-create page */
+  relativePath?: string;
+  runnerId: number;
+  testEnvironmentId?: number;
+  sizeClass: string;
+  screenshotPath?: string;
+  html: string;
+  contentText: string;
+  hashes: PageHashes;
+  fixedBodyHash?: string;
+  actionableItems: ActionableItem[];
+  scaffolds: Array<{
+    type: string;
+    html: string;
+    hash: string;
+    selector: string;
+  }>;
+  scaffoldSelectorByItemSelector: Record<string, string>;
+  createdByTestRunId?: number;
+}
+
+export interface EnsurePageStateResponse {
+  pageId: number;
+  requiresLogin: boolean;
+  pageStateId: number;
+  isNew: boolean;
+  scaffoldIdsBySelector: Record<string, number>;
+}
+
+// --- POST /combined/generate-surface-interactions ---
+
+/** Interaction item for combined endpoint — server fills testSurfaceId/testSurfaceRunId */
+export interface GenerateSurfaceInteractionItem {
+  runnerId: number;
+  testSurfaceId?: number;
+  testEnvironmentId?: number;
+  testInteraction: TestInteraction;
+  isGenerated?: boolean;
+  testSurfaceRunId?: number;
+  existingTestInteractionId?: number;
+}
+
+export interface GenerateSurfaceInteractionsRequest {
+  runnerId: number;
+  testEnvironmentId?: number;
+  sizeClass: string;
+  testSurface: TestSurface;
+  testSurfaceBundleId: number;
+  testSurfaceBundleRunId: number;
+  interactions: GenerateSurfaceInteractionItem[];
+  desiredKeys: string[];
+  dependencyTestInteractionId?: number;
+}
+
+export interface GenerateSurfaceInteractionsResponse {
+  surface: TestSurfaceResponse;
+  surfaceRun: TestSurfaceRunResponse;
+  interactions: BatchTestInteractionResult[];
+  retiredIds: number[];
+}
+
+// --- Generator output (returned by generators, batched by PageAnalyzer) ---
+
+export interface GeneratorSurfaceOutput {
+  testSurface: TestSurface;
+  interactions: GenerateSurfaceInteractionItem[];
+  desiredKeys: string[];
+  dependencyTestInteractionId?: number;
+}
+
+export interface GeneratorReconcileOutput {
+  surfaceTitle: string;
+  surfaceId?: number;
+  desiredKeys: string[];
+  dependencyTestInteractionId?: number;
+}
+
+export interface GeneratorOutput {
+  creates: GeneratorSurfaceOutput[];
+  reconciles: GeneratorReconcileOutput[];
+}
+
+// --- POST /combined/generate-all-surface-interactions ---
+
+export interface GenerateAllSurfaceInteractionsRequest {
+  runnerId: number;
+  testEnvironmentId?: number;
+  sizeClass: string;
+  testSurfaceBundleId: number;
+  testSurfaceBundleRunId: number;
+  surfaces: GeneratorSurfaceOutput[];
+  reconcileOnly?: GeneratorReconcileOutput[];
+}
+
+export interface GenerateAllSurfaceInteractionsResultItem {
+  surface: TestSurfaceResponse;
+  surfaceRun: TestSurfaceRunResponse;
+  interactions: BatchTestInteractionResult[];
+  retiredIds: number[];
+}
+
+export interface GenerateAllSurfaceInteractionsResponse {
+  results: GenerateAllSurfaceInteractionsResultItem[];
+  reconcileResults: Array<{ surfaceTitle: string; retiredIds: number[] }>;
+}
+
+// =============================================================================
 // Type Guards
 // =============================================================================
 
