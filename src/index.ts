@@ -2358,6 +2358,119 @@ export interface DetectPersonasAndScenariosResponse {
   scenariosDetected: number;
 }
 
+// =============================================================================
+// Login Detection
+// =============================================================================
+
+export type LoginSignal =
+  | 'url_pattern'
+  | 'password_field'
+  | 'email_password_form'
+  | 'sso_buttons'
+  | 'login_heading';
+
+export interface SSOButtonInfo {
+  provider: string;
+  selector: string;
+  text: string;
+}
+
+export interface LoginDetectionResult {
+  isLoginPage: boolean;
+  confidence: 'high' | 'medium' | 'low';
+  signals: LoginSignal[];
+  loginForm: FormInfo | null;
+  ssoButtons: SSOButtonInfo[];
+}
+
+export interface LoginConfig {
+  loginUrl?: string;
+  email?: string;
+  username?: string;
+  password?: string;
+  twoFactorCode?: string;
+  authProvider?: string;
+}
+
+// =============================================================================
+// Combined Next Endpoint
+// =============================================================================
+
+export interface CombinedNextCompletionPayload {
+  testInteractionRunId: number;
+  testInteractionId: number;
+  testSurfaceId: number;
+  surfaceRunId: number | null;
+  status: string;
+  durationMs?: number;
+  errorMessage?: string;
+  expectedOutcome?: string;
+  observedOutcome?: string;
+  screenshotPath?: string;
+  consoleLog?: string;
+  networkLog?: string;
+}
+
+export interface CombinedNextPageStatePayload {
+  pageId?: number;
+  relativePath?: string;
+  screenshotPath?: string;
+  html: string;
+  contentText: string;
+  hashes: PageHashes;
+  fixedBodyHash?: string;
+  actionableItems: ActionableItem[];
+  scaffolds: Array<{ type: string; html: string; hash: string; selector: string }>;
+  scaffoldSelectorByItemSelector: Record<string, string>;
+  forms?: Array<{ form: FormInfo; formType?: string }>;
+  currentTestInteractionId: number;
+  beginningPageStateId: number;
+  journeySteps?: TestStep[];
+  siteOrigin?: string;
+  scanScopePath?: string;
+  loginDetection?: LoginDetectionResult;
+  loginConfig?: LoginConfig;
+}
+
+export interface CombinedNextRequest {
+  runnerId: number;
+  testRunId: number;
+  bundleRunId: number;
+  testSurfaceBundleId: number;
+  sizeClass: SizeClass;
+  testEnvironmentId?: number;
+  completion?: CombinedNextCompletionPayload;
+  pageState?: CombinedNextPageStatePayload;
+  findings?: EnsureTestRunFindingRequest[];
+  stats?: UpdateTestRunStatsRequest;
+}
+
+export interface CombinedNextResponseNext {
+  interactionRunId: number;
+  surfaceRunId: number;
+  testInteraction: TestInteractionResponse;
+}
+
+export interface CombinedNextResponse {
+  pageState?: {
+    pageId: number;
+    pageStateId: number;
+    isNew: boolean;
+    requiresLogin: boolean;
+  };
+  next: CombinedNextResponseNext | null;
+  created: {
+    surfaces: number;
+    interactions: number;
+    findings: number;
+  };
+  generatedSurfaces: Array<{ surfaceId: number; title: string }>;
+}
+
+// =============================================================================
+// Type Guards
+// =============================================================================
+
 export function isSuccessResponse<T>(
   response: BaseResponse<T>
 ): response is BaseResponse<T> & { success: true; data: T } {
