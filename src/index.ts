@@ -2444,6 +2444,11 @@ export interface CombinedNextPageStatePayload {
   loginConfig?: LoginConfig;
 }
 
+export interface CombinedNextGeneratorOutputs {
+  surfaces: GeneratorSurfaceOutput[];
+  reconcileOnly?: GeneratorReconcileOutput[];
+}
+
 export interface CombinedNextRequest {
   runnerId: number;
   testRunId: number;
@@ -2453,6 +2458,7 @@ export interface CombinedNextRequest {
   testEnvironmentId?: number;
   completion?: CombinedNextCompletionPayload;
   pageState?: CombinedNextPageStatePayload;
+  generatorOutputs?: CombinedNextGeneratorOutputs;
   findings?: EnsureTestRunFindingRequest[];
   stats?: UpdateTestRunStatsRequest;
 }
