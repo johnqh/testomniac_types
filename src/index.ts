@@ -2366,13 +2366,25 @@ export type LoginSignal =
   | 'url_pattern'
   | 'password_field'
   | 'email_password_form'
-  | 'sso_buttons'
+  | 'sso_button'
   | 'login_heading';
 
+export type AuthProviderType =
+  | 'google'
+  | 'apple'
+  | 'microsoft'
+  | 'twitter'
+  | 'facebook'
+  | 'github'
+  | 'linkedin'
+  | 'okta'
+  | 'saml'
+  | 'unknown';
+
 export interface SSOButtonInfo {
-  provider: string;
+  provider: AuthProviderType;
   selector: string;
-  text: string;
+  label: string;
 }
 
 export interface LoginDetectionResult {
