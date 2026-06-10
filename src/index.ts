@@ -2432,7 +2432,12 @@ export interface CombinedNextPageStatePayload {
   hashes: PageHashes;
   fixedBodyHash?: string;
   actionableItems: ActionableItem[];
-  scaffolds: Array<{ type: string; html: string; hash: string; selector: string }>;
+  scaffolds: Array<{
+    type: string;
+    html: string;
+    hash: string;
+    selector: string;
+  }>;
   scaffoldSelectorByItemSelector: Record<string, string>;
   forms?: Array<{ form: FormInfo; formType?: string }>;
   currentTestInteractionId: number;
