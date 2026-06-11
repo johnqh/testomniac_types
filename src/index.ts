@@ -2210,10 +2210,10 @@ export interface GenerateSequenceResponse {
 }
 
 // =============================================================================
-// Combined Endpoints
+// Scan Internal Types
 // =============================================================================
 
-// --- POST /combined/ensure-page-state ---
+// --- Page State ---
 
 export interface EnsurePageStateRequest {
   /** Provide pageId directly, OR relativePath for server-side find-or-create */
@@ -2249,9 +2249,9 @@ export interface EnsurePageStateResponse {
   scaffoldIdsBySelector: Record<string, number>;
 }
 
-// --- POST /combined/generate-surface-interactions ---
+// --- Surface Interactions ---
 
-/** Interaction item for combined endpoint — server fills testSurfaceId/testSurfaceRunId */
+/** Interaction item for surface generation — server fills testSurfaceId/testSurfaceRunId */
 export interface GenerateSurfaceInteractionItem {
   runnerId: number;
   testSurfaceId?: number;
@@ -2262,26 +2262,7 @@ export interface GenerateSurfaceInteractionItem {
   existingTestInteractionId?: number;
 }
 
-export interface GenerateSurfaceInteractionsRequest {
-  runnerId: number;
-  testEnvironmentId?: number;
-  sizeClass: string;
-  testSurface: TestSurface;
-  testSurfaceBundleId: number;
-  testSurfaceBundleRunId: number;
-  interactions: GenerateSurfaceInteractionItem[];
-  desiredKeys: string[];
-  dependencyTestInteractionId?: number;
-}
-
-export interface GenerateSurfaceInteractionsResponse {
-  surface: TestSurfaceResponse;
-  surfaceRun: TestSurfaceRunResponse;
-  interactions: BatchTestInteractionResult[];
-  retiredIds: number[];
-}
-
-// --- Generator output (returned by generators, batched by PageAnalyzer) ---
+// --- Generator output (returned by generators, batched by scan/next) ---
 
 export interface GeneratorSurfaceOutput {
   testSurface: TestSurface;
@@ -2302,7 +2283,7 @@ export interface GeneratorOutput {
   reconciles: GeneratorReconcileOutput[];
 }
 
-// --- POST /combined/generate-all-surface-interactions ---
+// --- Batch Surface Generation ---
 
 export interface GenerateAllSurfaceInteractionsRequest {
   runnerId: number;
@@ -2324,38 +2305,6 @@ export interface GenerateAllSurfaceInteractionsResultItem {
 export interface GenerateAllSurfaceInteractionsResponse {
   results: GenerateAllSurfaceInteractionsResultItem[];
   reconcileResults: Array<{ surfaceTitle: string; retiredIds: number[] }>;
-}
-
-// =============================================================================
-// Type Guards
-// =============================================================================
-
-// --- POST /combined/detect-personas-and-scenarios ---
-
-export interface DetectPersonasAndScenariosRequest {
-  productId: number;
-}
-
-// --- POST /combined/complete-interaction-run ---
-
-export interface CompleteInteractionRunCombinedRequest {
-  testInteractionRunId: number;
-  status: string;
-  durationMs?: number;
-  errorMessage?: string;
-  status_update?: string;
-  expectedOutcome?: string;
-  observedOutcome?: string;
-  screenshotPath?: string;
-  consoleLog?: string;
-  networkLog?: string;
-}
-
-export interface DetectPersonasAndScenariosResponse {
-  personas: PersonaResponse[];
-  scenarios: TestScenarioResponse[];
-  personasDetected: number;
-  scenariosDetected: number;
 }
 
 // =============================================================================
