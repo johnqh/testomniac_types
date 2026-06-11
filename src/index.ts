@@ -2491,6 +2491,31 @@ export interface CombinedNextResponse {
 }
 
 // =============================================================================
+// Combined Start/End Endpoints
+// =============================================================================
+
+export interface CombinedStartRequest {
+  runnerId: number;
+  testRunId: number;
+  bundleRunId: number;
+  testSurfaceBundleId: number;
+  sizeClass: SizeClass;
+  testEnvironmentId?: number;
+  url: string;
+}
+
+export interface CombinedEndRequest {
+  productId: number;
+}
+
+export interface CombinedEndResponse {
+  personas: PersonaResponse[];
+  scenarios: TestScenarioResponse[];
+  personasDetected: number;
+  scenariosDetected: number;
+}
+
+// =============================================================================
 // Type Guards
 // =============================================================================
 
