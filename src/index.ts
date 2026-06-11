@@ -2405,10 +2405,10 @@ export interface LoginConfig {
 }
 
 // =============================================================================
-// Combined Next Endpoint
+// Scan Next Endpoint
 // =============================================================================
 
-export interface CombinedNextCompletionPayload {
+export interface ScanNextCompletionPayload {
   testInteractionRunId: number;
   testInteractionId: number;
   testSurfaceId: number;
@@ -2423,7 +2423,7 @@ export interface CombinedNextCompletionPayload {
   networkLog?: string;
 }
 
-export interface CombinedNextPageStatePayload {
+export interface ScanNextPageStatePayload {
   pageId?: number;
   relativePath?: string;
   screenshotPath?: string;
@@ -2449,39 +2449,39 @@ export interface CombinedNextPageStatePayload {
   loginConfig?: LoginConfig;
 }
 
-export interface CombinedNextGeneratorOutputs {
+export interface ScanNextGeneratorOutputs {
   surfaces: GeneratorSurfaceOutput[];
   reconcileOnly?: GeneratorReconcileOutput[];
 }
 
-export interface CombinedNextRequest {
+export interface ScanNextRequest {
   runnerId: number;
   testRunId: number;
   bundleRunId: number;
   testSurfaceBundleId: number;
   sizeClass: SizeClass;
   testEnvironmentId?: number;
-  completion?: CombinedNextCompletionPayload;
-  pageState?: CombinedNextPageStatePayload;
-  generatorOutputs?: CombinedNextGeneratorOutputs;
+  completion?: ScanNextCompletionPayload;
+  pageState?: ScanNextPageStatePayload;
+  generatorOutputs?: ScanNextGeneratorOutputs;
   findings?: EnsureTestRunFindingRequest[];
   stats?: UpdateTestRunStatsRequest;
 }
 
-export interface CombinedNextResponseNext {
+export interface ScanNextResponseNext {
   interactionRunId: number;
   surfaceRunId: number;
   testInteraction: TestInteractionResponse;
 }
 
-export interface CombinedNextResponse {
+export interface ScanNextResponse {
   pageState?: {
     pageId: number;
     pageStateId: number;
     isNew: boolean;
     requiresLogin: boolean;
   };
-  next: CombinedNextResponseNext | null;
+  next: ScanNextResponseNext | null;
   created: {
     surfaces: number;
     interactions: number;
@@ -2491,10 +2491,10 @@ export interface CombinedNextResponse {
 }
 
 // =============================================================================
-// Combined Start/End Endpoints
+// Scan Begin/End Endpoints
 // =============================================================================
 
-export interface CombinedStartRequest {
+export interface ScanBeginRequest {
   runnerId: number;
   testRunId: number;
   bundleRunId: number;
@@ -2504,11 +2504,11 @@ export interface CombinedStartRequest {
   url: string;
 }
 
-export interface CombinedEndRequest {
+export interface ScanEndRequest {
   productId: number;
 }
 
-export interface CombinedEndResponse {
+export interface ScanEndResponse {
   personas: PersonaResponse[];
   scenarios: TestScenarioResponse[];
   personasDetected: number;
