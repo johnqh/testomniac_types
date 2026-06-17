@@ -693,6 +693,22 @@ export interface LegacyTestInteraction {
   priority: string;
 }
 
+/**
+ * Per-environment user data blob. Open-ended store; `credential` is the
+ * well-known key consumed by login/auth. Variables in interaction input
+ * (`{dotted.path}`) resolve against this object at execution time.
+ */
+export interface UserData {
+  credential?: {
+    email?: string;
+    username?: string;
+    password?: string;
+    twoFactorCode?: string;
+  };
+  // Open-ended: room for additional per-environment data beyond credentials.
+  [key: string]: unknown;
+}
+
 export interface Credentials {
   email?: string;
   username?: string;
