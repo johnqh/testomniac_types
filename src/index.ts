@@ -2437,6 +2437,15 @@ export interface ScanNextResponseNext {
   interactionRunId: number;
   surfaceRunId: number;
   testInteraction: TestInteractionResponse;
+  /**
+   * Dependency chain for `testInteraction`, ordered ROOT-FIRST and INCLUDING
+   * the selected interaction as the final element. Replayed by the runner as
+   * setup before the selected interaction's own steps. `[testInteraction]`
+   * when there is no dependency. Optional for backward compatibility: when
+   * absent, consumers fall back to rebuilding the chain from cached
+   * interactions.
+   */
+  dependencyChain?: TestInteractionResponse[];
 }
 
 export interface ScanNextResponse {
