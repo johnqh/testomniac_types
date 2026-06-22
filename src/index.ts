@@ -2240,14 +2240,19 @@ export interface EnsurePageStateRequest {
   testEnvironmentId?: number;
   sizeClass: string;
   screenshotPath?: string;
-  html: string;
-  contentText: string;
+  /**
+   * Full page HTML. Optional: when absent, ensurePageState resolves the page
+   * state from `hashes` only and returns `needsHtml: true` (rather than
+   * creating) if the body is actually required.
+   */
+  html?: string;
+  contentText?: string;
   hashes: PageHashes;
   fixedBodyHash?: string;
   actionableItems: ActionableItem[];
   scaffolds: Array<{
     type: string;
-    html: string;
+    html?: string;
     hash: string;
     selector: string;
   }>;
@@ -2263,6 +2268,12 @@ export interface EnsurePageStateResponse {
   pageStateId: number;
   isNew: boolean;
   scaffoldIdsBySelector: Record<string, number>;
+  /**
+   * Set when the request omitted `html` but resolving the page state required
+   * it (no hash match, or a scaffold body was missing). The caller should
+   * resend with `html` populated. When true, the other fields are placeholders.
+   */
+  needsHtml?: boolean;
 }
 
 // --- Surface Interactions ---
@@ -2392,14 +2403,22 @@ export interface ScanNextPageStatePayload {
   pageId?: number;
   relativePath?: string;
   screenshotPath?: string;
-  html: string;
-  contentText: string;
+  /**
+   * Full page HTML. Optional: the runner omits it on the first attempt and
+   * sends only `hashes`. The server replies `needHtml: true` (see
+   * `ScanNextResponse`) when it actually needs the body — i.e. when the page
+   * state must be created or decomposed — and the runner resends with `html`
+   * populated. On revisits the HTML never crosses the wire.
+   */
+  html?: string;
+  contentText?: string;
   hashes: PageHashes;
   fixedBodyHash?: string;
   actionableItems: ActionableItem[];
   scaffolds: Array<{
     type: string;
-    html: string;
+    /** Omitted alongside the page `html` on the hashes-only first attempt. */
+    html?: string;
     hash: string;
     selector: string;
   }>;
@@ -2462,6 +2481,15 @@ export interface ScanNextResponse {
     findings: number;
   };
   generatedSurfaces: Array<{ surfaceId: number; title: string }>;
+  /**
+   * Set when the request carried a `pageState` without `html` but the server
+   * needed the body (page state must be created or decomposed this bundle run).
+   * The runner must resend the SAME scan/next request with `html`, scaffold
+   * `html`, and `contentText` populated. No findings/stats/selection are
+   * performed on a `needHtml` response, so the resend executes them exactly
+   * once.
+   */
+  needHtml?: boolean;
 }
 
 // =============================================================================
