@@ -2482,6 +2482,12 @@ export interface ScanNextResponse {
   };
   generatedSurfaces: Array<{ surfaceId: number; title: string }>;
   /**
+   * Per-phase server timing in milliseconds (e.g. `ensurePageState`, `generate`,
+   * `genCpu`, `genPersist`, `analyzerDecompose`, `completeAwait`, `selectNext`,
+   * `total`). Diagnostic only — always present, safe for clients to ignore.
+   */
+  timing?: Record<string, number>;
+  /**
    * Set when the request carried a `pageState` without `html` but the server
    * needed the body (page state must be created or decomposed this bundle run).
    * The runner must resend the SAME scan/next request with `html`, scaffold
