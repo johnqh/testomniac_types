@@ -2512,8 +2512,36 @@ export interface ScanBeginRequest {
   url: string;
 }
 
+/** Terminal status a scan run is closed out with. */
+export type ScanCloseoutStatus =
+  | 'completed'
+  | 'stopped'
+  | 'cancelled'
+  | 'failed';
+
 export interface ScanEndRequest {
-  productId: number;
+  /** Required for persona/scenario detection; omit (with runDetection:false) for pure closeout. */
+  productId?: number;
+  /** When false, skip persona/scenario detection and only run closeout. */
+  runDetection?: boolean;
+  /** Run-closeout fields. When testRunId/bundleRunId are present, /scan/end also
+   *  cancels pending work and closes the run/surface/bundle rows server-side. */
+  testRunId?: number;
+  bundleRunId?: number;
+  status?: ScanCloseoutStatus;
+  totalDurationMs?: number;
+  pagesFound?: number;
+  pageStatesFound?: number;
+  testRunsCompleted?: number;
+  status_update?: string;
+}
+
+/** Counts of rows transitioned by the server-side closeout in /scan/end. */
+export interface ScanEndCloseoutResult {
+  pendingInteractionsClosed: number;
+  surfaceRunsClosed: number;
+  bundleRunsClosed: number;
+  testRunsClosed: number;
 }
 
 export interface ScanEndResponse {
@@ -2521,6 +2549,8 @@ export interface ScanEndResponse {
   scenarios: TestScenarioResponse[];
   personasDetected: number;
   scenariosDetected: number;
+  /** Present when the request carried closeout fields. Null if closeout was skipped. */
+  closeout?: ScanEndCloseoutResult | null;
 }
 
 // =============================================================================
