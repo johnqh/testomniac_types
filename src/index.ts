@@ -573,6 +573,169 @@ export type ExpectationSeverity =
   (typeof ExpectationSeverity)[keyof typeof ExpectationSeverity];
 
 // =============================================================================
+// Expertise Rule IDs
+// =============================================================================
+
+export const ExpertiseRuleId = {
+  TesterPageLoaded: 'tester.page.loaded',
+  TesterConsoleNoErrors: 'tester.console.no-errors',
+  TesterNetworkNoErrors: 'tester.network.no-errors',
+  TesterNetworkNoServerErrors: 'tester.network.no-server-errors',
+  TesterNetworkNoMixedContent: 'tester.network.no-mixed-content',
+  TesterPerformanceLoadTimeWithin: 'tester.performance.load-time-within',
+  TesterInputValue: 'tester.input.value',
+  TesterSelectionState: 'tester.selection.state',
+  TesterValidationMessageVisible: 'tester.validation.message-visible',
+  TesterErrorStateVisible: 'tester.validation.error-visible',
+  TesterErrorStateCleared: 'tester.validation.error-cleared',
+  TesterFormSubmittedSuccessfully: 'tester.form.submitted-successfully',
+  TesterRequiredErrorShownForField: 'tester.validation.required-error-shown',
+  TesterFieldErrorClearsAfterFix: 'tester.validation.field-error-clears',
+  TesterCartSummaryChanged: 'tester.commerce.cart-summary-changed',
+  TesterCountChanged: 'tester.data.count-changed',
+  TesterRowCountChanged: 'tester.data.row-count-changed',
+  TesterNetworkRequestMade: 'tester.network.request-made',
+  TesterNoDuplicateMutationRequests:
+    'tester.network.no-duplicate-mutation-requests',
+  TesterDialogClosed: 'tester.dialog.closed',
+  TesterFocusReturned: 'tester.focus.returned',
+  TesterFeedbackVisible: 'tester.feedback.visible',
+  TesterFeedbackNotDuplicated: 'tester.feedback.not-duplicated',
+  TesterStatePersistsAfterReload: 'tester.persistence.reload',
+  TesterBackNavigationRestoresState: 'tester.persistence.back-navigation',
+  TesterForwardNavigationReappliesState:
+    'tester.persistence.forward-navigation',
+  TesterExpandedStateChanged: 'tester.disclosure.expanded-state-changed',
+  TesterElementFocused: 'tester.focus.element-focused',
+  TesterResultsChanged: 'tester.search.results-changed',
+  TesterResultsRestored: 'tester.search.results-restored',
+  TesterCollectionOrderChanged: 'tester.collection.order-changed',
+  TesterVariantStateChanged: 'tester.variant.state-changed',
+  TesterEmptyStateVisible: 'tester.empty-state.visible',
+  TesterUrlUnchanged: 'tester.navigation.url-unchanged',
+  TesterNavigationOrStateChanged: 'tester.navigation.or-state-changed',
+  TesterPageResponsive: 'tester.page.responsive',
+  TesterLoadingCompletes: 'tester.loading.completes',
+  TesterModalOpened: 'tester.modal.opened',
+  TesterMediaLoaded: 'tester.media.loaded',
+  TesterVideoPlayable: 'tester.video.playable',
+  TesterUnknownExpectation: 'tester.expectation.unknown',
+
+  SeoTitlePresent: 'seo.title.present',
+  SeoTitleLength: 'seo.title.length',
+  SeoMetaDescriptionPresent: 'seo.meta.description.present',
+  SeoMetaDescriptionLength: 'seo.meta.description.length',
+  SeoMetaKeywordsPresent: 'seo.meta.keywords.present',
+  SeoCanonicalPresent: 'seo.canonical.present',
+  SeoCanonicalTarget: 'seo.canonical.target',
+  SeoRobotsIndexability: 'seo.robots.indexability',
+  SeoOpenGraphTitle: 'seo.open-graph.title',
+  SeoOpenGraphDescription: 'seo.open-graph.description',
+  SeoAnchorTextDescriptive: 'seo.anchor.text-descriptive',
+
+  SecurityApiKeysInUrls: 'security.url.api-key',
+  SecuritySensitiveDataInUrls: 'security.url.sensitive-data',
+  SecurityHttpsRequests: 'security.network.https-requests',
+  SecurityMixedContent: 'security.network.mixed-content',
+  SecurityInsecureFormActions: 'security.form.insecure-action',
+  SecurityPasswordFieldsHttps: 'security.form.password-https',
+  SecuritySemanticInputTypes: 'security.form.semantic-input-types',
+  SecurityBlankTargetRel: 'security.link.blank-target-rel',
+  SecurityPageHealthNoopener: 'security.page-health.missing-noopener',
+
+  PerformanceRenderBlockingResponse: 'performance.render-blocking.response',
+  PerformanceRenderBlockingCount: 'performance.render-blocking.count',
+  PerformanceDomSize: 'performance.dom.size',
+  PerformanceHtmlPayloadSize: 'performance.html.payload-size',
+  PerformanceDuplicateStaticDownloads:
+    'performance.resource.duplicate-static-downloads',
+  PerformanceDuplicateMutationRequests:
+    'performance.network.duplicate-mutation-requests',
+  PerformanceSlowNetworkResponses: 'performance.network.slow-responses',
+  PerformanceNavigationTiming: 'performance.navigation.timing',
+  PerformanceTransferBudget: 'performance.resource.transfer-budget',
+  PerformanceSlowResourceTiming: 'performance.resource.slow-timing',
+  PerformanceLargestResources: 'performance.resource.largest',
+  PerformanceBrowserDuplicateResources:
+    'performance.resource.browser-duplicate-resources',
+  PerformanceBrowserRenderBlockingResources:
+    'performance.resource.browser-render-blocking',
+
+  ContentMeaningfulBodyText: 'content.body.meaningful-text',
+  ContentSingleH1: 'content.heading.single-h1',
+  ContentPlaceholderCopy: 'content.copy.placeholder',
+  ContentImageAltCoverage: 'content.image.alt-coverage',
+  ContentBrokenLinkPatterns: 'content.link.broken-patterns',
+  ContentPlaceholderLinks: 'content.link.placeholder',
+  ContentWeakImageAltText: 'content.image.weak-alt-text',
+  ContentLabelContextMismatch: 'content.label.context-mismatch',
+  ContentCurrencyConsistency: 'content.currency.consistency',
+  ContentDuplicateCtaDestinations: 'content.cta.duplicate-destinations',
+  ContentContactPageCompleteness: 'content.contact.completeness',
+  ContentProductCardEssentials: 'content.product-card.essentials',
+  ContentLanguageConsistency: 'content.language.consistency',
+  ContentDuplicateIds: 'content.dom.duplicate-ids',
+  ContentHeadingHierarchy: 'content.heading.hierarchy',
+  ContentHardcodedDevUrls: 'content.url.hardcoded-dev',
+  ContentOutdatedCopyright: 'content.copyright.current-year',
+  ContentOrphanedFormLabels: 'content.form.orphaned-labels',
+  ContentPageHealthBrokenImage: 'content.page-health.broken-image',
+  ContentPageHealthBrokenLinkPattern: 'content.page-health.broken-link-pattern',
+  ContentPageHealthCartMath: 'content.page-health.cart-math',
+  ContentPageHealthGrammar: 'content.page-health.grammar',
+  ContentPageHealthDefunctService: 'content.page-health.defunct-service',
+  ContentPageHealthMissingPrice: 'content.page-health.missing-price',
+  ContentPageHealthInvalidPrice: 'content.page-health.invalid-price',
+  ContentPageHealthInvalidDiscount: 'content.page-health.invalid-discount',
+  ContentPageHealthInvalidRating: 'content.page-health.invalid-rating',
+  ContentPageHealthPlaceholderText: 'content.page-health.placeholder-text',
+  ContentPageHealthPriceFormat: 'content.page-health.price-format',
+  ContentPageHealthEmptyProductPage: 'content.page-health.empty-product-page',
+  ContentPageHealthMissingProductImage:
+    'content.page-health.missing-product-image',
+  ContentPageHealthMissingStockInfo: 'content.page-health.missing-stock-info',
+
+  UiMainLandmark: 'ui.main-landmark',
+  UiScaffoldConsistency: 'ui.scaffold.consistency',
+  UiActiveErrorPatterns: 'ui.error.initial-render',
+  UiInteractiveDensity: 'ui.interactive-density',
+  UiSocialButtonIntegrity: 'ui.social-button.integrity',
+  UiBreadcrumbConsistency: 'ui.breadcrumb.consistency',
+  UiStuckLoadingIndicators: 'ui.loading.stuck',
+  UiDialogCloseAffordance: 'ui.dialog.close-affordance',
+  UiDisabledPrimaryActions: 'ui.primary-action.disabled',
+  UiNavigationButtons: 'ui.navigation.button-semantics',
+  UiPageHealthOverlap: 'ui.page-health.element-overlap',
+  UiPageHealthDeadSocialButton: 'ui.page-health.dead-social-button',
+  UiPageHealthInconsistentGrid: 'ui.page-health.inconsistent-grid',
+  UiPageHealthHorizontalOverflow: 'ui.page-health.horizontal-overflow',
+  UiPageHealthTruncatedText: 'ui.page-health.truncated-text',
+  UiPageHealthDuplicateElement: 'ui.page-health.duplicate-element',
+  UiPageHealthErrorMessageVisible: 'ui.page-health.error-message-visible',
+
+  AccessibilityDocumentLanguage: 'accessibility.document.language',
+  AccessibilityMainLandmark: 'accessibility.main-landmark',
+  AccessibilityFormLabels: 'accessibility.form.labels',
+  AccessibilityImageAltCoverage: 'accessibility.image.alt-coverage',
+  AccessibilityDialogLabelling: 'accessibility.dialog.labelling',
+  AccessibilityPositiveTabindex: 'accessibility.tabindex.positive',
+  AccessibilityAutoplayMedia: 'accessibility.media.autoplay-sound',
+  AccessibilityInteractiveNames: 'accessibility.control.name',
+  AccessibilityAriaReferences: 'accessibility.aria.references',
+  AccessibilityClickableSemantics: 'accessibility.clickable.semantics',
+  AccessibilityEmptyLinks: 'accessibility.link.empty',
+  AccessibilityPageHealthEmptyLink: 'accessibility.page-health.empty-link',
+  AccessibilityPageHealthBrokenAnchor:
+    'accessibility.page-health.broken-anchor',
+  AccessibilityPageHealthUnlabeledButton:
+    'accessibility.page-health.unlabeled-button',
+  AccessibilityPageHealthSmallTouchTarget:
+    'accessibility.page-health.small-touch-target',
+} as const;
+export type ExpertiseRuleId =
+  (typeof ExpertiseRuleId)[keyof typeof ExpertiseRuleId];
+
+// =============================================================================
 // Expectation
 // =============================================================================
 
@@ -1594,6 +1757,7 @@ export interface TestRunResponse {
 export interface CreateTestRunFindingRequest {
   testInteractionRunId: number;
   expertiseRuleId?: number;
+  ruleId?: ExpertiseRuleId;
   type: FindingType;
   priority: number;
   title: string;
@@ -1603,6 +1767,7 @@ export interface CreateTestRunFindingRequest {
 export interface EnsureTestRunFindingRequest {
   testRunId: number;
   testInteractionRunId: number;
+  ruleId?: ExpertiseRuleId;
   type: FindingType;
   priority: number;
   title: string;
@@ -1615,6 +1780,7 @@ export interface TestRunFindingResponse {
   testRunId: number | null;
   path: string | null;
   expertiseRuleId: number | null;
+  ruleId: ExpertiseRuleId | null;
   type: string;
   priority: number;
   title: string;
