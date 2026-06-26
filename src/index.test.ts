@@ -33,9 +33,47 @@ import {
   type TestSurface,
   type CreateElementIdentityRequest,
   type ElementIdentityResponse,
+  ExpertiseId,
+  ExpertiseRuleCatalog,
+  ExpertiseRuleId,
+  getExpertiseIdForRuleId,
+  type ExpertiseRuleOverride,
 } from './index';
 
 describe('testomniac_types', () => {
+  describe('expertise rule catalog', () => {
+    it('defines usable metadata for every stable rule ID', () => {
+      const ruleIds = Object.values(ExpertiseRuleId);
+      expect(Object.keys(ExpertiseRuleCatalog)).toHaveLength(ruleIds.length);
+
+      for (const ruleId of ruleIds) {
+        const rule = ExpertiseRuleCatalog[ruleId];
+        expect(rule.id).toBe(ruleId);
+        expect(rule.label).not.toBe('');
+        expect(rule.description).not.toBe('');
+        expect(rule.remediation).not.toBe('');
+      }
+    });
+
+    it('resolves a rule to its stable expertise ID', () => {
+      expect(getExpertiseIdForRuleId(ExpertiseRuleId.SeoTitlePresent)).toBe(
+        ExpertiseId.Seo
+      );
+      expect(
+        getExpertiseIdForRuleId(ExpertiseRuleId.SecurityMixedContent)
+      ).toBe(ExpertiseId.Security);
+    });
+
+    it('supports scan-level rule overrides', () => {
+      const override: ExpertiseRuleOverride = {
+        ruleId: ExpertiseRuleId.SeoTitlePresent,
+        enabled: false,
+        priority: 4,
+      };
+      expect(override.enabled).toBe(false);
+    });
+  });
+
   describe('successResponse', () => {
     it('should create a success response with data', () => {
       const data = { id: '123', name: 'Test' };

@@ -735,6 +735,101 @@ export const ExpertiseRuleId = {
 export type ExpertiseRuleId =
   (typeof ExpertiseRuleId)[keyof typeof ExpertiseRuleId];
 
+/** Stable ownership areas for generated findings. */
+export const ExpertiseId = {
+  Tester: 'tester',
+  Seo: 'seo',
+  Security: 'security',
+  Performance: 'performance',
+  Content: 'content',
+  Ui: 'ui',
+  Accessibility: 'accessibility',
+} as const;
+export type ExpertiseId = (typeof ExpertiseId)[keyof typeof ExpertiseId];
+
+export interface ExpertiseRuleDefinition {
+  id: ExpertiseRuleId;
+  expertiseId: ExpertiseId;
+  category: string;
+  label: string;
+  description: string;
+  remediation: string;
+  defaultPriority: FindingPriority;
+}
+
+const expertiseIdByRulePrefix: Record<string, ExpertiseId> = {
+  tester: ExpertiseId.Tester,
+  seo: ExpertiseId.Seo,
+  security: ExpertiseId.Security,
+  performance: ExpertiseId.Performance,
+  content: ExpertiseId.Content,
+  ui: ExpertiseId.Ui,
+  accessibility: ExpertiseId.Accessibility,
+};
+
+function titleCaseRulePart(value: string): string {
+  return value
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function defaultPriorityForExpertise(
+  expertiseId: ExpertiseId
+): FindingPriority {
+  if (expertiseId === ExpertiseId.Security) return FindingPriority.Major;
+  if (expertiseId === ExpertiseId.Tester) return FindingPriority.Major;
+  return FindingPriority.Minor;
+}
+
+/**
+ * Shared metadata for every stable rule. Clients should render and group findings
+ * through this catalog rather than parsing a title or rule ID themselves.
+ */
+export const ExpertiseRuleCatalog: Record<
+  ExpertiseRuleId,
+  ExpertiseRuleDefinition
+> = Object.fromEntries(
+  (Object.values(ExpertiseRuleId) as ExpertiseRuleId[]).map((id) => {
+    const [prefix, category = 'general', ...ruleParts] = id.split('.');
+    const expertiseId = expertiseIdByRulePrefix[prefix];
+    const ruleLabel = ruleParts.map(titleCaseRulePart).join(' ');
+    const categoryLabel = titleCaseRulePart(category);
+    const label = ruleLabel ? `${categoryLabel}: ${ruleLabel}` : categoryLabel;
+    return [
+      id,
+      {
+        id,
+        expertiseId,
+        category,
+        label,
+        description: `${label} did not meet the ${expertiseId} check.`,
+        remediation: `Review ${categoryLabel.toLowerCase()} and correct the condition reported by this check.`,
+        defaultPriority: defaultPriorityForExpertise(expertiseId),
+      },
+    ];
+  })
+) as Record<ExpertiseRuleId, ExpertiseRuleDefinition>;
+
+export function getExpertiseRuleDefinition(
+  ruleId: ExpertiseRuleId | null | undefined
+): ExpertiseRuleDefinition | null {
+  return ruleId ? (ExpertiseRuleCatalog[ruleId] ?? null) : null;
+}
+
+export function getExpertiseIdForRuleId(
+  ruleId: ExpertiseRuleId | null | undefined
+): ExpertiseId | null {
+  return getExpertiseRuleDefinition(ruleId)?.expertiseId ?? null;
+}
+
+export interface ExpertiseRuleOverride {
+  ruleId: ExpertiseRuleId;
+  enabled?: boolean;
+  priority?: FindingPriority;
+}
+
 // =============================================================================
 // Expectation
 // =============================================================================
@@ -912,6 +1007,7 @@ export interface CreateDiscoveryRunRequest {
   testEnvironmentId?: number;
   sizeClass?: SizeClass;
   expertiseSlugs?: string[];
+  ruleOverrides?: ExpertiseRuleOverride[];
   createdByUserId?: string;
   ownedByUserId?: string;
   environmentLabel?: string;
@@ -1691,6 +1787,7 @@ export interface CreateTestRunRequest {
   testEnvironmentId?: number;
   discovery?: boolean;
   expertiseSlugsJson?: string[];
+  ruleOverridesJson?: ExpertiseRuleOverride[];
   parentTestRunId?: number;
   rootTestRunId?: number;
   sizeClass: string;
@@ -1727,6 +1824,7 @@ export interface TestRunResponse {
   testEnvironmentId: number | null;
   discovery: boolean;
   expertiseSlugsJson: string[] | null;
+  ruleOverridesJson: ExpertiseRuleOverride[] | null;
   parentTestRunId: number | null;
   rootTestRunId: number | null;
   sizeClass: string;
@@ -1780,6 +1878,7 @@ export interface TestRunFindingResponse {
   testRunId: number | null;
   path: string | null;
   expertiseRuleId: number | null;
+  expertiseId: ExpertiseId | null;
   ruleId: ExpertiseRuleId | null;
   type: string;
   priority: number;
@@ -1787,6 +1886,19 @@ export interface TestRunFindingResponse {
   description: string;
   interactionRunIds: number[];
   createdAt: string | null;
+}
+
+export interface TestRunFindingRuleSummary {
+  ruleId: ExpertiseRuleId | null;
+  expertiseId: ExpertiseId | null;
+  type: FindingType;
+  priority: number;
+  title: string;
+  description: string;
+  affectedPages: number;
+  findingCount: number;
+  sampleFindingIds: number[];
+  samplePaths: string[];
 }
 
 // --- Issues (deprecated — replaced by TestRunFinding) ---
