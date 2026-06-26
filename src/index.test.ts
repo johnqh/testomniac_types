@@ -38,6 +38,10 @@ import {
   ExpertiseRuleId,
   getExpertiseIdForRuleId,
   type ExpertiseRuleOverride,
+  type ScanSettingsResponse,
+  type TestRunFindingExpertiseSummary,
+  type TestRunFindingRuleSummary,
+  type UpdateScanSettingsRequest,
 } from './index';
 
 describe('testomniac_types', () => {
@@ -71,6 +75,57 @@ describe('testomniac_types', () => {
         priority: 4,
       };
       expect(override.enabled).toBe(false);
+    });
+
+    it('defines grouped finding summaries for rules and expertises', () => {
+      const ruleSummary: TestRunFindingRuleSummary = {
+        ruleId: ExpertiseRuleId.SeoTitlePresent,
+        expertiseId: ExpertiseId.Seo,
+        type: IssueType.Warning,
+        priority: 2,
+        title: 'Missing title',
+        description: 'The page is missing a title tag.',
+        category: 'title',
+        label: 'Title: Present',
+        remediation: 'Add a descriptive title tag.',
+        defaultPriority: 3,
+        affectedPages: 2,
+        findingCount: 4,
+        sampleFindingIds: [1, 2],
+        samplePaths: ['/a', '/b'],
+      };
+      const expertiseSummary: TestRunFindingExpertiseSummary = {
+        expertiseId: ExpertiseId.Seo,
+        findingCount: 4,
+        affectedPages: 2,
+        ruleCount: 1,
+        errorCount: 0,
+        warningCount: 4,
+        infoCount: 0,
+      };
+
+      expect(ruleSummary.label).toBe('Title: Present');
+      expect(expertiseSummary.warningCount).toBe(4);
+    });
+
+    it('defines reusable scan-settings contracts', () => {
+      const response: ScanSettingsResponse = {
+        productId: 7,
+        testEnvironmentId: 11,
+        expertiseSlugs: ['tester', 'seo'],
+        ruleOverrides: [
+          {
+            ruleId: ExpertiseRuleId.SeoTitlePresent,
+            enabled: false,
+          },
+        ],
+      };
+      const update: UpdateScanSettingsRequest = {
+        expertiseSlugs: ['tester', 'content'],
+      };
+
+      expect(response.expertiseSlugs).toContain('seo');
+      expect(update.ruleOverrides).toBeUndefined();
     });
   });
 

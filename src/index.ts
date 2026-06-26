@@ -1895,10 +1895,36 @@ export interface TestRunFindingRuleSummary {
   priority: number;
   title: string;
   description: string;
+  category: string | null;
+  label: string;
+  remediation: string | null;
+  defaultPriority: FindingPriority | null;
   affectedPages: number;
   findingCount: number;
   sampleFindingIds: number[];
   samplePaths: string[];
+}
+
+export interface TestRunFindingExpertiseSummary {
+  expertiseId: ExpertiseId | null;
+  findingCount: number;
+  affectedPages: number;
+  ruleCount: number;
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
+}
+
+export interface ScanSettingsResponse {
+  productId: number;
+  testEnvironmentId?: number;
+  expertiseSlugs: string[] | null;
+  ruleOverrides: ExpertiseRuleOverride[] | null;
+}
+
+export interface UpdateScanSettingsRequest {
+  expertiseSlugs?: string[] | null;
+  ruleOverrides?: ExpertiseRuleOverride[] | null;
 }
 
 // --- Issues (deprecated — replaced by TestRunFinding) ---
