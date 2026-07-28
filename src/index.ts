@@ -613,6 +613,7 @@ export const ExpertiseRuleId = {
   TesterVariantStateChanged: 'tester.variant.state-changed',
   TesterEmptyStateVisible: 'tester.empty-state.visible',
   TesterUrlUnchanged: 'tester.navigation.url-unchanged',
+  TesterUrlMatchesTarget: 'tester.navigation.url-matches-target',
   TesterNavigationOrStateChanged: 'tester.navigation.or-state-changed',
   TesterPageResponsive: 'tester.page.responsive',
   TesterLoadingCompletes: 'tester.loading.completes',
