@@ -2704,6 +2704,28 @@ export interface ScanNextCompletionPayload {
   networkLog?: string;
 }
 
+/**
+ * One repeated instance of a UI pattern. Carries only identity — `outerHtml` is
+ * deliberately omitted because the payload ships one entry per instance and the
+ * server-side graph mapping never reads the markup.
+ */
+export interface ScanPatternInstancePayload {
+  selector: string;
+  hash: string;
+}
+
+/**
+ * A UI pattern and its repeated instances. Supplies the nesting layer that flat
+ * `scaffolds` lack, so the graph service can collapse lists instead of churning
+ * a view signature on every item added or removed.
+ */
+export interface ScanPatternPayload {
+  type: string;
+  selector: string;
+  count: number;
+  instances: ScanPatternInstancePayload[];
+}
+
 export interface ScanNextPageStatePayload {
   pageId?: number;
   relativePath?: string;
@@ -2728,6 +2750,11 @@ export interface ScanNextPageStatePayload {
     selector: string;
   }>;
   scaffoldSelectorByItemSelector: Record<string, string>;
+  /**
+   * Detected UI patterns with their instances. Optional: older runners omit it,
+   * in which case observations still succeed but lists do not collapse.
+   */
+  patterns?: ScanPatternPayload[];
   forms?: Array<{ form: FormInfo; formType?: string }>;
   currentTestInteractionId: number;
   beginningPageStateId: number;
