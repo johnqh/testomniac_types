@@ -2726,11 +2726,28 @@ export interface ScanPatternPayload {
   instances: ScanPatternInstancePayload[];
 }
 
+/**
+ * Server-side reads derived in the runner, so the page HTML need not be sent.
+ * Each field replaces one consumer of the old `html` payload field.
+ */
+export interface ScanPageSignals {
+  /** Replaces `pageHasOpenDialog(html)`. */
+  hasOpenDialog: boolean;
+  /** Replaces `estimateCollectionCount(html)`. */
+  collectionCount: number;
+  /** Replaces `extractVisibleText(html)`. */
+  visibleText: string;
+}
+
 export interface ScanNextPageStatePayload {
   pageId?: number;
   relativePath?: string;
   screenshotPath?: string;
   /**
+   * @deprecated Sent only by runners older than 0.1.181. Prefer `contentMd`.
+   * Retained so an old runner's page content is not silently lost while the
+   * API and runner roll out independently.
+   *
    * Full page HTML. Optional: the runner omits it on the first attempt and
    * sends only `hashes`. The server replies `needHtml: true` (see
    * `ScanNextResponse`) when it actually needs the body — i.e. when the page
@@ -2755,6 +2772,23 @@ export interface ScanNextPageStatePayload {
    * in which case observations still succeed but lists do not collapse.
    */
   patterns?: ScanPatternPayload[];
+  /**
+   * Markdown projection of the page, replacing `html` on the wire.
+   *
+   * The server prefers this and derives it from `html` only while older runners
+   * are still deployed. Markdown is a fraction of the size and is what the
+   * graph service matches a goal against.
+   */
+  contentMd?: string;
+  /**
+   * Values the server used to derive from raw HTML.
+   *
+   * Computed in the runner from the live DOM, where each check is cheaper and
+   * exact. They exist so `html` can leave the payload: markdown contains no
+   * `<dialog>`, `<tr>` or `<li>`, so the generators that counted those tags
+   * would silently return zero if handed markdown instead.
+   */
+  signals?: ScanPageSignals;
   forms?: Array<{ form: FormInfo; formType?: string }>;
   currentTestInteractionId: number;
   beginningPageStateId: number;
