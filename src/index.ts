@@ -2551,6 +2551,10 @@ export interface EnsurePageStateRequest {
    * creating) if the body is actually required.
    */
   html?: string;
+  /** Markdown projection of the page. Preferred over `html` when both arrive. */
+  contentMd?: string;
+  /** Derived reads computed in the runner. See `ScanPageSignals`. */
+  signals?: ScanPageSignals;
   contentText?: string;
   hashes: PageHashes;
   fixedBodyHash?: string;
