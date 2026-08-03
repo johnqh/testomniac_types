@@ -1,4 +1,4 @@
-export * from './replay-selector';
+export * from './replay-selector.js';
 // Re-export common types from @sudobility/types
 export type {
   ApiResponse,
