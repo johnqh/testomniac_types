@@ -2795,6 +2795,14 @@ export interface ScanNextPageStatePayload {
   signals?: ScanPageSignals;
   forms?: Array<{ form: FormInfo; formType?: string }>;
   currentTestInteractionId: number;
+  /**
+   * Accessible name of the control whose activation produced this page state.
+   *
+   * The graph joins a planned click to the view it leads to by this name, so
+   * without it a multi-step plan cannot be validated: every click looks
+   * terminal and the second action fails to chain.
+   */
+  triggerLabel?: string;
   beginningPageStateId: number;
   journeySteps?: TestStep[];
   siteOrigin?: string;
