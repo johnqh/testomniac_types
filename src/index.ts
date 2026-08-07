@@ -2744,6 +2744,29 @@ export interface ScanPageSignals {
   visibleText: string;
 }
 
+/**
+ * One HTTP request the page issued, captured whole.
+ *
+ * Sent complete — every header, both bodies. The graph service needs the real
+ * shape of a call to be able to reproduce it later, and it redacts at ingest:
+ * credential-looking header values and sensitive body fields are dropped
+ * before anything is written, so nothing sensitive is stored regardless of
+ * what is sent.
+ *
+ * Bodies are capped by nothing here on purpose. An API response truncated
+ * mid-object infers a schema missing exactly the fields that made it long.
+ */
+export interface CapturedNetworkRequest {
+  method: string;
+  url: string;
+  requestHeaders?: Record<string, string>;
+  /** Raw body as sent. JSON is parsed downstream; anything else is typed only. */
+  requestBody?: string;
+  responseStatus?: number;
+  responseHeaders?: Record<string, string>;
+  responseBody?: string;
+}
+
 export interface ScanNextPageStatePayload {
   pageId?: number;
   relativePath?: string;
@@ -2794,6 +2817,11 @@ export interface ScanNextPageStatePayload {
    * would silently return zero if handed markdown instead.
    */
   signals?: ScanPageSignals;
+  /**
+   * XHR/fetch traffic this page issued. Optional: older runners omit it, and
+   * the graph service then simply learns no API surface for the app.
+   */
+  networkRequests?: CapturedNetworkRequest[];
   forms?: Array<{ form: FormInfo; formType?: string }>;
   currentTestInteractionId: number;
   /**
