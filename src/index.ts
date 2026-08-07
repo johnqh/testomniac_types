@@ -2883,6 +2883,15 @@ export interface ScanNextResponse {
 
 export interface ScanBeginRequest {
   runnerId: number;
+  /**
+   * What this runner's browser adapter supports, e.g. ["withinText"].
+   *
+   * Capabilities rather than a version: a consumer asking "can you scope a
+   * click to one row?" should not have to know which release added it. Absence
+   * means no capability — a runner that never reported must not be handed a
+   * key it would silently drop.
+   */
+  capabilities?: string[];
   testRunId: number;
   bundleRunId: number;
   testSurfaceBundleId: number;
