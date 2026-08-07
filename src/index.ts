@@ -2754,6 +2754,14 @@ export interface ScanPageSignals {
   collectionCount: number;
   /** Replaces `extractVisibleText(html)`. */
   visibleText: string;
+  /**
+   * `document.title`.
+   *
+   * The graph service weighs a view's title above its body text when matching
+   * a goal, because a title says what a view is FOR rather than what happens
+   * to be on it. Read from the live DOM: markdown carries no <title>.
+   */
+  title?: string;
 }
 
 /**
