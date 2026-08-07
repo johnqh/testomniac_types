@@ -1027,6 +1027,16 @@ export interface CreateDiscoveryRunRequest {
   continueWithLogin?: boolean;
   quickScan?: boolean;
   scanMode?: 'full' | 'partial' | 'minimum';
+  /**
+   * Send the app's API traffic to the graph service. **Off unless asked for.**
+   *
+   * The graph service can learn an app's API surface from its traffic, but
+   * that means request and response bodies leaving the runner, so it is opt-in
+   * per scan rather than a property of every scan. When false the browser
+   * buffers nothing — this opts out of the capture itself, not merely of the
+   * send.
+   */
+  captureApi?: boolean;
 }
 
 export interface CreateDiscoveryRunResponse {
@@ -1847,6 +1857,8 @@ export interface TestRunResponse {
   loginUrl: string | null;
   quickScan: boolean;
   scanMode: 'full' | 'partial' | 'minimum';
+  /** @see CreateDiscoveryRunRequest.captureApi */
+  captureApi: boolean;
   createdAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
