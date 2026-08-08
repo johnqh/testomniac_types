@@ -24,7 +24,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\"",
     "typecheck": "tsc --noEmit",
     "verify": "bun run typecheck && bun run lint && bun run test && bun run build",
-    "prepublishOnly": "bun run clean && bun run verify && node ../workflows/scripts/check-package-entry.cjs"
+    "prepublishOnly": "node ../workflows/scripts/check-publish-safety.cjs && bun run clean && bun run verify && node ../workflows/scripts/check-package-entry.cjs"
   },
   "files": [
     "dist/**/*",
