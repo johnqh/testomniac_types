@@ -2776,6 +2776,86 @@ export interface ScanPageSignals {
  * Bodies are capped by nothing here on purpose. An API response truncated
  * mid-object infers a schema missing exactly the fields that made it long.
  */
+/**
+ * Navigation planning, as proxied by testomniac_api.
+ *
+ * These mirror the graph service's contract but are declared here so consumers
+ * — the web app, the client SDK — depend on Testomniac's own types rather than
+ * on `webgraph_client`. The graph service is reached only through the proxy,
+ * which is what keeps its API key server-side.
+ */
+export interface NavigationPlanRequest {
+  /** What the user wants, in plain language. */
+  goal: string;
+  /** Where the caller currently is. Defaults to the app's entry view. */
+  from?: { urlPath: string; signature?: string };
+  maxDepth?: number;
+  maxCandidates?: number;
+  /**
+   * Whether the caller already holds a session. Defaults false server-side,
+   * which routes AROUND login walls.
+   */
+  authenticated?: boolean;
+  /**
+   * What the caller is looking at right now. Supplying `controls` lets a plan
+   * act on a screen the graph has never recorded.
+   */
+  observed?: {
+    contentMd?: string;
+    urlPath?: string;
+    controls?: Array<{ name: string; actionKind?: string }>;
+  };
+}
+
+export type NavigationPlanAction =
+  | {
+      kind: 'goto';
+      toUrlPath: string;
+      toViewId: number | null;
+      label: string | null;
+    }
+  | {
+      kind: 'click';
+      controlName: string;
+      onViewId: number;
+      toViewId: number | null;
+      label: string | null;
+      /** Which row, when the control repeats in a list. */
+      within?: string;
+    }
+  | {
+      kind: 'fill';
+      controlName: string;
+      value: string;
+      onViewId: number;
+      within?: string;
+    }
+  /** Call the app's own API instead of driving its interface. Ends a plan. */
+  | {
+      kind: 'call';
+      endpointId: number;
+      method: string;
+      url: string;
+      bodyJson?: string;
+      /** Headers whose values were withheld; the caller supplies live ones. */
+      authHeaderNames: string[];
+    };
+
+export interface NavigationPlanResponse {
+  startView: { id: number; urlPath: string; signature: string } | null;
+  actions: NavigationPlanAction[];
+  confidence: 'high' | 'medium' | 'low';
+  reason: string;
+  /** `explore` means the plan acts on the page the caller reported seeing. */
+  source: 'llm' | 'graph-fallback' | 'explore';
+}
+
+/** A transition a caller reports as broken, so the graph routes around it. */
+export interface NavigationReplanRequest extends NavigationPlanRequest {
+  failedTransitionId?: number;
+  failedControlName?: string;
+}
+
 export interface CapturedNetworkRequest {
   method: string;
   url: string;
