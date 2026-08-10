@@ -2579,6 +2579,18 @@ export interface EnsurePageStateRequest {
     selector: string;
   }>;
   scaffoldSelectorByItemSelector: Record<string, string>;
+  /**
+   * Item selector -> `type:index` of the pattern instance containing it.
+   *
+   * Every instance of a pattern carries the SAME selector — the pattern's own —
+   * so an instance cannot be identified by matching selectors against it. Each
+   * item was resolved to its instance in the page, where containment is a fact
+   * rather than a string comparison.
+   *
+   * Optional: older runners omit it, in which case per-item controls collapse
+   * onto the first instance and a list changes view identity with its length.
+   */
+  patternInstanceByItemSelector?: Record<string, string>;
   createdByTestRunId?: number;
   /** Pre-processed forms to store (with formType already computed client-side) */
   forms?: Array<{ form: FormInfo; formType?: string }>;
@@ -2895,6 +2907,18 @@ export interface ScanNextPageStatePayload {
     selector: string;
   }>;
   scaffoldSelectorByItemSelector: Record<string, string>;
+  /**
+   * Item selector -> `type:index` of the pattern instance containing it.
+   *
+   * Every instance of a pattern carries the SAME selector — the pattern's own —
+   * so an instance cannot be identified by matching selectors against it. Each
+   * item was resolved to its instance in the page, where containment is a fact
+   * rather than a string comparison.
+   *
+   * Optional: older runners omit it, in which case per-item controls collapse
+   * onto the first instance and a list changes view identity with its length.
+   */
+  patternInstanceByItemSelector?: Record<string, string>;
   /**
    * Detected UI patterns with their instances. Optional: older runners omit it,
    * in which case observations still succeed but lists do not collapse.
